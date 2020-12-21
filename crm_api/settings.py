@@ -1,7 +1,7 @@
 import os
 
 mode = os.environ.get("SUPPORT_PROFILE")
-print(mode)
+# print(mode)
 
 if mode == "develop":
     from crm_api.develop import *
