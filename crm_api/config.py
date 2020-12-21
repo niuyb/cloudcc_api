@@ -9,15 +9,15 @@ RESULT = {"data": [], "code": -1, "msg": ""}
 
 
 # cloudcc 超管账号   后期修改为公用账号
-ClOUDCC_USERNAME = "zhangwenwen@yqzbw.com"
-ClOUDCC_PASSWORD = "zhxg123456"
+ClOUDCC_USERNAME = "admin@yqzbw.com"
+ClOUDCC_PASSWORD = "zhxg1111"
 
 # 获取cloudcc请求路径
 ACCESS_URL = "http://site.cloudcc.com/api/appURL/get?username="
 
 # redis
 CLOUD_REDIS = "192.168.185.129"
-REDIS_EXPIRE = 60*60
+REDIS_EXPIRE = 30*60
 
 # cloudcc Object 对象
 ClOUDCC_OBJECT={
