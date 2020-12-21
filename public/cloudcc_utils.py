@@ -11,8 +11,9 @@ import requests
 # 增加重试次数
 # requests.DEFAULT_RETRIES = 5
 # s.keep_alive = False
-from crm_api.config import CLOUD_REDIS, REDIS_EXPIRE, ACCESS_URL, ClOUDCC_USERNAME, ClOUDCC_PASSWORD
+
 from public.utils import get_redis, Result
+from settings.config import CLOUD_REDIS, ACCESS_URL, ClOUDCC_USERNAME, REDIS_EXPIRE, ClOUDCC_PASSWORD
 
 
 def cloudcc_reload():
