@@ -24,7 +24,6 @@ def account_query():
     result = Result()
     field_name = request.args.get("field_name",None)
     field_value = request.args.get("field_value",None)
-    print(field_name,field_value)
     if field_name in ACCOUNT_QUERY_ALLOW:
         try:
             access_url = cloudcc_get_request_url(ACCESS_URL, ClOUDCC_USERNAME)
