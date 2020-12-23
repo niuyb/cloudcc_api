@@ -102,9 +102,9 @@ def cloudcc_query_name(access_url,server_name,objectapi_name,object_name,binding
     session.keep_alive = False
     access_url = access_url + "/distributor.action?serviceName=" + server_name + "&objectApiName=" + objectapi_name + "&expressions=name=" + object_name + "&binding=" + binding
     try:
-        print(access_url)
+        # print(access_url)
         response = json.loads(session.get(access_url).text)
-        print(response)
+        # print(response)
         if response["result"] == True:
             return response["data"]
         else:
@@ -120,9 +120,9 @@ def modify_by_api(access_url,server_name,objectapi_name,data,binding):
     try:
         data=json.dumps(data)
         access_url = access_url+"/distributor.action?serviceName="+server_name+"&objectApiName="+objectapi_name+"&data="+data+"&binding="+binding
-        print(access_url)
+        # print(access_url)
         response = json.loads(session.get(access_url).text)
-        print(response)
+        # print(response)
         if response["result"] == True:
             return True
         else:

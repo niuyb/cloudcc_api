@@ -57,7 +57,7 @@ def account_modify():
     account_id = request.args.get("account_id", None)
     modify_field = request.args.get("modify_field", None)
     mofidy_value = request.args.get("mofidy_value", None)
-    print(modify_field)
+    # print(modify_field)
     if modify_field in ACCOUNT_MODIFY_ALLOW:
         try:
             access_url = cloudcc_get_request_url(ACCESS_URL, ClOUDCC_USERNAME)
