@@ -10,8 +10,8 @@ from flask import Blueprint
 
 blue_order = Blueprint("blue_order",__name__)
 
-@blue_order.route("/order/api")
-def index():
+@blue_order.route("/order/api",methods=["GET"])
+def order_query():
     return "blue_order_index"
 
 

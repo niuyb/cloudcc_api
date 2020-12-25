@@ -5,7 +5,7 @@
 # 工具：PyCharm
 # Python版本：3.7.0
 """"""
-
+import hashlib
 import json
 import requests
 # 增加重试次数
@@ -136,12 +136,17 @@ def modify_by_api(access_url,server_name,objectapi_name,data,binding):
 
 if __name__ == "__main__":
     pass
-    data=cloudcc_query_name("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cquery","Account","万科","F4318B05B7C1D4DC0CF165E0AB5421BC")
-    print(data)
+    # data=cloudcc_query_name("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cquery","Account","万科","F4318B05B7C1D4DC0CF165E0AB5421BC")
+    # print(data)
     #
     # "0012020FE5A8EB0s9Ahn"
-    # data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account","select id,`name` from `Account` where `name` like '%测试%' ","456D2580A40D836C3B9C3D0145411810")
-    # print(data)
+    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account","select name,zwyhxwfx,customItem178 as qyyhxwfx  from `Account` where id ='00120181CC67DBE7FYir' ","D6951830CBDFF252EE8C478767A58A68")
+    print(data)
 
     # data = modify_by_api("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","update","Account", [{'id':"0012020FE5A8EB0s9Ahn","name":"万科_modify_by_api"}], "F4318B05B7C1D4DC0CF165E0AB5421BC")
     # print(data)
+
+    # md5_str = hashlib.md5("QY_001".encode(encoding='UTF-8')).hexdigest()
+    # print(md5_str)
+    # md5_str = hashlib.md5("ZW_001".encode(encoding='UTF-8')).hexdigest()
+    # print(md5_str)
