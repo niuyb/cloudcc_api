@@ -35,10 +35,10 @@ def account_query():
                 return json.dumps(result.dict(), ensure_ascii=False)
             try:
                 if field_name in ACCOUNT_FUZZY_QUERY :
-                    sql_string = """ select id as account_id,`name` from `{}` where `{}` like '%{}%' """
+                    sql_string = """ select id as account_id,`name`,customItem151 as industry_1,customItem162 as industry_2,fState as address_province,fCity as address_city ,fDistrict as address_area from `{}` where `{}` like '%{}%' """
                 else:
                     # 暂未添加多值处理
-                    sql_string = """ select id as account_id,`name` from `{}` where `{}` in ('{}') """
+                    sql_string = """ select id as account_id,`name`,customItem151 as industry_1,customItem162 as industry_2,fState as address_province,fCity as address_city ,fDistrict as address_area from `{}` where `{}` in ('{}') """
                 sql_name = ACCOUNT_MAPPING.get(field_name,None)
                 if sql_name:
                     cloudcc_object = ClOUDCC_OBJECT.get("account")
@@ -47,6 +47,12 @@ def account_query():
                     for data_dict in data:
                         del data_dict["CCObjectAPI"]
                         del data_dict["accountId"]
+                        del data_dict["addressArea"]
+                        del data_dict["addressCity"]
+                        del data_dict["addressProvince"]
+                        del data_dict["industry1"]
+                        del data_dict["industry2"]
+
                     result.data = data
                     result.code = 1
                 else:

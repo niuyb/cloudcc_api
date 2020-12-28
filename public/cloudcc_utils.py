@@ -151,7 +151,7 @@ if __name__ == "__main__":
     # print(data)
     #
     # "0012020FE5A8EB0s9Ahn"
-    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account","select name,zwyhxwfx,customItem178 as qyyhxwfx  from `Account` where id ='00120181CC67DBE7FYir' ","AC45108027B5EDAABECEC2E24573D04C")
+    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account","select acount(*) as name  from `Account`  ","579B756DFB236FFC9769F3CC0CA859C8")
     print(data)
 
     # data = modify_by_api("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","update","Account", [{'id':"0012020FE5A8EB0s9Ahn","name":"万科_modify_by_api"}], "F4318B05B7C1D4DC0CF165E0AB5421BC")
