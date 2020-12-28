@@ -57,7 +57,7 @@ def opportunity_query():
         else:
             result.msg = "field_name传参有误,请使用id或name"
     else:
-        result.msg = "token有误"
+        result.msg = "token无效"
     return json.dumps(result.dict(), ensure_ascii=False)
 
 

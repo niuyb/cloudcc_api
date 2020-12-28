@@ -57,7 +57,7 @@ def account_query():
         else:
             result.msg = "field_name传参有误,请使用id或name"
     else:
-        result.msg = "token有误,请重新申请token"
+        result.msg = "token无效"
     return json.dumps(result.dict(),ensure_ascii=False)
 
 
@@ -83,14 +83,15 @@ def account_modify():
                 return json.dumps(result.dict(), ensure_ascii=False)
             try:
                 # --------------------后续修改暂时写死----------------------
-                if token == QY_token and modify_field== "zw_back_url":
-                    result.msg = "无权限"
-                    return json.dumps(result.dict(), ensure_ascii=False)
-                elif token == ZW_token and modify_field== "qy_back_url":
-                    result.msg = "无权限"
+                if token == QY_token:
+                    cloudcc_field = ACCOUNT_MAPPING.get(modify_field).get("QY")
+                elif token == ZW_token:
+                    cloudcc_field = ACCOUNT_MAPPING.get(modify_field).get("ZW")
+                else:
+                    result.msg = "token有误"
                     return json.dumps(result.dict(), ensure_ascii=False)
                 # --------------------------------------------------------
-                cloudcc_field = ACCOUNT_MAPPING.get(modify_field)
+                # cloudcc_field = ACCOUNT_MAPPING.get(modify_field)
                 cloudcc_object = ClOUDCC_OBJECT.get("account")
                 data = [{"id": account_id, cloudcc_field: modify_value}]
                 res_data = modify_by_api(access_url, "update", cloudcc_object, data, binding)
@@ -102,5 +103,5 @@ def account_modify():
         else:
             result.msg = "put modify_field传参有误"
     else:
-        result.msg = "token有误,请重新申请token"
+        result.msg = "token无效"
     return json.dumps(result.dict(),ensure_ascii=False)

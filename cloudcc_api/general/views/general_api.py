@@ -24,10 +24,10 @@ def get_token():
     password = request.args.get("password",None)
     # 验证账号
     if username == "QY_001":
-        result.data = hashlib.md5(username.encode(encoding='UTF-8')).hexdigest()
+        result.data = {"token":hashlib.md5(username.encode(encoding='UTF-8')).hexdigest()}
         result.code = 1
     elif username == "ZW_001":
-        result.data = hashlib.md5(username.encode(encoding='UTF-8')).hexdigest()
+        result.data = {"token":hashlib.md5(username.encode(encoding='UTF-8')).hexdigest()}
         result.code = 1
     else:
         result.msg = "获取token失败,请检查账号密码"

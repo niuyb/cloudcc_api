@@ -99,19 +99,26 @@ def isInString(string_old, sub_list):
     return False
 
 """pandas查询数据的连接信息"""
+# def engine(db_info):
+#     engine = create_engine(
+#         "mysql+pymysql://{}:{}@{}/{}?charset={}".format(
+#             db_info['USER'],
+#             db_info['PASSWORD'],
+#             db_info['HOST'],
+#             db_info['NAME'],
+#             'utf8'
+#         ), poolclass=NullPool
+#     )
+#     conn_engine = engine.connect()  # 创建连接
+#     return conn_engine
 def engine(db_info):
-    engine = create_engine(
-        "mysql+pymysql://{}:{}@{}/{}?charset={}".format(
-            db_info['USER'],
-            db_info['PASSWORD'],
-            db_info['HOST'],
-            db_info['NAME'],
-            'utf8'
-        ), poolclass=NullPool
-    )
+    engine = create_engine("mysql+pymysql://{}:{}@{}/{}?charset={}".format(db_info['DB_USER'],
+                                                                           db_info['DB_PWD'],
+                                                                           db_info['DB_HOST'],
+                                                                           db_info['DB_NAME'],
+                                                                           'utf8'), poolclass=NullPool)
     conn_engine = engine.connect()  # 创建连接
     return conn_engine
-
 
 def cncurrency(value, capital=True, prefix=False, classical=None):
     '''
@@ -240,7 +247,7 @@ class Result():
     def __iter__(self):
         attrs = dir(self)
         for attr in attrs:
-            # 去除魔术方法
+            # 去除自建方法
             if attr.find("__") == 0:
                 continue
             value = getattr(self, attr)

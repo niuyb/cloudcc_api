@@ -29,16 +29,22 @@ ClOUDCC_OBJECT={
 ACCOUNT_MAPPING={
     "id":"id",
     "name":"name",
-    "zw_back_url":"zwyhxwfx",
-    "qy_back_url":"customItem178",
+    "call_back_url":{"ZW":"zwyhxwfx","QY":"customItem178"},
+    # "zw_back_url":"zwyhxwfx",
+    # "qy_back_url":"customItem178",
 }
 # 以下都是接口字段
 # 客户  允许  查询 字段名称
 ACCOUNT_QUERY_ALLOW=["id","name"]
 # 客户  允许  修改 字段名称
-ACCOUNT_MODIFY_ALLOW=["name","zw_back_url","qy_back_url"]
+ACCOUNT_MODIFY_ALLOW=["name","call_back_url"]
 # 允许 模糊查询
 ACCOUNT_FUZZY_QUERY = ["name"]
+
+# update_append 更新字段
+UPDATE_APPEND_ITEMS = ["id", "ownerid", "account_name", "created_at", "address_province", "address_city",
+                         "address_area", "industry_1", "industry_2", "level", "sea_status", "contact_phone",
+                         "recent_activity_time"]
 # -----------------------------------------OPPORTUNITY-----------------------------------------------
 # opportunity api 与 cloudcc映射
 OPPORTUNITY_MAPPING={

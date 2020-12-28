@@ -94,6 +94,17 @@ def cloudcc_query_sql(access_url,server_name,objectapi_name,sql,binding):
     except:
         return "获取data失败"
 
+# def cloudcc_query_sql_requirement(access_url,server_name,objectapi_name,binding,sql_select_items,sql_filter):
+#     """ 自定条件查询 通过sql 查询 """
+#     for select_item in sql_select_items:
+#         pass
+#     select_items = ""
+#     sql = """ select {} from {} where {} """.format(select_items,objectapi_name)
+#
+#     res=cloudcc_query_sql(access_url,server_name,objectapi_name,sql,binding)
+#
+
+
 # 后期调试
 def cloudcc_query_name(access_url,server_name,objectapi_name,object_name,binding):
     """ 通过名称具体查询 查询 """
@@ -140,7 +151,7 @@ if __name__ == "__main__":
     # print(data)
     #
     # "0012020FE5A8EB0s9Ahn"
-    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account","select name,zwyhxwfx,customItem178 as qyyhxwfx  from `Account` where id ='00120181CC67DBE7FYir' ","D6951830CBDFF252EE8C478767A58A68")
+    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account","select name,zwyhxwfx,customItem178 as qyyhxwfx  from `Account` where id ='00120181CC67DBE7FYir' ","AC45108027B5EDAABECEC2E24573D04C")
     print(data)
 
     # data = modify_by_api("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","update","Account", [{'id':"0012020FE5A8EB0s9Ahn","name":"万科_modify_by_api"}], "F4318B05B7C1D4DC0CF165E0AB5421BC")
