@@ -282,9 +282,25 @@ def get_redis(host,db):
     return r
 
 
+
+"""毫秒级别时间戳转成日期 """
+def ms_date(ms_time):
+    time_local  = time.localtime(ms_time/1000)
+    date = time.strftime("%Y-%m-%d", time_local)
+    return date
+"""毫秒级别时间戳转成时间 """
+def ms_time(ms_time):
+    time_local  = time.localtime(ms_time/1000)
+    date = time.strftime("%Y-%m-%d %H:%M:%S", time_local)
+    return date
 """日期转成毫秒级别时间戳 """
 def date_ms(date):
     # timestr = '2020-09-14'
     datetime_obj = datetime.strptime(date, "%Y-%m-%d")
+    obj_stamp = int(time.mktime(datetime_obj.timetuple()) * 1000.0 + datetime_obj.microsecond / 1000.0)
+    return obj_stamp
+"""时间转成毫秒级别时间戳 """
+def time_ms(date):
+    datetime_obj = datetime.strptime(date, "%Y-%m-%d %H:%M")
     obj_stamp = int(time.mktime(datetime_obj.timetuple()) * 1000.0 + datetime_obj.microsecond / 1000.0)
     return obj_stamp

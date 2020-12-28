@@ -8,7 +8,7 @@ import json
 import pandas as pd
 from flask import request
 from cloudcc_api.account.views import blue_account
-from public.utils import Result, date_ms, engine
+from public.utils import Result, engine, time_ms
 from settings import settings
 from settings.config import UPDATE_APPEND_ITEMS
 
@@ -26,7 +26,7 @@ def account_update_append():
     token = request.args.get("token", None)
     if token:
         try:
-            date_stamp = date_ms(date)
+            date_stamp = time_ms(date)
             new_data = engine(settings.db_new_data)
             select_items=""
             for select_item in UPDATE_APPEND_ITEMS:
