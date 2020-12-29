@@ -304,3 +304,11 @@ def time_ms(date):
     datetime_obj = datetime.strptime(date, "%Y-%m-%d %H:%M")
     obj_stamp = int(time.mktime(datetime_obj.timetuple()) * 1000.0 + datetime_obj.microsecond / 1000.0)
     return obj_stamp
+""" list to sql string  """
+def list_to_sql_string(list):
+    #  ["a","b"] -->  "a","b"
+    list_str = '"' + '","'.join(list) + '"'
+    return list_str
+
+
+

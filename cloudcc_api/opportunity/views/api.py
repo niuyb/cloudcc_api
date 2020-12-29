@@ -33,7 +33,7 @@ def opportunity_query():
                 return json.dumps(result.dict(), ensure_ascii=False)
             try:
                 if field_name in OPPORTUNITY_FUZZY_QUERY :
-                    sql_string = """ select id as opportunity_id,`name`,`khmc` as account_id from `{}` where `{}` like '%{}%' """
+                    sql_string = """ select id as opportunity_id,`name`,`khmc` as account_id from `{}` where `{}` like '%{}%' limit 15"""
                 else:
                     # 暂未添加多值处理
                     sql_string = """ select id as opportunity_id,`name`,`khmc` as account_id from `{}` where `{}` in ('{}') """

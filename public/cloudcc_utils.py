@@ -86,7 +86,7 @@ def cloudcc_query_sql(access_url,server_name,objectapi_name,sql,binding):
     access_url = access_url+"/distributor.action?serviceName="+server_name+"&objectApiName="+objectapi_name+"&expressions="+sql+"&binding="+binding
     try:
         response = json.loads(session.get(access_url).text)
-        # print(response)
+        print(response)
         if response["result"] == True:
             return response["data"]
         else:
@@ -131,6 +131,42 @@ def modify_by_api(access_url,server_name,objectapi_name,data,binding):
     try:
         data=json.dumps(data)
         access_url = access_url+"/distributor.action?serviceName="+server_name+"&objectApiName="+objectapi_name+"&data="+data+"&binding="+binding
+        print(access_url)
+        response = json.loads(session.get(access_url).text)
+        print(response)
+        if response["result"] == True:
+            return True
+        else:
+            return False
+    except:
+        return False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def get_pick_list_value(access_url,server_name,data):
+    session = requests.session()
+    session.keep_alive = False
+    try:
+        data=json.dumps(data)
+        access_url = access_url+"/distributor.action?serviceName="+server_name+"&objectApiName="+objectapi_name+"&data="+data+"&binding="+binding
         # print(access_url)
         response = json.loads(session.get(access_url).text)
         # print(response)
@@ -145,13 +181,14 @@ def modify_by_api(access_url,server_name,objectapi_name,data,binding):
 
 
 
+
 if __name__ == "__main__":
     pass
     # data=cloudcc_query_name("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cquery","Account","万科","F4318B05B7C1D4DC0CF165E0AB5421BC")
     # print(data)
     #
     # "0012020FE5A8EB0s9Ahn"
-    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account","select acount(*) as name  from `Account`  ","579B756DFB236FFC9769F3CC0CA859C8")
+    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account","select  *  from `Account` where id ='00120181CC67DBE7FYir'  ","69D5C1732552FEDC1A8806931EE3F113")
     print(data)
 
     # data = modify_by_api("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","update","Account", [{'id':"0012020FE5A8EB0s9Ahn","name":"万科_modify_by_api"}], "F4318B05B7C1D4DC0CF165E0AB5421BC")

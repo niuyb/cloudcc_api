@@ -28,10 +28,8 @@ def account_update_append():
         try:
             date_stamp = time_ms(date)
             new_data = engine(settings.db_new_data)
-            select_items=""
-            for select_item in UPDATE_APPEND_ITEMS:
-                select_items = select_items + select_item + ","
-            sql = """ select {} from account where created_at >= {}""".format(str(select_items[:-1]),date_stamp)
+            select_items = ",".join(UPDATE_APPEND_ITEMS)
+            sql = """ select {} from account where created_at >= {}""".format(str(select_items),date_stamp)
             account_df = pd.read_sql_query(sql, new_data)
             account_dict = account_df.to_dict(orient='records')
             result.code = 1

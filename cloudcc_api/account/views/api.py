@@ -9,6 +9,7 @@ import json
 from flask import Blueprint, request
 
 from public.cloudcc_utils import cloudcc_get_request_url, cloudcc_get_binding, cloudcc_query_sql, modify_by_api
+from public.permission_utils import CHECK_PERMISSION_QUERY
 from public.utils import Result
 from settings.config import ACCOUNT_QUERY_ALLOW, ACCESS_URL, ClOUDCC_USERNAME, ClOUDCC_PASSWORD, ClOUDCC_OBJECT, \
     ACCOUNT_MODIFY_ALLOW, ACCOUNT_MAPPING, QY_token, ZW_token, ACCOUNT_FUZZY_QUERY
@@ -34,29 +35,27 @@ def account_query():
                 result.msg = "获取binding失败,请检查配置"
                 return json.dumps(result.dict(), ensure_ascii=False)
             try:
-                if field_name in ACCOUNT_FUZZY_QUERY :
-                    sql_string = """ select id as account_id,`name`,customItem151 as industry_1,customItem162 as industry_2,fState as address_province,fCity as address_city ,fDistrict as address_area from `{}` where `{}` like '%{}%' """
+                sql_str=CHECK_PERMISSION_QUERY(token,"account")
+                if sql_str:
+                    if field_name in ACCOUNT_FUZZY_QUERY :
+                        sql_string = """ select {} from `{}` where `{}` like '%{}%' limit 15"""
+                    else:
+                        # 暂未添加多值处理
+                        sql_string = """ select {} from `{}` where `{}` in ('{}') """
+                    sql_name = ACCOUNT_MAPPING.get(field_name,None)
+                    if sql_name:
+                        cloudcc_object = ClOUDCC_OBJECT.get("account")
+                        sql = sql_string.format(sql_str,cloudcc_object, field_name,field_value)
+                        print(sql)
+                        data = cloudcc_query_sql(access_url, "cqlQuery", cloudcc_object, sql, binding)
+                        for data_dict in data:
+                            del data_dict["CCObjectAPI"]
+                        result.data = data
+                        result.code = 1
+                    else:
+                        result.msg = "field_name传参有误"
                 else:
-                    # 暂未添加多值处理
-                    sql_string = """ select id as account_id,`name`,customItem151 as industry_1,customItem162 as industry_2,fState as address_province,fCity as address_city ,fDistrict as address_area from `{}` where `{}` in ('{}') """
-                sql_name = ACCOUNT_MAPPING.get(field_name,None)
-                if sql_name:
-                    cloudcc_object = ClOUDCC_OBJECT.get("account")
-                    sql = sql_string.format(cloudcc_object, field_name,field_value)
-                    data = cloudcc_query_sql(access_url, "cqlQuery", cloudcc_object, sql, binding)
-                    for data_dict in data:
-                        del data_dict["CCObjectAPI"]
-                        del data_dict["accountId"]
-                        del data_dict["addressArea"]
-                        del data_dict["addressCity"]
-                        del data_dict["addressProvince"]
-                        del data_dict["industry1"]
-                        del data_dict["industry2"]
-
-                    result.data = data
-                    result.code = 1
-                else:
-                    result.msg = "field_name传参有误"
+                    result.msg = "暂无权限查询"
             except:
                 result.msg = "获取data失败,请检查参数"
                 return json.dumps(result.dict(), ensure_ascii=False)
@@ -89,12 +88,14 @@ def account_modify():
                 return json.dumps(result.dict(), ensure_ascii=False)
             try:
                 # --------------------后续修改暂时写死----------------------
-                if token == QY_token:
-                    cloudcc_field = ACCOUNT_MAPPING.get(modify_field).get("QY")
-                elif token == ZW_token:
-                    cloudcc_field = ACCOUNT_MAPPING.get(modify_field).get("ZW")
+                if token == QY_token and modify_field == "back_url":
+                    cloudcc_field = ACCOUNT_MAPPING.get("qy_"+modify_field)
+                elif token == ZW_token and modify_field == "back_url":
+                    cloudcc_field = ACCOUNT_MAPPING.get("zw_"+modify_field)
+                elif token == ZW_token or token == QY_token:
+                    cloudcc_field = ACCOUNT_MAPPING.get(modify_field)
                 else:
-                    result.msg = "token有误"
+                    result.msg = "暂无权限"
                     return json.dumps(result.dict(), ensure_ascii=False)
                 # --------------------------------------------------------
                 # cloudcc_field = ACCOUNT_MAPPING.get(modify_field)
@@ -103,7 +104,8 @@ def account_modify():
                 res_data = modify_by_api(access_url, "update", cloudcc_object, data, binding)
                 result.data = res_data
                 result.code = 1
-            except:
+            except Exception as e:
+                print(e)
                 result.msg = "获取data失败,请检查参数"
                 return json.dumps(result.dict(), ensure_ascii=False)
         else:
