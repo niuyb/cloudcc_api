@@ -301,7 +301,7 @@ def date_ms(date):
     return obj_stamp
 """时间转成毫秒级别时间戳 """
 def time_ms(date):
-    datetime_obj = datetime.strptime(date, "%Y-%m-%d %H:%M")
+    datetime_obj = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
     obj_stamp = int(time.mktime(datetime_obj.timetuple()) * 1000.0 + datetime_obj.microsecond / 1000.0)
     return obj_stamp
 """ list to sql string  """

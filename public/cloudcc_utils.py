@@ -7,12 +7,15 @@
 """"""
 import hashlib
 import json
+import pandas as pd
+
 import requests
 # 增加重试次数
 # requests.DEFAULT_RETRIES = 5
 # s.keep_alive = False
 
-from public.utils import get_redis, Result
+from public.utils import get_redis, Result, engine
+from settings import settings
 from settings.config import CLOUD_REDIS, ACCESS_URL, ClOUDCC_USERNAME, REDIS_EXPIRE, ClOUDCC_PASSWORD
 
 
@@ -42,7 +45,9 @@ def cloudcc_get_request_url(url,username):
         return access_url
     else:
         try:
+            # print(url + username)
             response = json.loads(session.get(url + username).text)
+            # print(response)
             if response.get("success") == True:
                 access_url = response.get("result")
             else:
@@ -66,6 +71,7 @@ def cloudcc_get_binding(access_url,username,password):
     else:
         try:
             access_url = access_url + "/distributor.action?serviceName=clogin&userName=" + username + "&password=" + password
+            # print(access_url)
             response = json.loads(session.get(access_url).text)
             # print(response)
             if response.get("result") == True:
@@ -88,10 +94,12 @@ def cloudcc_query_sql(access_url,server_name,objectapi_name,sql,binding):
         response = json.loads(session.get(access_url).text)
         print(response)
         if response["result"] == True:
+            # print("sql查询",len(response["data"]))
             return response["data"]
         else:
             return "获取data无效,请检查参数"
-    except:
+    except Exception as e:
+        print(e)
         return "获取data失败"
 
 # def cloudcc_query_sql_requirement(access_url,server_name,objectapi_name,binding,sql_select_items,sql_filter):
@@ -131,9 +139,9 @@ def modify_by_api(access_url,server_name,objectapi_name,data,binding):
     try:
         data=json.dumps(data)
         access_url = access_url+"/distributor.action?serviceName="+server_name+"&objectApiName="+objectapi_name+"&data="+data+"&binding="+binding
-        print(access_url)
+        # print(access_url)
         response = json.loads(session.get(access_url).text)
-        print(response)
+        # print(response)
         if response["result"] == True:
             return True
         else:
@@ -188,8 +196,21 @@ if __name__ == "__main__":
     # print(data)
     #
     # "0012020FE5A8EB0s9Ahn"
-    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account","select  *  from `Account` where id ='00120181CC67DBE7FYir'  ","69D5C1732552FEDC1A8806931EE3F113")
-    print(data)
+    # data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account","select  *  from `Account` where id ='0012020B26843C18KDAP'  ","FAB429EB2370B7621897C28A5402DFC1")
+
+
+    # data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","ccuser","select * from `ccuser` limit 100 ","396B78249AE4CB452C94E2E06BD94AE6")
+    # print(data)
+
+    field_value="001202091B99BA4sW3fv"
+    database = engine(settings.db_new_data)
+    query_sql = """ select crm_id from account_back where id in ("{}")""".format(field_value)
+    query_df = pd.read_sql_query(query_sql, database)
+    print(query_df.shape)
+    a_list=query_df.iloc[0].tolist()[0]
+    print(a_list)
+    # field_value =
+    database.close()
 
     # data = modify_by_api("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","update","Account", [{'id':"0012020FE5A8EB0s9Ahn","name":"万科_modify_by_api"}], "F4318B05B7C1D4DC0CF165E0AB5421BC")
     # print(data)

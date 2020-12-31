@@ -26,7 +26,7 @@ ClOUDCC_OBJECT={
     "opportunity":"Opportunity",
 }
 # -----------------------------------------ACCOUNT-----------------------------------------------
-# account api 与 cloudcc映射
+# account api 参数 与 cloudcc映射
 ACCOUNT_MAPPING={
     "id":"id",
     "name":"name",
@@ -78,10 +78,10 @@ PERMISSION_DICT = {
 
 QY_token = "457d6a5e009f1ebb0906f03b32d0881f"
 # QY账号允许查询返回的字段
-QY_ACCOUNT_QUERY=["id","name"]
+QY_ACCOUNT_QUERY=["id","name","yid"]
 
 ZW_token = "4e33e00381c94a9bba251ebb44996c0f"
 # ZW账号允许查询返回的字段
-ZW_ACCOUNT_QUERY=["id","name","customItem151","customItem162","fState","fCity","fDistrict"]
+ZW_ACCOUNT_QUERY=["id","name","customItem151","customItem162","fState","fCity","fDistrict","yid"]
 
 
