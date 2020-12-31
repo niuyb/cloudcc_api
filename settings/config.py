@@ -79,9 +79,10 @@ PERMISSION_DICT = {
 QY_token = "457d6a5e009f1ebb0906f03b32d0881f"
 # QY账号允许查询返回的字段
 QY_ACCOUNT_QUERY=["id","name","yid"]
+QY_OPPORTUNITY_QUERY = ["name","id","zzkh","yid"]
 
 ZW_token = "4e33e00381c94a9bba251ebb44996c0f"
 # ZW账号允许查询返回的字段
 ZW_ACCOUNT_QUERY=["id","name","customItem151","customItem162","fState","fCity","fDistrict","yid"]
-
+ZW_OPPORTUNITY_QUERY = ["name","id","zzkh","yid"]
 
