@@ -136,10 +136,6 @@ class Order_Data():
 
 
 
-
-
-
-
     def inster_sql(self, df):
         new_data = engine(settings.db_new_data)
         df.to_sql(self.sql_table, new_data, index=False, if_exists="append")
@@ -201,14 +197,14 @@ class Order_Data():
         # try:
         sql_string = """ select {} from {} limit {},{} """
         sql = sql_string.format("*", self.cloudcc_object,index,self.one_times_num)
-        for i in range(3):
-            data = cloudcc_query_sql(self.access_url, "cqlQuery",self.cloudcc_object, sql, self.binding)
-            if len(data) == self.one_times_num:
-                print("获取",len(data))
-                break
-            else:
-                print("重试{}".format(i),len(data))
-                continue
+        # for i in range(3):
+        data = cloudcc_query_sql(self.access_url, "cqlQuery",self.cloudcc_object, sql, self.binding)
+            # if len(data) == self.one_times_num:
+            #     print("获取",len(data))
+            #     break
+            # else:
+            #     print("重试{}".format(i),len(data))
+            #     continue
         cc_df = pd.DataFrame(data)
         ccdf_name_list = list(self.sql_mapping.keys()) + ["is_deleted"]
         cc_df = cc_df[ccdf_name_list]
@@ -283,7 +279,8 @@ class Order_Data():
                 time.sleep(1)
                 self.get_cloudcc_order(self.sql_index_list[list_index])
                 list_index += 1
-        except :
+        except Exception as e:
+            print(e)
             pass
 
     def merge_infos(self,nums,q,f_q):

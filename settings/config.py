@@ -42,7 +42,7 @@ ACCOUNT_MODIFY_ALLOW=["name","back_url"]
 ACCOUNT_FUZZY_QUERY = ["name"]
 
 # update_append 更新字段
-UPDATE_APPEND_ITEMS = ["id", "ownerid", "account_name", "created_at", "address_province", "address_city",
+UPDATE_APPEND_ITEMS = ["id", "owner_id", "account_name", "created_at", "address_province", "address_city",
                          "address_area", "industry_1", "industry_2", "level", "sea_status", "contact_phone",
                          "recent_activity_time"]
 # -----------------------------------------OPPORTUNITY-----------------------------------------------

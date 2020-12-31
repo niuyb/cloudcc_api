@@ -26,15 +26,17 @@ def account_update_append():
     token = request.args.get("token", None)
     if token:
         try:
-            date_stamp = time_ms(date)
+            # date_stamp = time_ms(date)
+            date_stamp = date
             new_data = engine(settings.db_new_data)
             select_items = ",".join(UPDATE_APPEND_ITEMS)
-            sql = """ select {} from account where created_at >= {}""".format(str(select_items),date_stamp)
+            sql = """ select {} from account_back where created_at >= {}""".format(str(select_items),date_stamp)
             account_df = pd.read_sql_query(sql, new_data)
             account_dict = account_df.to_dict(orient='records')
             result.code = 1
             result.data = account_dict
-        except:
+        except Exception as e:
+            print(e)
             result.msg = "获取Account增量更新失败"
             return json.dumps(result.dict(),ensure_ascii=False)
     else:

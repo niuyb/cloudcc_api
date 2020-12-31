@@ -92,7 +92,7 @@ def cloudcc_query_sql(access_url,server_name,objectapi_name,sql,binding):
     access_url = access_url+"/distributor.action?serviceName="+server_name+"&objectApiName="+objectapi_name+"&expressions="+sql+"&binding="+binding
     try:
         response = json.loads(session.get(access_url).text)
-        print(response)
+        # print(response)
         if response["result"] == True:
             # print("sql查询",len(response["data"]))
             return response["data"]
