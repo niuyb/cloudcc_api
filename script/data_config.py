@@ -29,7 +29,37 @@ ORDER_DICT={
     "customItem164": "total_performance",
     "customItem182": "approve_date",
     "customitem294": "payback_type",
+    "yid":"xsy_id",
 }
+ORDER_TABLE_STRING="""ALTER table `{}`
+      MODIFY `id` varchar(50) COMMENT '星光自建订单id',
+      MODIFY `crm_id` varchar(50) COMMENT 'crm 订单id',
+      MODIFY `po` varchar(50) COMMENT '流水号',
+      MODIFY `owner_id` varchar(50) COMMENT '销售负责人 对应星光salerid',
+      MODIFY `status` varchar(20) COMMENT '订单状态',
+      MODIFY `account_id` varchar(50) COMMENT '最终客户id 对应account 星光id',
+      MODIFY `price_id` varchar(50) COMMENT '价格表名称',
+      MODIFY `opportunity_id` varchar(100) COMMENT '商机id',
+      MODIFY `created_by` varchar(50) COMMENT '创建人',
+      MODIFY `created_at` varchar(50) COMMENT '创建日期',
+      MODIFY `updated_by` varchar(50) COMMENT '最新修改人',
+      MODIFY `updated_at` varchar(50) COMMENT '最新修改日期',
+      MODIFY `amount` varchar(50) COMMENT '订单总金额',
+      MODIFY `discount_amount` varchar(50) COMMENT '总折扣额',
+      MODIFY `contract_status` varchar(20) COMMENT '合同状态',
+      MODIFY `contract_attribute` varchar(10) COMMENT '合同属性 1新签 2续签',
+      MODIFY `contract_id` varchar(50) COMMENT '合同编号',
+      MODIFY `contract_start` varchar(50) COMMENT '合同开始日期',
+      MODIFY `contract_end` varchar(50) COMMENT '最终合同截止日期',
+      MODIFY `contract_back_date` varchar(50) COMMENT '合同归档日期',
+      MODIFY `total_performance` varchar(50) COMMENT '业绩核算(成本）总额',
+      MODIFY `approve_date` varchar(50) COMMENT '审批通过时间',
+      MODIFY `payback_type` varchar(20) COMMENT '回款计划类型',
+      MODIFY `xsy_id` varchar(20) COMMENT '销售易id' """
+
+
+
+
 
 # 数据库名称
 ACCOUNT_SQL_TABLE = "account_back"
