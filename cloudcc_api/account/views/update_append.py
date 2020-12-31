@@ -30,7 +30,8 @@ def account_update_append():
             date_stamp = date
             new_data = engine(settings.db_new_data)
             select_items = ",".join(UPDATE_APPEND_ITEMS)
-            sql = """ select {} from account_back where created_at >= {}""".format(str(select_items),date_stamp)
+            sql = """ select {} from account_back where created_at like "{}%%" """.format(str(select_items),str(date_stamp))
+            print(sql)
             account_df = pd.read_sql_query(sql, new_data)
             account_dict = account_df.to_dict(orient='records')
             result.code = 1
