@@ -120,6 +120,8 @@ def account_modify():
     modify_field = request.args.get("modify_field", None)
     modify_value = request.args.get("modify_value", None)
     token = request.args.get("token", None)
+    database = engine(settings.db_new_data)
+
     if token:
         if modify_field in ACCOUNT_MODIFY_ALLOW:
             try:
@@ -127,6 +129,7 @@ def account_modify():
                 binding = cloudcc_get_binding(access_url, ClOUDCC_USERNAME, ClOUDCC_PASSWORD)
             except:
                 result.msg = "获取binding失败,请检查配置"
+                database.close()
                 return json.dumps(result.dict(), ensure_ascii=False)
             try:
                 # --------------------后续修改暂时写死----------------------
@@ -142,6 +145,14 @@ def account_modify():
                 # --------------------------------------------------------
                 # cloudcc_field = ACCOUNT_MAPPING.get(modify_field)
                 cloudcc_object = ClOUDCC_OBJECT.get("account")
+                account_sql = """ select crm_id from {} where id="{}" """.format(ACCOUNT_SQL_TABLE,account_id)
+                df = pd.read_sql_query(account_sql, database)
+                if df.shape[0] > 0:
+                    account_id=df["crm_id"].tolist()[0]
+                else:
+                    result.msg = "暂无数据"
+                    database.close()
+                    return json.dumps(result.dict(), ensure_ascii=False)
                 data = [{"id": account_id, cloudcc_field: modify_value}]
                 res_data = modify_by_api(access_url, "update", cloudcc_object, data, binding)
                 result.data = res_data
@@ -149,9 +160,11 @@ def account_modify():
             except Exception as e:
                 print(e)
                 result.msg = "获取data失败,请检查参数"
+                database.close()
                 return json.dumps(result.dict(), ensure_ascii=False)
         else:
             result.msg = "put modify_field传参有误"
     else:
         result.msg = "token无效"
+    database.close()
     return json.dumps(result.dict(),ensure_ascii=False)

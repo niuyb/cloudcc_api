@@ -24,6 +24,7 @@ REDIS_EXPIRE = 30*60
 ClOUDCC_OBJECT={
     "account":"Account",
     "opportunity":"Opportunity",
+    "order":"dingdan"
 }
 # -----------------------------------------ACCOUNT-----------------------------------------------
 # account api 参数 与 cloudcc映射
@@ -44,7 +45,7 @@ ACCOUNT_FUZZY_QUERY = ["name"]
 # update_append 更新字段
 UPDATE_APPEND_ITEMS = ["id", "owner_id", "account_name", "created_at", "address_province", "address_city",
                          "address_area", "industry_1", "industry_2", "level", "sea_status", "contact_phone",
-                         "recent_activity_time"]
+                         "recent_activity_time","xsy_id"]
 # -----------------------------------------OPPORTUNITY-----------------------------------------------
 # opportunity api 与 cloudcc映射
 OPPORTUNITY_MAPPING={

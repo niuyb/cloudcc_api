@@ -5,7 +5,8 @@
 # 工具：PyCharm
 # Python版本：3.7.0
 
-
+ORDER_API_NAME="dingdan"
+ORDER_SQL_TABLE="order_back"
 ORDER_DICT={
     "id":"crm_id",
     "name":"po",
@@ -62,6 +63,7 @@ ORDER_TABLE_STRING="""ALTER table `{}`
 
 
 # 数据库名称
+ACCOUNT_API_NAME = "Account"
 ACCOUNT_SQL_TABLE = "account_back"
 ACCOUNT_DICT={
     "id":"crm_id",
@@ -96,7 +98,42 @@ ACCOUNT_DICT={
     "customItem216": "push_sea_date",
     "yid":"xsy_id"
 }
+ACCOUNT_TABLE_STRING = """ALTER table `{}` 
+                    MODIFY column `id` varchar(100)  COMMENT '星光自建客户id',
+                    MODIFY column `crm_id` varchar(20) COMMENT '销售易客户ID ',
+                    MODIFY column `entity_type` varchar(20) COMMENT '客户类型(客户，代理商）',
+                    MODIFY column `owner_id` varchar(50) COMMENT '对应星光自建销售id',
+                    MODIFY column `account_name` varchar(255) COMMENT '客户名称',
+                    MODIFY column `level` varchar(10) COMMENT '客户级别（开发客户、重点客户、正式客户）',
+                    MODIFY column `sea_status` varchar(20) COMMENT '公海状态',
+                    MODIFY column `longitude` varchar(100) COMMENT '经度',
+                    MODIFY column `latitude` varchar(100) COMMENT '纬度',
+                    MODIFY column `address` text COMMENT '地址',
+                    MODIFY column `address_province` varchar(255) COMMENT '省',
+                    MODIFY column `address_city` varchar(255) COMMENT '市',
+                    MODIFY column `address_area` varchar(255) COMMENT '区',
+                    MODIFY column `recent_activity_time` varchar(20) COMMENT '最新活动记录',
+                    MODIFY column `recent_activity_by` varchar(50) COMMENT '最新跟进人 对应星光新建销售id',
+                    MODIFY column `sea_id` varchar (50) COMMENT '所属公海',
+                    MODIFY column `created_at` varchar(50) COMMENT '创建日期',
+                    MODIFY column `created_by` varchar(50) COMMENT '创建人',
+                    MODIFY column `updated_at` varchar(50) COMMENT '最新修改日',
+                    MODIFY column `updated_by` varchar(50) COMMENT '最新修改人  对应星光新建销售id',
+                    MODIFY column `industry_1` varchar(255) COMMENT '一级行业',
+                    MODIFY column `industry_2` varchar(255) COMMENT '二级行业',
+                    MODIFY column `contact` varchar(255) COMMENT '联系人',
+                    MODIFY column `contact_phone` varchar(255) COMMENT '联系电话',
+                    MODIFY column `contact_post` varchar(255) COMMENT '联系职务',
+                    MODIFY column `department_top` varchar(20) COMMENT '所属事业部  对应星光自建部门id',
+                    MODIFY column `department` varchar(20) COMMENT '客户所属部门  对应星光自建部门id',
+                    MODIFY column `sea_push` varchar(20) COMMENT '是否为公海池推送客户',
+                    MODIFY column `push_sea_date` varchar(20) COMMENT '公海池推送时间' """
 
+
+
+
+USER_API_NAME="Ccuser"
+USER_SQL_TABLE="user_back"
 USER_DICT={
     "id":"crm_id",
     "name":"username",
@@ -105,6 +142,16 @@ USER_DICT={
     "createdate":"hire_date",
     "email":"email",
 }
+USER_TABLE_STRING = """ALTER table `{}`
+                MODIFY column `id` varchar(100) COMMENT "星光自建 用户id",
+                MODIFY column `crm_id` varchar(100) COMMENT "crm 用户id",
+                MODIFY column `username` varchar(50) COMMENT "用户名称",
+                MODIFY column `department_id` varchar(50) COMMENT "部门id",
+                MODIFY column `status` tinyint(5) COMMENT "是否在职 1在职 0离职",
+                MODIFY column `hire_date` varchar(100) COMMENT "入职时间ms",
+                MODIFY column `email` varchar(100) COMMENT "邮箱" """
+
+
 OPPORTUNITY_SQL_TABLE = "opportunity_back"
 OPPORTUNITY_DICT = {
     "id": "crm_id",
@@ -129,3 +176,25 @@ OPPORTUNITY_DICT = {
     "yid": "xsy_id"
 
 }
+OPPORTUNITY_TABLE_STRING = """ALTER table `{}`
+                  MODIFY `id` varchar(50) COMMENT '星光自建商机id',
+                  MODIFY `crm_id` varchar(50) COMMENT 'crm商机id',
+                  MODIFY `entity_type` varchar(20) COMMENT '业务类型',
+                  MODIFY `opportunity_name` varchar(500) COMMENT '商机名称',
+                  MODIFY `owner_id` varchar (100) COMMENT '星光自建销售id',
+                  MODIFY `price_id` varchar(50) COMMENT '价格表id',
+                  MODIFY `account_id` varchar(100) COMMENT '最终客户id ',
+                  MODIFY `money` varchar(50) COMMENT '商机金额',
+                  MODIFY `intended_product` varchar(500) COMMENT '意向产品',
+                  MODIFY `sale_stage` varchar(50) COMMENT '销售阶段',
+                  MODIFY `win_rate` varchar (10) COMMENT '赢率',
+                  MODIFY `close_date` varchar(50) COMMENT '结单日期',
+                  MODIFY `saler_promise` varchar(50) COMMENT '销售承诺',
+                  MODIFY `project_budget` varchar(255) COMMENT '成本预算',
+                  MODIFY `created_at` varchar(50) COMMENT '创建日期',
+                  MODIFY `created_by` varchar(50) COMMENT '创建人',
+                  MODIFY `updated_at` varchar(50) COMMENT '最新修改日期',
+                  MODIFY `updated_by` varchar(50) COMMENT '最新修改人',
+                  MODIFY `contact` varchar(100) COMMENT '商机联系人',
+                  MODIFY `position` text COMMENT '联系人职务',
+                  MODIFY `xsy_id` text COMMENT '销售易id' """
