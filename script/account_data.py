@@ -29,22 +29,21 @@ from datetime import datetime
 import pandas as pd
 
 from public.cloudcc_utils import cloudcc_get_request_url, cloudcc_get_binding, cloudcc_query_sql
-from public.utils import engine, list_to_sql_string
-from script.data_config import ORDER_DICT, ACCOUNT_DICT, OPPORTUNITY_DICT
+from public.utils import engine, list_to_sql_string, time_ms
+from script.data_config import OPPORTUNITY_DICT, \
+    OPPORTUNITY_TABLE_STRING, OPPORTUNITY_API_NAME, OPPORTUNITY_SQL_TABLE, OPPORTUNITY_CLOUMNS_ORDER, USER_SQL_TABLE, \
+    ACCOUNT_SQL_TABLE, ACCOUNT_API_NAME, ACCOUNT_DICT, ACCOUNT_TABLE_STRING, ACCOUNT_CLOUMNS_ORDER
+from script.data_utils import create_id
 from settings import settings
 from settings.config import ACCESS_URL, ClOUDCC_USERNAME, ClOUDCC_PASSWORD
 
 pd.set_option('display.max_rows', None) # 展示所有行
 pd.set_option('display.max_columns', None) # 展示所有列
-pd.set_option('display.width', None)
+pd.set_option('display.width', None)# 展示所有列
 
 
 """
-order_id 生成规则
-
-年份取后两位
-
-"ZO" + md5('order_name + timestamp')+ index
+price_id  暂时未转换
 
 """
 
@@ -52,49 +51,26 @@ order_id 生成规则
 class Order_Data():
     def __init__(self):
 
-        # self.new_data = engine(settings.db_new_data)
         self.access_url  = ''
         self.binding = ''
-        self.cloudcc_object="Account"
-        self.sql_table= "account_back"
+        self.cloudcc_object=ACCOUNT_API_NAME
+        self.sql_table= ACCOUNT_SQL_TABLE
+        # self.sql_table= "account_back_copy1"
         self.sql_mapping= ACCOUNT_DICT
+        self.sql_table_string = ACCOUNT_TABLE_STRING
+        self.user_table = USER_SQL_TABLE
+        # self.account_table = ACCOUNT_SQL_TABLE
+        # self.account_table = "account_back_copy"
 
+
+        self.today = str(datetime.now().strftime('%Y-%m-%d'))
+        # self.today = "2021-01-04"
+        print(self.today)
         self.one_times_num = 1000
         self.sql_index_list=[]
+        self.process_num = 1
+        self.columns_order = ACCOUNT_CLOUMNS_ORDER
 
-        # self.columns_order = ["id","crm_id","po","entity_type","ownerid","status","account_id","priceid","opportunity_id","created_by","created_at","updated_by","updated_at","amount","discount_amount","contract_status","contract_attribute","contractid","contract_start","contract_end","contract_back_date","total_performance","salerA","salerB","salerC","salerA_amount","salerB_amount","salerC_amount","approve_date","payback_type"]
-        # self.ignore_key_list=["id","crm_id"]
-        # self.df_list=[]
-
-
-
-
-
-
-    def time_ms(self,date):
-        try:
-            if date:
-                datetime_obj = datetime.strptime(date, "%Y-%m-%d %H:%M")
-                obj_stamp = int(time.mktime(datetime_obj.timetuple()) * 1000.0 + datetime_obj.microsecond / 1000.0)
-                obj_stamp = str(obj_stamp)
-            else:
-                obj_stamp = ""
-            return obj_stamp
-        except:
-            # print(date,type(date))
-            return ""
-
-    def ms_date(self,ms_time):
-        ms_time = int(ms_time)
-        time_local = time.localtime(ms_time / 1000)
-        date = time.strftime("%Y%m%d", time_local)
-        return date[2:]
-
-    def create_id(self,item_name,create_timestamp,index):
-        md5_str = hashlib.md5(item_name.encode(encoding='UTF-8')+create_timestamp.encode(encoding='UTF-8')).hexdigest()[8:-8]
-        md5_str = md5_str + index
-        md5_str = self.id_per+md5_str
-        return md5_str
 
     def get_conn(self):
         host = "192.168.185.129"
@@ -130,175 +106,144 @@ class Order_Data():
         main_df = main_df.drop([crm_key], axis=1)
         return main_df
 
+    def inster_sql(self, df,local_str):
 
-
-
-
-
-
-    def inster_sql(self, df):
         new_data = engine(settings.db_new_data)
-        df.to_sql(self.sql_table, new_data, index=False, if_exists="append")
         cur, conn = self.get_conn()
-
-        sql_remarks = """ALTER table `%s` 
-                            MODIFY column `id` varchar(100)  COMMENT '星光自建客户id',
-                            MODIFY column `crm_id` varchar(20) COMMENT '销售易客户ID ',
-                            MODIFY column `entity_type` varchar(20) COMMENT '客户类型(客户，代理商）',
-                            MODIFY column `owner_id` varchar(50) COMMENT '对应星光自建销售id',
-                            MODIFY column `account_name` varchar(255) COMMENT '客户名称',
-                            MODIFY column `level` varchar(10) COMMENT '客户级别（开发客户、重点客户、正式客户）',
-                            MODIFY column `sea_status` varchar(20) COMMENT '公海状态',
-                            MODIFY column `longitude` varchar(100) COMMENT '经度',
-                            MODIFY column `latitude` varchar(100) COMMENT '纬度',
-                            MODIFY column `address` text COMMENT '地址',
-                            MODIFY column `address_province` varchar(255) COMMENT '省',
-                            MODIFY column `address_city` varchar(255) COMMENT '市',
-                            MODIFY column `address_area` varchar(255) COMMENT '区',
-                            MODIFY column `recent_activity_time` varchar(20) COMMENT '最新活动记录',
-                            MODIFY column `recent_activity_by` varchar(50) COMMENT '最新跟进人 对应星光新建销售id',
-                            MODIFY column `sea_id` varchar (50) COMMENT '所属公海',
-                            MODIFY column `created_at` varchar(50) COMMENT '创建日期',
-                            MODIFY column `created_by` varchar(50) COMMENT '创建人',
-                            MODIFY column `updated_at` varchar(50) COMMENT '最新修改日',
-                            MODIFY column `updated_by` varchar(50) COMMENT '最新修改人  对应星光新建销售id',
-                            MODIFY column `industry_1` varchar(255) COMMENT '一级行业',
-                            MODIFY column `industry_2` varchar(255) COMMENT '二级行业',
-                            MODIFY column `contact` varchar(255) COMMENT '联系人',
-                            MODIFY column `contact_phone` varchar(255) COMMENT '联系电话',
-                            MODIFY column `contact_post` varchar(255) COMMENT '联系职务',
-                            MODIFY column `department_top` varchar(20) COMMENT '所属事业部  对应星光自建部门id',
-                            MODIFY column `department` varchar(20) COMMENT '客户所属部门  对应星光自建部门id',
-                            MODIFY column `sea_push` varchar(20) COMMENT '是否为公海池推送客户',
-                            MODIFY column `push_sea_date` varchar(20) COMMENT '公海池推送时间',
-                            MODIFY column `xsy_id` varchar(20) COMMENT '' """ % self.sql_table
-        cur.execute(sql_remarks)
-
-        cur.close()
-        conn.close()
-
-        new_data.close()
+        try:
+            # 删除本次操作的所有local id
+            delete_sql = """ delete from {} WHERE crm_id in ({}) """.format(self.sql_table, local_str)
+            cur.execute(delete_sql)
+            conn.commit()
+            # 入库操作
+            df = df[self.columns_order]
+            df.to_sql(self.sql_table, new_data, index=False, if_exists="append")
+            # 修改类型
+            sql_remarks = self.sql_table_string.format(self.sql_table)
+            cur.execute(sql_remarks)
+        except Exception as e:
+            print(e)
+        finally:
+            cur.close()
+            conn.close()
+            new_data.close()
 
     def get_cloudcc_order(self,index):
-
-        try:
-            self.access_url = cloudcc_get_request_url(ACCESS_URL, ClOUDCC_USERNAME)
-            self.binding = cloudcc_get_binding(self.access_url, ClOUDCC_USERNAME, ClOUDCC_PASSWORD)
-        except:
-            print("获取binding失败,请检查配置")
-            return False
-
-
-        cur,conn = self.get_conn()
-        new_data = engine(settings.db_new_data)
-
         if index == 1:
             index = 0
+        new_data = engine(settings.db_new_data)
         # try:
-        sql_string = """ select {} from {} limit {},{} """
-        sql = sql_string.format("*", self.cloudcc_object,index,self.one_times_num)
-        # for i in range(3):
+        sql_string = """ select {} from {} where left(lastmodifydate,10) = '{}' limit {},{} """
+        sql = sql_string.format("*", self.cloudcc_object,self.today,index,self.one_times_num)
+        print(sql)
         data = cloudcc_query_sql(self.access_url, "cqlQuery",self.cloudcc_object, sql, self.binding)
-            # if len(data) == self.one_times_num:
-            #     print("获取",len(data))
-            #     break
-            # else:
-            #     print("重试{}".format(i),len(data))
-            #     continue
-        cc_df = pd.DataFrame(data)
-        ccdf_name_list = list(self.sql_mapping.keys()) + ["is_deleted"]
-        cc_df = cc_df[ccdf_name_list]
-        cc_df = cc_df.rename(columns=self.sql_mapping)
+        print("查询",len(data))
+        if data:
 
-        # 本次操作的cc id
-        operate_list = cc_df["crm_id"].tolist()
-        operate_str = list_to_sql_string(operate_list)
-        local_sql = """ select * from `{}` where crm_id in ({})""".format(self.sql_table,operate_str)
-        local_df = pd.read_sql_query(local_sql,new_data)
+            cc_df = pd.DataFrame(columns=list(self.sql_mapping.keys()))
+            cc_df = cc_df.append(data,ignore_index=True,sort=False)
+            ccdf_name_list = list(self.sql_mapping.keys()) + ["is_deleted"]
+            cc_df = cc_df[ccdf_name_list]
+            cc_df = cc_df.rename(columns=self.sql_mapping)
 
-        # 本次操作local数据库id
-        local_list = cc_df["crm_id"].tolist()
-        local_str = list_to_sql_string(local_list)
+            # 本次操作的cc id
+            operate_list = cc_df["crm_id"].tolist()
+            operate_str = list_to_sql_string(operate_list)
+            local_sql = """ select id,crm_id from `{}` where crm_id in ({})""".format(self.sql_table,operate_str)
+            local_df = pd.read_sql_query(local_sql,new_data)
+            # 本次操作local数据库id
+            local_list = cc_df["crm_id"].tolist()
+            local_str = list_to_sql_string(local_list)
 
-        # 删除cc 与 local 中删除的数据
-        deleted_list = cc_df.loc[cc_df["is_deleted"] != "0","crm_id"].tolist()
-        for deleted_id in deleted_list:
-            local_df = local_df.drop(local_df[local_df['crm_id'] == deleted_id].index)
-            cc_df = cc_df.drop(cc_df[cc_df['crm_id'] == deleted_id].index)
-        print("已删除",len(deleted_list))
-
-        merge_local_df = local_df[["id","crm_id"]]
-        cc_df = pd.merge(cc_df, merge_local_df, how='left', on="crm_id")
-        cc_df = cc_df.drop(["is_deleted"],axis=1)
+            # 删除cc 与 local 中删除的数据
+            deleted_list = cc_df.loc[cc_df["is_deleted"] != "0","crm_id"].tolist()
+            for deleted_id in deleted_list:
+                local_df = local_df.drop(local_df[local_df['crm_id'] == deleted_id].index)
+                cc_df = cc_df.drop(cc_df[cc_df['crm_id'] == deleted_id].index)
+            print("已删除",len(deleted_list))
+            cc_df = cc_df.drop(["is_deleted"],axis=1)
 
 
+            # 新增 数据
+            local_merge_df = local_df[["id","crm_id"]]
+            cc_df = pd.merge(cc_df, local_merge_df, how='left', on="crm_id")
+            index_sql = """ select count(*) as nums from %s where left(created_at,10)="%s" """%(self.sql_table,self.today)
+            print("index_sql",index_sql)
+            id_index = pd.read_sql_query(index_sql,new_data)["nums"].tolist()[0]
+            print("id_index",id_index)
+            for row in cc_df.itertuples():
+                df_index = getattr(row, 'Index')
+                recent_activity_time = getattr(row, 'recent_activity_time')
+                try:
+                    cc_df.at[df_index, 'recent_activity_time'] = time_ms(recent_activity_time)
+                except:
+                    pass
+                push_sea_date = getattr(row, 'push_sea_date')
+                try:
+                    cc_df.at[df_index, 'push_sea_date'] = time_ms(push_sea_date)
+                except:
+                    pass
+                created_at = getattr(row, 'created_at')
+                cc_df.at[df_index, 'created_at'] = time_ms(created_at)
+                updated_at = getattr(row, 'updated_at')
+                cc_df.at[df_index, 'updated_at'] = time_ms(updated_at)
+                xsy_id = getattr(row, 'xsy_id')
+                try:
+                    xsy_id = str(xsy_id).strip()
+                except:
+                    pass
+                cc_df.at[df_index, 'xsy_id'] = xsy_id
+                po = getattr(row, 'account_name')
+                created_at = getattr(row, 'created_at')
+                timestamp = time_ms(created_at)
+                id = getattr(row, 'id')
+                if isinstance(id,str):
+                    pass
+                else:
+                    id = create_id(po, timestamp, id_index)
+                    cc_df.at[df_index, 'id'] = id
+                id_index+=1
 
 
-        # # 并集去重 取出差集
-        # add_df = cc_df.append(local_df,sort=False)
-        # add_df = add_df.drop_duplicates(subset=['crm_id'], keep=False)
-        #
-        # #add_df 新增   添加到local
-        # local_df = local_df.append(add_df,sort=False)
+            # 在这里替换想相应的id
+            #owner_id
+            local_user_sql = """select `id` as local_owner_id ,crm_id as owner_id from {}""".format(self.user_table)
+            local_user_df = pd.read_sql_query(local_user_sql,new_data)
+            cc_df = pd.merge(cc_df, local_user_df, how='left', on="owner_id")
+            cc_df = cc_df.drop(["owner_id"],axis=1)
+            cc_df = cc_df.rename(columns={"local_owner_id":"owner_id"})
+            # created_by
+            local_user_df = local_user_df.rename(columns={"owner_id":"created_by"})
+            cc_df = pd.merge(cc_df, local_user_df, how='left', on="created_by")
+            cc_df = cc_df.drop(["created_by"],axis=1)
+            cc_df = cc_df.rename(columns={"local_owner_id":"created_by"})
+            # updated_by
+            local_user_df = local_user_df.rename(columns={"created_by":"updated_by"})
+            cc_df = pd.merge(cc_df, local_user_df, how='left', on="updated_by")
+            cc_df = cc_df.drop(["updated_by"],axis=1)
+            cc_df = cc_df.rename(columns={"local_owner_id":"updated_by"})
+            # recent_activity_by
+            local_user_df = local_user_df.rename(columns={"updated_by":"recent_activity_by"})
+            cc_df = pd.merge(cc_df, local_user_df, how='left', on="recent_activity_by")
+            cc_df = cc_df.drop(["recent_activity_by"],axis=1)
+            cc_df = cc_df.rename(columns={"local_owner_id":"recent_activity_by"})
 
-        # 修改操作
-
-        # 删除本次操作的所有local id
-        delete_sql = """ delete from {} WHERE crm_id in ({}) """.format(self.sql_table,local_str)
-        cur.execute(delete_sql)
-        conn.commit()
-
-        cur.close()
-        conn.close()
-        new_data.close()
-
-        time.sleep(random.randint(0,5))
-        self.inster_sql(cc_df)
-
-
-
-
-        # 123123
-        # deleted_list = cc_df.loc[cc_df["is_deleted"] != "0","crm_id"].tolist()
-
-
-        # 本次修改的id
-        # deleted_list = cc_df.loc[cc_df["is_deleted"] == "1","crm_id"].tolist()
-
-
-
-
-
+            new_data.close()
+            print(cc_df)
+            self.inster_sql(cc_df,local_str)
+            print("入库",cc_df.shape)
 
     def get_infos(self,p_index):
         list_index = p_index
-        times = int(len(self.sql_index_list) /1) +2
+        times = int(len(self.sql_index_list) /self.process_num) +2
         try:
             for i in range(times):
                 print(self.sql_index_list[list_index])
-                time.sleep(1)
                 self.get_cloudcc_order(self.sql_index_list[list_index])
                 list_index += 1
         except Exception as e:
-            print(e)
+            print("get_infos------",e)
             pass
-
-    def merge_infos(self,nums,q,f_q):
-        data_list=[]
-        # 结束标志
-        f_index = 0
-        while True:
-            # time.sleep(1)
-            data_list_queue = q.get(True)
-            data_list += data_list_queue
-            print(len(data_list))
-            if len(data_list) == nums:
-                self.aaa(data_list)
-                break
-            f_index += f_q.get(True)
-            print("f_index",f_index)
-            # if f_index == 4:
-            #     break
 
     def process_data(self):
         try:
@@ -308,10 +253,11 @@ class Order_Data():
             print("获取binding失败,请检查配置")
             return False
         try:
-            count_sql = """  select count(*) as nums from {} """.format(self.cloudcc_object)
+            count_sql = """  select count(*) as nums from %s where left(lastmodifydate,10) = '%s' """%(self.cloudcc_object,self.today)
+            print(count_sql)
             count_data = cloudcc_query_sql(self.access_url, "cqlQuery", self.cloudcc_object, count_sql, self.binding)
             nums = count_data[0].get("nums",0)
-            # nums = 10000
+            print(count_data)
         except:
             print("获取总数目失败")
             return False
@@ -323,20 +269,18 @@ class Order_Data():
             num_times = 0
 
         for index in range(num_times):
-            if num_times == 1:
-                index = 1
             start = int(index) * self.one_times_num
+            if num_times == 1:
+                start = 1
             if index == 0:
                 start = 1
             self.sql_index_list.append(start)
 
         print(self.sql_index_list)
         self.sql_index_list = self.sql_index_list[::-1]
-        p_l = []
-        # Process(target=self.merge_infos, args=(nums,)).start()
 
-        for i in range(1):
-            time.sleep(1)
+        p_l = []
+        for i in range(self.process_num):
             p1 = Process(target=self.get_infos,args=(i,))
             p1.start()
             p_l.append(p1)
@@ -347,15 +291,8 @@ class Order_Data():
 if __name__ == "__main__":
     o = Order_Data()
 
-    # df = o.get_crm_data()
-    # # print(order_df)
-    # o.inster_sql(df)
-    # o.close_connent()
-
-    # o.get_cloudcc_order()
-
     o.process_data()
-    # o.get_cloudcc_order(100)
+    # o.get_cloudcc_order(0)
 
 
 

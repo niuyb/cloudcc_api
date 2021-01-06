@@ -26,6 +26,10 @@ ClOUDCC_OBJECT={
     "opportunity":"Opportunity",
     "order":"dingdan"
 }
+# 增量更新接口单次返回条数
+APPEND_PAGE_NUMS= 500
+
+
 # -----------------------------------------ACCOUNT-----------------------------------------------
 # account api 参数 与 cloudcc映射
 ACCOUNT_MAPPING={
@@ -41,9 +45,8 @@ ACCOUNT_QUERY_ALLOW=["id","name"]
 ACCOUNT_MODIFY_ALLOW=["name","back_url"]
 # 允许 模糊查询
 ACCOUNT_FUZZY_QUERY = ["name"]
-
 # update_append 更新字段
-UPDATE_APPEND_ITEMS = ["id", "owner_id", "account_name", "created_at", "address_province", "address_city",
+ACCOUNT_APPEND_ITEMS = ["id", "owner_id", "account_name", "created_at", "address_province", "address_city",
                          "address_area", "industry_1", "industry_2", "level", "sea_status", "contact_phone",
                          "recent_activity_time","xsy_id"]
 # -----------------------------------------OPPORTUNITY-----------------------------------------------
@@ -57,6 +60,9 @@ OPPORTUNITY_MAPPING={
 OPPORTUNITY_QUERY_ALLOW=["id","name","account_id"]
 # 允许 模糊查询
 OPPORTUNITY_FUZZY_QUERY = ["name"]
+# update_append 更新字段
+OPPORTUNITY_APPEND_ITEMS = ["id", "crm_id", "opportunity_name", "account_id", "owner_id", "saler_promise",
+                         "intended_product", "close_date", "sale_stage","phone","xsy_id"]
 # -----------------------------------------ORDER-----------------------------------------------
 # order api 与 cloudcc映射
 ORDER_MAPPING={

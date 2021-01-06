@@ -139,9 +139,9 @@ def modify_by_api(access_url,server_name,objectapi_name,data,binding):
     try:
         data=json.dumps(data)
         access_url = access_url+"/distributor.action?serviceName="+server_name+"&objectApiName="+objectapi_name+"&data="+data+"&binding="+binding
-        # print(access_url)
+        print(access_url)
         response = json.loads(session.get(access_url).text)
-        # print(response)
+        print(response)
         if response["result"] == True:
             return True
         else:
@@ -199,18 +199,9 @@ if __name__ == "__main__":
     # data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account","select  *  from `Account` where id ='0012020B26843C18KDAP'  ","FAB429EB2370B7621897C28A5402DFC1")
 
 
-    # data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","ccuser","select * from `ccuser` limit 100 ","396B78249AE4CB452C94E2E06BD94AE6")
-    # print(data)
+    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Opportunity","""select *  from Opportunity where id="00220200741FEEF6rxdM" ""","0D00CD7B1F8583A993C81F850DB975D1")
+    print(data)
 
-    field_value="001202091B99BA4sW3fv"
-    database = engine(settings.db_new_data)
-    query_sql = """ select crm_id from account_back where id in ("{}")""".format(field_value)
-    query_df = pd.read_sql_query(query_sql, database)
-    print(query_df.shape)
-    a_list=query_df.iloc[0].tolist()[0]
-    print(a_list)
-    # field_value =
-    database.close()
 
     # data = modify_by_api("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","update","Account", [{'id':"0012020FE5A8EB0s9Ahn","name":"万科_modify_by_api"}], "F4318B05B7C1D4DC0CF165E0AB5421BC")
     # print(data)

@@ -19,7 +19,7 @@ import  pandas as pd
 import pymysql
 
 from public.utils import engine, time_ms
-from script.data_utils import create_account_id
+from script.data_utils import create_id
 from settings import settings
 
 
@@ -53,9 +53,9 @@ def test():
         account_name = getattr(row, 'username')
         created_at = getattr(row, 'hire_date')
         timestamp  =time_ms(created_at)
-        id= create_account_id(account_name, timestamp, sql_index)
+        id= create_id(account_name, timestamp, sql_index)
         sql_index +=1
-        df.at[index, 'istar_id'] = id
+        df.at[index, 'id'] = id
 
     print(df)
     sql_table = "user_back"
@@ -63,12 +63,13 @@ def test():
     cur, conn = get_conn()
 
     sql_remarks = """ALTER table `{}`
-                    MODIFY column `istar_id` varchar(100) COMMENT "星光自建 用户id",
+                    MODIFY column `id` varchar(100) COMMENT "星光自建 用户id",
                     MODIFY column `crm_id` varchar(100) COMMENT "crm 用户id",
                     MODIFY column `username` varchar(50) COMMENT "用户名称",
                     MODIFY column `department_id` varchar(50) COMMENT "部门id",
                     MODIFY column `status` tinyint(5) COMMENT "是否在职 1在职 0离职",
-                    MODIFY column `hire_date` varchar(100) COMMENT "入职时间ms" """.format( sql_table)
+                    MODIFY column `hire_date` varchar(100) COMMENT "入职时间ms",
+                    MODIFY column `email` varchar(100) COMMENT "邮箱" """.format( sql_table)
     cur.execute(sql_remarks)
 
     cur.close()

@@ -18,7 +18,9 @@
 import  pandas as pd
 import pymysql
 
-from public.utils import engine, time_ms
+from public.cloudcc_utils import cloudcc_query_sql
+from public.utils import engine, time_ms, list_to_sql_string
+from script.data_config import OPPORTUNITY_TABLE_STRING
 from script.data_utils import create_id
 from settings import settings
 pd.set_option('display.max_rows', None) # 展示所有行
@@ -47,45 +49,32 @@ def get_conn():
 def test():
     new_data = engine(settings.db_new_data)
 
-    sql = """ select * from opportunity_back """
+    old_sql = """ select id,crm_id from opportunity_back """
+    old_df = pd.read_sql_query(old_sql,new_data)
+
+    sql = """ select * from opportunity_back_copy1 """
     df = pd.read_sql_query(sql,new_data)
+    df = df.drop(['id'], axis=1)
+    df = pd.merge(df, old_df, how='left', on="crm_id")
+
     sql_index = 0
     for row in df.itertuples():
-        index = getattr(row, 'Index')
-        account_name = getattr(row, 'opportunity_name')
-        created_at = getattr(row, 'created_at')
-        timestamp  =time_ms(created_at)
-        id= create_id(account_name, timestamp, sql_index)
-        sql_index +=1
-        df.at[index, 'id'] = id
+        id = getattr(row, 'id')
+        if id:
+            index = getattr(row, 'Index')
+            account_name = getattr(row, 'opportunity_name')
+            created_at = getattr(row, 'created_at')
+            timestamp  =time_ms(created_at)
+            id= create_id(account_name, timestamp, sql_index)
+            sql_index +=1
+            df.at[index, 'id'] = id
 
     print(df)
-    sql_table = "opportunity_back"
+    sql_table = "opportunity_back_copy1"
     df.to_sql(sql_table, new_data, index=False, if_exists="replace")
     cur, conn = get_conn()
 
-    sql_remarks = """ALTER table `%s`
-                      MODIFY `id` varchar(50) COMMENT '星光自建商机id',
-                      MODIFY `crm_id` varchar(50) COMMENT 'crm商机id',
-                      MODIFY `entity_type` varchar(20) COMMENT '业务类型',
-                      MODIFY `opportunity_name` varchar(500) COMMENT '商机名称',
-                      MODIFY `owner_id` varchar (100) COMMENT '星光自建销售id',
-                      MODIFY `price_id` varchar(50) COMMENT '价格表id',
-                      MODIFY `account_id` varchar(100) COMMENT '最终客户id ',
-                      MODIFY `money` varchar(50) COMMENT '商机金额',
-                      MODIFY `intended_product` varchar(500) COMMENT '意向产品',
-                      MODIFY `sale_stage` varchar(50) COMMENT '销售阶段',
-                      MODIFY `win_rate` varchar (10) COMMENT '赢率',
-                      MODIFY `close_date` varchar(50) COMMENT '结单日期',
-                      MODIFY `saler_promise` varchar(50) COMMENT '销售承诺',
-                      MODIFY `project_budget` varchar(255) COMMENT '成本预算',
-                      MODIFY `created_at` varchar(50) COMMENT '创建日期',
-                      MODIFY `created_by` varchar(50) COMMENT '创建人',
-                      MODIFY `updated_at` varchar(50) COMMENT '最新修改日期',
-                      MODIFY `updated_by` varchar(50) COMMENT '最新修改人',
-                      MODIFY `contact` varchar(100) COMMENT '商机联系人',
-                      MODIFY `position` text COMMENT '联系人职务',
-                      MODIFY `xsy_id` text COMMENT '销售易id' """ % sql_table
+    sql_remarks = OPPORTUNITY_TABLE_STRING .format( sql_table)
     cur.execute(sql_remarks)
 
     cur.close()
@@ -102,42 +91,22 @@ def test():
 def change_account_id():
     new_data = engine(settings.db_new_data)
 
-    sql = """ select * from opportunity_back """
+    sql = """ select * from opportunity_back_copy1 """
     df = pd.read_sql_query(sql,new_data)
     account_sql = """ select id as new_account_id, crm_id as account_id from account_back """
     account_df = pd.read_sql_query(account_sql,new_data)
 
+    # print(account_df)
     df = pd.merge(df, account_df, how='left', on="account_id")
     df = df.drop(["account_id"],axis=1)
     df = df.rename(columns = {"new_account_id":"account_id"})
     print(df)
 
-    sql_table = "opportunity_back"
+    sql_table = "opportunity_back_copy1"
     df.to_sql(sql_table, new_data, index=False, if_exists="replace")
     cur, conn = get_conn()
 
-    sql_remarks = """ALTER table `%s`
-                      MODIFY `id` varchar(50) COMMENT '星光自建商机id',
-                      MODIFY `crm_id` varchar(50) COMMENT 'crm商机id',
-                      MODIFY `entity_type` varchar(20) COMMENT '业务类型',
-                      MODIFY `opportunity_name` varchar(500) COMMENT '商机名称',
-                      MODIFY `owner_id` varchar (100) COMMENT '星光自建销售id',
-                      MODIFY `price_id` varchar(50) COMMENT '价格表id',
-                      MODIFY `account_id` varchar(100) COMMENT '最终客户id ',
-                      MODIFY `money` varchar(50) COMMENT '商机金额',
-                      MODIFY `intended_product` varchar(500) COMMENT '意向产品',
-                      MODIFY `sale_stage` varchar(50) COMMENT '销售阶段',
-                      MODIFY `win_rate` varchar (10) COMMENT '赢率',
-                      MODIFY `close_date` varchar(50) COMMENT '结单日期',
-                      MODIFY `saler_promise` varchar(50) COMMENT '销售承诺',
-                      MODIFY `project_budget` varchar(255) COMMENT '成本预算',
-                      MODIFY `created_at` varchar(50) COMMENT '创建日期',
-                      MODIFY `created_by` varchar(50) COMMENT '创建人',
-                      MODIFY `updated_at` varchar(50) COMMENT '最新修改日期',
-                      MODIFY `updated_by` varchar(50) COMMENT '最新修改人',
-                      MODIFY `contact` varchar(100) COMMENT '商机联系人',
-                      MODIFY `position` text COMMENT '联系人职务',
-                      MODIFY `xsy_id` text COMMENT '销售易id' """ % sql_table
+    sql_remarks = OPPORTUNITY_TABLE_STRING.format(sql_table)
     cur.execute(sql_remarks)
 
     cur.close()
@@ -147,11 +116,96 @@ def change_account_id():
     new_data.close()
 
 
+def change():
+    new_data = engine(settings.db_new_data)
+    sql = """ select * from opportunity_back """
+    cc_df = pd.read_sql_query(sql,new_data)
+
+    for row in cc_df.itertuples():
+
+        df_index = getattr(row, 'Index')
+        # close_date = getattr(row, 'close_date')
+        # try:
+        #     cc_df.at[df_index, 'close_date'] = time_ms(close_date)
+        # except:
+        #     pass
+        # created_at = getattr(row, 'created_at')
+        # cc_df.at[df_index, 'created_at'] = time_ms(created_at)
+        # updated_at = getattr(row, 'updated_at')
+        # cc_df.at[df_index, 'updated_at'] = time_ms(updated_at)
+        # xsy_id = getattr(row, 'xsy_id')
+        # try:
+        #     xsy_id = str(xsy_id).strip()
+        # except:
+        #     pass
+        # cc_df.at[df_index, 'xsy_id'] = xsy_id
+
+        phone = getattr(row, 'phone')
+        try:
+            phone = str(phone).strip()
+        except:
+            pass
+        cc_df.at[df_index, 'phone'] = phone
+
+    # # owner_id
+    # local_user_sql = """select `id` as local_owner_id ,crm_id as owner_id from {}""".format("user_back")
+    # local_user_df = pd.read_sql_query(local_user_sql, new_data)
+    # cc_df = pd.merge(cc_df, local_user_df, how='left', on="owner_id")
+    # cc_df = cc_df.drop(["owner_id"], axis=1)
+    # cc_df = cc_df.rename(columns={"local_owner_id": "owner_id"})
+    # # created_by
+    # local_user_df = local_user_df.rename(columns={"owner_id": "created_by"})
+    # cc_df = pd.merge(cc_df, local_user_df, how='left', on="created_by")
+    # cc_df = cc_df.drop(["created_by"], axis=1)
+    # cc_df = cc_df.rename(columns={"local_owner_id": "created_by"})
+    # # updated_by
+    # local_user_df = local_user_df.rename(columns={"created_by": "updated_by"})
+    # cc_df = pd.merge(cc_df, local_user_df, how='left', on="updated_by")
+    # cc_df = cc_df.drop(["updated_by"], axis=1)
+    # cc_df = cc_df.rename(columns={"local_owner_id": "updated_by"})
+
+
+
+    print(cc_df)
+
+
+
+    sql_table = "opportunity_back"
+    cc_df.to_sql(sql_table, new_data, index=False, if_exists="replace")
+    cur, conn = get_conn()
+
+    sql_remarks =OPPORTUNITY_TABLE_STRING.format(sql_table)
+    cur.execute(sql_remarks)
+
+    cur.close()
+    conn.close()
+    new_data.close()
+
+
+
+
+def update_account_id():
+    """ 补全accountid """
+    new_data = engine(settings.db_new_data)
+
+
+    sql = """ select crm_id from opportunity_back_copy2 where account_id is null """
+    df = pd.read_sql_query(sql,new_data)
+    null_id_list = df["crm_id"].tolist()[:100]
+    null_id_str = list_to_sql_string(null_id_list)
+    sql = """select * from Opportunity where id in ({})""".format(null_id_str)
+    data = cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com", "cqlQuery", "Opportunity", sql, "A5573D484A29CDF08A1130136E88FC52")
+    print(data)
+    data_df = pd.DataFrame(data)
+    print(df)
+
+
 
 if __name__ == "__main__":
     # test()
-    change_account_id()
-
+    # change_account_id()
+    change()
+    # update_account_id()
 
 
 

@@ -22,13 +22,13 @@ ORDER_DICT={
     "amount": "amount",
     "totaldiscountamount": "discount_amount",
     "htzt": "contract_status",
-    "customItem158": "contract_attribute",
-    "customItem166": "contract_id",
-    "customItem147": "contract_start",
-    "customItem148": "contract_end",
-    "customItem156": "contract_back_date",
-    "customItem164": "total_performance",
-    "customItem182": "approve_date",
+    "customitem158": "contract_attribute",
+    "customitem166": "contract_id",
+    "customitem147": "contract_start",
+    "customitem148": "contract_end",
+    "customitem156": "contract_back_date",
+    "customitem164": "total_performance",
+    "customitem182": "approve_date",
     "customitem294": "payback_type",
     "yid":"xsy_id",
 }
@@ -65,6 +65,7 @@ ORDER_TABLE_STRING="""ALTER table `{}`
 # 数据库名称
 ACCOUNT_API_NAME = "Account"
 ACCOUNT_SQL_TABLE = "account_back"
+ACCOUNT_CLOUMNS_ORDER = ["id","crm_id","entity_type","account_name","owner_id","level","sea_status","longitude","address","address_province","address_city","address_area","recent_activity_time","recent_activity_by","sea_id","created_by","created_at","updated_by","updated_at","industry_1","industry_2","contact","contact_phone","contact_post","department_top","department","sea_push","push_sea_date","xsy_id"]
 ACCOUNT_DICT={
     "id":"crm_id",
     "leixing":"entity_type",
@@ -86,16 +87,16 @@ ACCOUNT_DICT={
     "createdate": "created_at",
     "lastmodifybyid": "updated_by",
     "lastmodifydate": "updated_at",
-    "customItem151": "industry_1",
-    "customItem162": "industry_2",
-    "customItem159": "contact",
+    "customitem151": "industry_1",
+    "customitem162": "industry_2",
+    "customitem159": "contact",
     "dianhua": "contact_phone",
     "customItem161": "contact_post",
     # 部门转换
     "dimdepart": "department_top",
-    "customItem156": "department",
-    "customItem214": "sea_push",
-    "customItem216": "push_sea_date",
+    "customitem156": "department",
+    "customitem214": "sea_push",
+    "customitem216": "push_sea_date",
     "yid":"xsy_id"
 }
 ACCOUNT_TABLE_STRING = """ALTER table `{}` 
@@ -150,9 +151,13 @@ USER_TABLE_STRING = """ALTER table `{}`
                 MODIFY column `status` tinyint(5) COMMENT "是否在职 1在职 0离职",
                 MODIFY column `hire_date` varchar(100) COMMENT "入职时间ms",
                 MODIFY column `email` varchar(100) COMMENT "邮箱" """
-
-
+# api 名称
+OPPORTUNITY_API_NAME = "Opportunity"
+# 数据库名称
 OPPORTUNITY_SQL_TABLE = "opportunity_back"
+# 入库顺序
+OPPORTUNITY_CLOUMNS_ORDER = ["id","crm_id","entity_type","opportunity_name","owner_id","price_id","account_id","money","intended_product","sale_stage","win_rate","close_date","saler_promise","project_budget","created_by","created_at","updated_by","updated_at","contact","position","xsy_id"]
+# api 与数据库字段映射关系
 OPPORTUNITY_DICT = {
     "id": "crm_id",
     "ywlx": "entity_type",
@@ -171,11 +176,12 @@ OPPORTUNITY_DICT = {
     "createdate": "created_at",
     "lastmodifybyid": "updated_by",
     "lastmodifydate": "updated_at",
-    "customItem165": "contact",
-    "customItem166": "position",
+    "customitem165": "contact",
+    "customitem166": "position",
+    "customitem222":"phone",
     "yid": "xsy_id"
-
 }
+# 数据库类型格式
 OPPORTUNITY_TABLE_STRING = """ALTER table `{}`
                   MODIFY `id` varchar(50) COMMENT '星光自建商机id',
                   MODIFY `crm_id` varchar(50) COMMENT 'crm商机id',
@@ -197,4 +203,5 @@ OPPORTUNITY_TABLE_STRING = """ALTER table `{}`
                   MODIFY `updated_by` varchar(50) COMMENT '最新修改人',
                   MODIFY `contact` varchar(100) COMMENT '商机联系人',
                   MODIFY `position` text COMMENT '联系人职务',
+                  MODIFY `phone` varchar(100) COMMENT '联系人职务',
                   MODIFY `xsy_id` text COMMENT '销售易id' """
