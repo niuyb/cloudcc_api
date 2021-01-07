@@ -64,7 +64,7 @@ class Order_Data():
 
 
         self.today = str(datetime.now().strftime('%Y-%m-%d'))
-        # self.today = "2021-01-04"
+        # self.today = "2021-01-06"
         print(self.today)
         self.one_times_num = 1000
         self.sql_index_list=[]

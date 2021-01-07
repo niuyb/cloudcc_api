@@ -91,6 +91,7 @@ def cloudcc_query_sql(access_url,server_name,objectapi_name,sql,binding):
     session.keep_alive = False
     access_url = access_url+"/distributor.action?serviceName="+server_name+"&objectApiName="+objectapi_name+"&expressions="+sql+"&binding="+binding
     try:
+        # print(access_url)
         response = json.loads(session.get(access_url).text)
         # print(response)
         if response["result"] == True:
@@ -139,9 +140,9 @@ def modify_by_api(access_url,server_name,objectapi_name,data,binding):
     try:
         data=json.dumps(data)
         access_url = access_url+"/distributor.action?serviceName="+server_name+"&objectApiName="+objectapi_name+"&data="+data+"&binding="+binding
-        print(access_url)
+        # print(access_url)
         response = json.loads(session.get(access_url).text)
-        print(response)
+        # print(response)
         if response["result"] == True:
             return True
         else:
@@ -199,9 +200,11 @@ if __name__ == "__main__":
     # data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account","select  *  from `Account` where id ='0012020B26843C18KDAP'  ","FAB429EB2370B7621897C28A5402DFC1")
 
 
-    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Opportunity","""select *  from Opportunity where id="00220200741FEEF6rxdM" ""","0D00CD7B1F8583A993C81F850DB975D1")
-    print(data)
+    # data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","dingdan","""select name,id,byh,yid from `dingdan` where `id` in ('a1320215866B50EliWrK')  and is_deleted="0" ""","558321A23E6CFFB4D290A9B378E68A8B")
+    # print(data)
 
+    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account","""select * from `Account` where `id`='001202087FAE486Y2P4V' ""","C8F19CE08E946B64EBA015A232F4F557")
+    print(data)
 
     # data = modify_by_api("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","update","Account", [{'id':"0012020FE5A8EB0s9Ahn","name":"万科_modify_by_api"}], "F4318B05B7C1D4DC0CF165E0AB5421BC")
     # print(data)

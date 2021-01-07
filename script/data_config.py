@@ -7,6 +7,7 @@
 
 ORDER_API_NAME="dingdan"
 ORDER_SQL_TABLE="order_back"
+ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","amount","discount_amount","contract_status","contract_attribute","contract_id","contract_start","contract_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id"]
 ORDER_DICT={
     "id":"crm_id",
     "name":"po",
@@ -156,7 +157,7 @@ OPPORTUNITY_API_NAME = "Opportunity"
 # 数据库名称
 OPPORTUNITY_SQL_TABLE = "opportunity_back"
 # 入库顺序
-OPPORTUNITY_CLOUMNS_ORDER = ["id","crm_id","entity_type","opportunity_name","owner_id","price_id","account_id","money","intended_product","sale_stage","win_rate","close_date","saler_promise","project_budget","created_by","created_at","updated_by","updated_at","contact","position","xsy_id"]
+OPPORTUNITY_CLOUMNS_ORDER = ["id","crm_id","entity_type","opportunity_name","owner_id","price_id","account_id","money","intended_product","sale_stage","win_rate","close_date","saler_promise","project_budget","created_by","created_at","updated_by","updated_at","contact","position","phone","xsy_id"]
 # api 与数据库字段映射关系
 OPPORTUNITY_DICT = {
     "id": "crm_id",
@@ -203,5 +204,5 @@ OPPORTUNITY_TABLE_STRING = """ALTER table `{}`
                   MODIFY `updated_by` varchar(50) COMMENT '最新修改人',
                   MODIFY `contact` varchar(100) COMMENT '商机联系人',
                   MODIFY `position` text COMMENT '联系人职务',
-                  MODIFY `phone` varchar(100) COMMENT '联系人职务',
+                  MODIFY `phone` varchar(100) COMMENT '电话',
                   MODIFY `xsy_id` text COMMENT '销售易id' """

@@ -124,22 +124,21 @@ def change():
     for row in cc_df.itertuples():
 
         df_index = getattr(row, 'Index')
-        # close_date = getattr(row, 'close_date')
-        # try:
-        #     cc_df.at[df_index, 'close_date'] = time_ms(close_date)
-        # except:
-        #     pass
-        # created_at = getattr(row, 'created_at')
-        # cc_df.at[df_index, 'created_at'] = time_ms(created_at)
-        # updated_at = getattr(row, 'updated_at')
-        # cc_df.at[df_index, 'updated_at'] = time_ms(updated_at)
-        # xsy_id = getattr(row, 'xsy_id')
-        # try:
-        #     xsy_id = str(xsy_id).strip()
-        # except:
-        #     pass
-        # cc_df.at[df_index, 'xsy_id'] = xsy_id
-
+        close_date = getattr(row, 'close_date')
+        try:
+            cc_df.at[df_index, 'close_date'] = time_ms(close_date)
+        except:
+            pass
+        created_at = getattr(row, 'created_at')
+        cc_df.at[df_index, 'created_at'] = time_ms(created_at)
+        updated_at = getattr(row, 'updated_at')
+        cc_df.at[df_index, 'updated_at'] = time_ms(updated_at)
+        xsy_id = getattr(row, 'xsy_id')
+        try:
+            xsy_id = str(xsy_id).strip()
+        except:
+            pass
+        cc_df.at[df_index, 'xsy_id'] = xsy_id
         phone = getattr(row, 'phone')
         try:
             phone = str(phone).strip()
@@ -148,26 +147,24 @@ def change():
         cc_df.at[df_index, 'phone'] = phone
 
     # # owner_id
-    # local_user_sql = """select `id` as local_owner_id ,crm_id as owner_id from {}""".format("user_back")
-    # local_user_df = pd.read_sql_query(local_user_sql, new_data)
-    # cc_df = pd.merge(cc_df, local_user_df, how='left', on="owner_id")
-    # cc_df = cc_df.drop(["owner_id"], axis=1)
-    # cc_df = cc_df.rename(columns={"local_owner_id": "owner_id"})
-    # # created_by
-    # local_user_df = local_user_df.rename(columns={"owner_id": "created_by"})
-    # cc_df = pd.merge(cc_df, local_user_df, how='left', on="created_by")
-    # cc_df = cc_df.drop(["created_by"], axis=1)
-    # cc_df = cc_df.rename(columns={"local_owner_id": "created_by"})
-    # # updated_by
-    # local_user_df = local_user_df.rename(columns={"created_by": "updated_by"})
-    # cc_df = pd.merge(cc_df, local_user_df, how='left', on="updated_by")
-    # cc_df = cc_df.drop(["updated_by"], axis=1)
-    # cc_df = cc_df.rename(columns={"local_owner_id": "updated_by"})
-
+    local_user_sql = """select `id` as local_owner_id ,crm_id as owner_id from {}""".format("user_back")
+    local_user_df = pd.read_sql_query(local_user_sql, new_data)
+    cc_df = pd.merge(cc_df, local_user_df, how='left', on="owner_id")
+    cc_df = cc_df.drop(["owner_id"], axis=1)
+    cc_df = cc_df.rename(columns={"local_owner_id": "owner_id"})
+    # created_by
+    local_user_df = local_user_df.rename(columns={"owner_id": "created_by"})
+    cc_df = pd.merge(cc_df, local_user_df, how='left', on="created_by")
+    cc_df = cc_df.drop(["created_by"], axis=1)
+    cc_df = cc_df.rename(columns={"local_owner_id": "created_by"})
+    # updated_by
+    local_user_df = local_user_df.rename(columns={"created_by": "updated_by"})
+    cc_df = pd.merge(cc_df, local_user_df, how='left', on="updated_by")
+    cc_df = cc_df.drop(["updated_by"], axis=1)
+    cc_df = cc_df.rename(columns={"local_owner_id": "updated_by"})
 
 
     print(cc_df)
-
 
 
     sql_table = "opportunity_back"

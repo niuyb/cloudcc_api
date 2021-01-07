@@ -16,8 +16,12 @@
 # importlib.reload(sys)
 
 
-from multiprocessing import Process
 
+import hashlib
+import random
+from multiprocessing import Process,Queue
+
+import numpy as np
 import pymysql
 
 import time
@@ -26,7 +30,9 @@ import pandas as pd
 
 from public.cloudcc_utils import cloudcc_get_request_url, cloudcc_get_binding, cloudcc_query_sql
 from public.utils import engine, list_to_sql_string, time_ms
-from script.data_config import ORDER_DICT, ORDER_TABLE_STRING,ORDER_SQL_TABLE, ORDER_API_NAME
+from script.data_config import OPPORTUNITY_DICT, \
+    OPPORTUNITY_TABLE_STRING, OPPORTUNITY_API_NAME, OPPORTUNITY_SQL_TABLE, OPPORTUNITY_CLOUMNS_ORDER, USER_SQL_TABLE, \
+    ACCOUNT_SQL_TABLE, ORDER_API_NAME, ORDER_TABLE_STRING, ORDER_DICT, ORDER_SQL_TABLE, ORDER_CLOUMNS_ORDER
 from script.data_utils import create_id
 from settings import settings
 from settings.config import ACCESS_URL, ClOUDCC_USERNAME, ClOUDCC_PASSWORD
@@ -37,6 +43,7 @@ pd.set_option('display.width', None)# 展示所有列
 
 
 """
+price_id  暂时未转换
 
 """
 
@@ -44,21 +51,24 @@ pd.set_option('display.width', None)# 展示所有列
 class Order_Data():
     def __init__(self):
 
-        self.cloudcc_object=ORDER_API_NAME
-        self.sql_table= ORDER_SQL_TABLE
-        self.sql_mapping= ORDER_DICT
-        self.sql_table_string = ORDER_TABLE_STRING
-
         self.access_url  = ''
         self.binding = ''
-        self.today = datetime.now().strftime('%Y-%m-%d')
+        self.cloudcc_object=ORDER_API_NAME
+        self.sql_table= ORDER_SQL_TABLE
+        # self.sql_table= "order_back_copy1"
+        self.sql_mapping= ORDER_DICT
+        self.sql_table_string = ORDER_TABLE_STRING
+        self.user_table = USER_SQL_TABLE
+        self.account_table = ACCOUNT_SQL_TABLE
+        self.opportunity_table = OPPORTUNITY_SQL_TABLE
+
+        self.today = str(datetime.now().strftime('%Y-%m-%d'))
+        # self.today = "2021-01-06"
         print(self.today)
-        # self.today = "2021-01-03"
-        # 单次更新数量
         self.one_times_num = 1000
         self.sql_index_list=[]
-        # 进程数目
         self.process_num = 1
+        self.columns_order = ORDER_CLOUMNS_ORDER
 
 
     def get_conn(self):
@@ -79,7 +89,24 @@ class Order_Data():
 
         return cur,conn
 
+    def deal_df(self,order_df,key,type):
+        if type.find(",") >0:
+            type_list = type.split(",")
+            for type in type_list:
+                order_df.loc[order_df[key] == type, key] = ""
+        else:
+            pass
+            order_df.loc[order_df[key] == type, key] = ""
+        return order_df
+
+    def merge_df(self,main_df,right_df,user_key,user_crm_key,key,crm_key):
+        right_df = right_df.rename(columns={user_key: key,user_crm_key:crm_key})
+        main_df = pd.merge(main_df, right_df, how='left', on=crm_key)
+        main_df = main_df.drop([crm_key], axis=1)
+        return main_df
+
     def inster_sql(self, df,local_str):
+
         new_data = engine(settings.db_new_data)
         cur, conn = self.get_conn()
         try:
@@ -88,6 +115,7 @@ class Order_Data():
             cur.execute(delete_sql)
             conn.commit()
             # 入库操作
+            df = df[self.columns_order]
             df.to_sql(self.sql_table, new_data, index=False, if_exists="append")
             # 修改类型
             sql_remarks = self.sql_table_string.format(self.sql_table)
@@ -99,17 +127,16 @@ class Order_Data():
             conn.close()
             new_data.close()
 
-    def get_cloudcc_infos(self,index):
-
-        # self.today = "2020-12-29"
-        new_data = engine(settings.db_new_data)
-
+    def get_cloudcc_order(self,index):
         if index == 1:
             index = 0
+        new_data = engine(settings.db_new_data)
         # try:
-        sql_string = """ select {} from {} where lastmodifydate like "%{}%" limit {},{} """
+        sql_string = """ select {} from {} where left(lastmodifydate,10) = '{}' limit {},{} """
         sql = sql_string.format("*", self.cloudcc_object,self.today,index,self.one_times_num)
+        print(sql)
         data = cloudcc_query_sql(self.access_url, "cqlQuery",self.cloudcc_object, sql, self.binding)
+        print("查询",len(data))
         if data:
 
             cc_df = pd.DataFrame(columns=list(self.sql_mapping.keys()))
@@ -121,14 +148,11 @@ class Order_Data():
             # 本次操作的cc id
             operate_list = cc_df["crm_id"].tolist()
             operate_str = list_to_sql_string(operate_list)
-            local_sql = """ select * from `{}` where crm_id in ({})""".format(self.sql_table,operate_str)
+            local_sql = """ select id,crm_id,account_id from `{}` where crm_id in ({})""".format(self.sql_table,operate_str)
             local_df = pd.read_sql_query(local_sql,new_data)
             # 本次操作local数据库id
             local_list = cc_df["crm_id"].tolist()
             local_str = list_to_sql_string(local_list)
-
-            # 在这里记录修改
-
 
             # 删除cc 与 local 中删除的数据
             deleted_list = cc_df.loc[cc_df["is_deleted"] != "0","crm_id"].tolist()
@@ -138,14 +162,46 @@ class Order_Data():
             print("已删除",len(deleted_list))
             cc_df = cc_df.drop(["is_deleted"],axis=1)
 
+
             # 新增 数据
             local_merge_df = local_df[["id","crm_id"]]
             cc_df = pd.merge(cc_df, local_merge_df, how='left', on="crm_id")
-            index_sql = """ select count(*) as nums from %s where created_at like "%s" """%(self.sql_table,self.today)
+            index_sql = """ select count(*) as nums from %s where left(created_at,10)="%s" """%(self.sql_table,self.today)
+            print("index_sql",index_sql)
             id_index = pd.read_sql_query(index_sql,new_data)["nums"].tolist()[0]
-            print(id_index)
+            print("id_index",id_index)
             for row in cc_df.itertuples():
                 df_index = getattr(row, 'Index')
+                contract_back_date = getattr(row, 'contract_back_date')
+                try:
+                    cc_df.at[df_index, 'contract_back_date'] = time_ms(contract_back_date)
+                except:
+                    pass
+                approve_date = getattr(row, 'approve_date')
+                try:
+                    cc_df.at[df_index, 'approve_date'] = time_ms(approve_date)
+                except:
+                    pass
+                created_at = getattr(row, 'created_at')
+                cc_df.at[df_index, 'created_at'] = time_ms(created_at)
+                updated_at = getattr(row, 'updated_at')
+                cc_df.at[df_index, 'updated_at'] = time_ms(updated_at)
+                contract_start = getattr(row, 'contract_start')
+                try:
+                    cc_df.at[df_index, 'contract_start'] = time_ms(contract_start)
+                except:
+                    pass
+                contract_end = getattr(row, 'contract_end')
+                try:
+                    cc_df.at[df_index, 'contract_end'] = time_ms(contract_end)
+                except:
+                    pass
+                xsy_id = getattr(row, 'xsy_id')
+                try:
+                    xsy_id = str(xsy_id).strip()
+                except:
+                    pass
+                cc_df.at[df_index, 'xsy_id'] = xsy_id
                 po = getattr(row, 'po')
                 created_at = getattr(row, 'created_at')
                 timestamp = time_ms(created_at)
@@ -154,13 +210,47 @@ class Order_Data():
                     pass
                 else:
                     id = create_id(po, timestamp, id_index)
-                    print(id)
+                    # print(id)
                     cc_df.at[df_index, 'id'] = id
                 id_index+=1
 
-            new_data.close()
 
+            # 在这里替换想相应的id
+            # account_id
+            cc_account_str = list_to_sql_string(cc_df["account_id"].dropna().tolist())
+            local_account_sql = """ select id as local_account_id,crm_id as account_id  from `{}` where crm_id in ({})""".format(self.account_table,cc_account_str)
+            local_account_df = pd.read_sql_query(local_account_sql,new_data)
+            cc_df = pd.merge(cc_df, local_account_df, how='left', on="account_id")
+            cc_df = cc_df.drop(["account_id"],axis=1)
+            cc_df = cc_df.rename(columns={"local_account_id":"account_id"})
+            # opportunity_id
+            cc_opportunity_str = list_to_sql_string(cc_df["opportunity_id"].dropna().tolist())
+            local_opp_sql = """ select id as local_opportunity_id,crm_id as opportunity_id  from `{}` where crm_id in ({})""".format(self.opportunity_table,cc_opportunity_str)
+            local_opp_df = pd.read_sql_query(local_opp_sql,new_data)
+            cc_df = pd.merge(cc_df, local_opp_df, how='left', on="opportunity_id")
+            cc_df = cc_df.drop(["opportunity_id"],axis=1)
+            cc_df = cc_df.rename(columns={"local_opportunity_id":"opportunity_id"})
+            #owner_id
+            local_user_sql = """select `id` as local_owner_id ,crm_id as owner_id from {}""".format(self.user_table)
+            local_user_df = pd.read_sql_query(local_user_sql,new_data)
+            cc_df = pd.merge(cc_df, local_user_df, how='left', on="owner_id")
+            cc_df = cc_df.drop(["owner_id"],axis=1)
+            cc_df = cc_df.rename(columns={"local_owner_id":"owner_id"})
+            # created_by
+            local_user_df = local_user_df.rename(columns={"owner_id":"created_by"})
+            cc_df = pd.merge(cc_df, local_user_df, how='left', on="created_by")
+            cc_df = cc_df.drop(["created_by"],axis=1)
+            cc_df = cc_df.rename(columns={"local_owner_id":"created_by"})
+            # updated_by
+            local_user_df = local_user_df.rename(columns={"created_by":"updated_by"})
+            cc_df = pd.merge(cc_df, local_user_df, how='left', on="updated_by")
+            cc_df = cc_df.drop(["updated_by"],axis=1)
+            cc_df = cc_df.rename(columns={"local_owner_id":"updated_by"})
+
+            new_data.close()
+            # print(cc_df)
             self.inster_sql(cc_df,local_str)
+            print("入库",cc_df.shape)
 
     def get_infos(self,p_index):
         list_index = p_index
@@ -168,26 +258,11 @@ class Order_Data():
         try:
             for i in range(times):
                 print(self.sql_index_list[list_index])
-                time.sleep(1)
-                self.get_cloudcc_infos(self.sql_index_list[list_index])
+                self.get_cloudcc_order(self.sql_index_list[list_index])
                 list_index += 1
         except Exception as e:
-            print(e)
+            print("get_infos------",e)
             pass
-
-    def merge_infos(self,nums,q,f_q):
-        data_list=[]
-        # 结束标志
-        f_index = 0
-        while True:
-            # time.sleep(1)
-            data_list_queue = q.get(True)
-            data_list += data_list_queue
-            print(len(data_list))
-            if len(data_list) == nums:
-                break
-            f_index += f_q.get(True)
-            print("f_index",f_index)
 
     def process_data(self):
         try:
@@ -197,9 +272,11 @@ class Order_Data():
             print("获取binding失败,请检查配置")
             return False
         try:
-            count_sql = """  select count(*) as nums from {} """.format(self.cloudcc_object)
+            count_sql = """  select count(*) as nums from %s where left(lastmodifydate,10) = '%s' """%(self.cloudcc_object,self.today)
+            print(count_sql)
             count_data = cloudcc_query_sql(self.access_url, "cqlQuery", self.cloudcc_object, count_sql, self.binding)
             nums = count_data[0].get("nums",0)
+            print(count_data)
         except:
             print("获取总数目失败")
             return False
@@ -211,18 +288,17 @@ class Order_Data():
             num_times = 0
 
         for index in range(num_times):
-            if num_times == 1:
-                index = 1
             start = int(index) * self.one_times_num
+            if num_times == 1:
+                start = 1
             if index == 0:
                 start = 1
             self.sql_index_list.append(start)
 
         print(self.sql_index_list)
         self.sql_index_list = self.sql_index_list[::-1]
-        p_l = []
-        # Process(target=self.merge_infos, args=(nums,)).start()
 
+        p_l = []
         for i in range(self.process_num):
             p1 = Process(target=self.get_infos,args=(i,))
             p1.start()
@@ -235,7 +311,7 @@ if __name__ == "__main__":
     o = Order_Data()
 
     o.process_data()
-    # o.get_cloudcc_infos(0)
+    # o.get_cloudcc_order(0)
 
 
 

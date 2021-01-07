@@ -55,9 +55,9 @@ class Order_Data():
         # self.new_data = engine(settings.db_new_data)
         self.access_url  = ''
         self.binding = ''
-        self.cloudcc_object="Account"
-        self.sql_table= "account_back_copy2"
-        self.sql_mapping= ACCOUNT_DICT
+        self.cloudcc_object="dingdan"
+        self.sql_table= "order_back_copy1"
+        self.sql_mapping= ORDER_DICT
 
         self.one_times_num = 1000
         self.sql_index_list=[]

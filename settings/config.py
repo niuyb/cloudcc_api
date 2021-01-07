@@ -61,7 +61,7 @@ OPPORTUNITY_QUERY_ALLOW=["id","name","account_id"]
 # 允许 模糊查询
 OPPORTUNITY_FUZZY_QUERY = ["name"]
 # update_append 更新字段
-OPPORTUNITY_APPEND_ITEMS = ["id", "crm_id", "opportunity_name", "account_id", "owner_id", "saler_promise",
+OPPORTUNITY_APPEND_ITEMS = ["id", "opportunity_name", "account_id", "owner_id", "saler_promise",
                          "intended_product", "close_date", "sale_stage","phone","xsy_id"]
 # -----------------------------------------ORDER-----------------------------------------------
 # order api 与 cloudcc映射
@@ -71,7 +71,8 @@ ORDER_MAPPING={
 }
 # 订单  查询条件  查询 字段名称
 ORDER_QUERY_ALLOW=["id","name"]
-
+# 允许 模糊查询
+ORDER_FUZZY_QUERY = ["name"]
 
 
 # -----------------------------------------TEMP-----------------------------------------------
@@ -87,9 +88,11 @@ QY_token = "457d6a5e009f1ebb0906f03b32d0881f"
 # QY账号允许查询返回的字段
 QY_ACCOUNT_QUERY=["id","name","yid"]
 QY_OPPORTUNITY_QUERY = ["name","id","zzkh","yid"]
+QY_ORDER_QUERY = ["name","id","byh","yid"]
 
 ZW_token = "4e33e00381c94a9bba251ebb44996c0f"
 # ZW账号允许查询返回的字段
 ZW_ACCOUNT_QUERY=["id","name","customItem151","customItem162","fState","fCity","fDistrict","yid"]
 ZW_OPPORTUNITY_QUERY = ["name","id","zzkh","yid"]
+ZW_ORDER_QUERY = ["name","id","byh","yid"]
 

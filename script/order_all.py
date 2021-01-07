@@ -30,13 +30,13 @@ import pandas as pd
 
 from public.cloudcc_utils import cloudcc_get_request_url, cloudcc_get_binding, cloudcc_query_sql
 from public.utils import engine, list_to_sql_string
-from script.data_config import ORDER_DICT, ACCOUNT_DICT, OPPORTUNITY_DICT, USER_DICT
+from script.data_config import ORDER_DICT, ACCOUNT_DICT, OPPORTUNITY_DICT, OPPORTUNITY_TABLE_STRING, ORDER_TABLE_STRING
 from settings import settings
 from settings.config import ACCESS_URL, ClOUDCC_USERNAME, ClOUDCC_PASSWORD
 
 pd.set_option('display.max_rows', None) # 展示所有行
 pd.set_option('display.max_columns', None) # 展示所有列
-pd.set_option('display.width', None)# 展示所有列
+pd.set_option('display.width', None)
 
 
 """
@@ -56,16 +56,38 @@ class Order_Data():
         self.access_url  = ''
         self.binding = ''
         self.cloudcc_object="dingdan"
-        self.sql_table= "order_back"
+        self.sql_table= "order_back_copy1"
         self.sql_mapping= ORDER_DICT
+        self.sql_table_string = ORDER_TABLE_STRING
 
         self.one_times_num = 1000
         self.sql_index_list=[]
 
-        # self.columns_order = ["id","crm_id","po","entity_type","ownerid","status","account_id","priceid","opportunity_id","created_by","created_at","updated_by","updated_at","amount","discount_amount","contract_status","contract_attribute","contractid","contract_start","contract_end","contract_back_date","total_performance","salerA","salerB","salerC","salerA_amount","salerB_amount","salerC_amount","approve_date","payback_type"]
-        # self.ignore_key_list=["id","crm_id"]
-        # self.df_list=[]
 
+    def time_ms(self,date):
+        try:
+            if date:
+                datetime_obj = datetime.strptime(date, "%Y-%m-%d %H:%M")
+                obj_stamp = int(time.mktime(datetime_obj.timetuple()) * 1000.0 + datetime_obj.microsecond / 1000.0)
+                obj_stamp = str(obj_stamp)
+            else:
+                obj_stamp = ""
+            return obj_stamp
+        except:
+            # print(date,type(date))
+            return ""
+
+    def ms_date(self,ms_time):
+        ms_time = int(ms_time)
+        time_local = time.localtime(ms_time / 1000)
+        date = time.strftime("%Y%m%d", time_local)
+        return date[2:]
+
+    def create_id(self,item_name,create_timestamp,index):
+        md5_str = hashlib.md5(item_name.encode(encoding='UTF-8')+create_timestamp.encode(encoding='UTF-8')).hexdigest()[8:-8]
+        md5_str = md5_str + index
+        md5_str = self.id_per+md5_str
+        return md5_str
 
     def get_conn(self):
         host = "192.168.185.129"
@@ -101,35 +123,21 @@ class Order_Data():
         main_df = main_df.drop([crm_key], axis=1)
         return main_df
 
+
+
+
+
+
+
+
+
+
+
     def inster_sql(self, df):
         new_data = engine(settings.db_new_data)
         df.to_sql(self.sql_table, new_data, index=False, if_exists="append")
         cur, conn = self.get_conn()
-        sql_remarks = """ALTER table `{}`
-                          MODIFY `id` varchar(50) COMMENT '星光自建订单id',
-                          MODIFY `crm_id` varchar(50) COMMENT 'crm 订单id',
-                          MODIFY `po` varchar(50) COMMENT '流水号',
-                          MODIFY `owner_id` varchar(50) COMMENT '销售负责人 对应星光salerid',
-                          MODIFY `status` varchar(20) COMMENT '订单状态',
-                          MODIFY `account_id` varchar(50) COMMENT '最终客户id 对应account 星光id',
-                          MODIFY `price_id` varchar(50) COMMENT '价格表名称',
-                          MODIFY `opportunity_id` varchar(100) COMMENT '商机id',
-                          MODIFY `created_by` varchar(50) COMMENT '创建人',
-                          MODIFY `created_at` varchar(50) COMMENT '创建日期',
-                          MODIFY `updated_by` varchar(50) COMMENT '最新修改人',
-                          MODIFY `updated_at` varchar(50) COMMENT '最新修改日期',
-                          MODIFY `amount` varchar(50) COMMENT '订单总金额',
-                          MODIFY `discount_amount` varchar(50) COMMENT '总折扣额',
-                          MODIFY `contract_status` varchar(20) COMMENT '合同状态',
-                          MODIFY `contract_attribute` varchar(10) COMMENT '合同属性 1新签 2续签',
-                          MODIFY `contract_id` varchar(50) COMMENT '合同编号',
-                          MODIFY `contract_start` varchar(50) COMMENT '合同开始日期',
-                          MODIFY `contract_end` varchar(50) COMMENT '最终合同截止日期',
-                          MODIFY `contract_back_date` varchar(50) COMMENT '合同归档日期',
-                          MODIFY `total_performance` varchar(50) COMMENT '业绩核算(成本）总额',
-                          MODIFY `approve_date` varchar(50) COMMENT '审批通过时间',
-                          MODIFY `payback_type` varchar(20) COMMENT '回款计划类型',
-                          MODIFY `xsy_id` varchar(20) COMMENT '销售易id' """ .format(self.sql_table)
+        sql_remarks = self.sql_table_string.format(self.sql_table)
         cur.execute(sql_remarks)
 
         cur.close()
@@ -139,6 +147,14 @@ class Order_Data():
 
     def get_cloudcc_order(self,index):
 
+        try:
+            self.access_url = cloudcc_get_request_url(ACCESS_URL, ClOUDCC_USERNAME)
+            self.binding = cloudcc_get_binding(self.access_url, ClOUDCC_USERNAME, ClOUDCC_PASSWORD)
+        except:
+            print("获取binding失败,请检查配置")
+            return False
+
+
         cur,conn = self.get_conn()
         new_data = engine(settings.db_new_data)
 
@@ -147,10 +163,9 @@ class Order_Data():
         # try:
         sql_string = """ select {} from {} limit {},{} """
         sql = sql_string.format("*", self.cloudcc_object,index,self.one_times_num)
-        print(sql)
         # for i in range(3):
         data = cloudcc_query_sql(self.access_url, "cqlQuery",self.cloudcc_object, sql, self.binding)
-        print("aaaaaaaa",len(data))
+        print("cc数据",len(data))
         #     if len(data) == self.one_times_num:
         #         print("获取",len(data))
         #         break
@@ -159,7 +174,6 @@ class Order_Data():
         #         continue
         cc_df = pd.DataFrame(data)
         ccdf_name_list = list(self.sql_mapping.keys()) + ["is_deleted"]
-        print(data)
         cc_df = cc_df[ccdf_name_list]
         cc_df = cc_df.rename(columns=self.sql_mapping)
 
@@ -180,8 +194,8 @@ class Order_Data():
             cc_df = cc_df.drop(cc_df[cc_df['crm_id'] == deleted_id].index)
         print("已删除",len(deleted_list))
 
-        # merge_local_df = local_df[["id","crm_id"]]
-        # cc_df = pd.merge(cc_df, merge_local_df, how='left', on="crm_id")
+        merge_local_df = local_df[["id","crm_id"]]
+        cc_df = pd.merge(cc_df, merge_local_df, how='left', on="crm_id")
         cc_df = cc_df.drop(["is_deleted"],axis=1)
 
 
@@ -210,13 +224,6 @@ class Order_Data():
 
 
 
-
-        # 123123
-        # deleted_list = cc_df.loc[cc_df["is_deleted"] != "0","crm_id"].tolist()
-
-
-        # 本次修改的id
-        # deleted_list = cc_df.loc[cc_df["is_deleted"] == "1","crm_id"].tolist()
 
 
 
@@ -264,6 +271,7 @@ class Order_Data():
             count_sql = """  select count(*) as nums from {} """.format(self.cloudcc_object)
             count_data = cloudcc_query_sql(self.access_url, "cqlQuery", self.cloudcc_object, count_sql, self.binding)
             nums = count_data[0].get("nums",0)
+            # nums = 3001
         except:
             print("获取总数目失败")
             return False

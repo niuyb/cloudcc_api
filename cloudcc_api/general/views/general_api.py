@@ -29,6 +29,9 @@ def get_token():
     elif username == "ZW_001":
         result.data = {"token":hashlib.md5(username.encode(encoding='UTF-8')).hexdigest()}
         result.code = 1
+    elif username == "SJ_001":
+        result.data = {"token": hashlib.md5(username.encode(encoding='UTF-8')).hexdigest()}
+        result.code = 1
     else:
         result.msg = "获取token失败,请检查账号密码"
         return json.dumps(result.dict(), ensure_ascii=False)

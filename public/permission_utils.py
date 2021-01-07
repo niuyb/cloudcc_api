@@ -6,10 +6,12 @@
 # Python版本：3.7.0
 from public.utils import list_to_sql_string
 from settings.config import QY_token, ZW_token, QY_ACCOUNT_QUERY, ZW_ACCOUNT_QUERY, QY_OPPORTUNITY_QUERY, \
-    ZW_OPPORTUNITY_QUERY
+    ZW_OPPORTUNITY_QUERY, ZW_ORDER_QUERY, QY_ORDER_QUERY
 
 
 def CHECK_PERMISSION_QUERY(token,sql_table):
+    # 暂时if 后续分配token后修改方法
+    # return 可查询的sql字段 ,无权限则False
     if sql_table == "account":
         if token == QY_token:
             sql_list =QY_ACCOUNT_QUERY
@@ -30,6 +32,18 @@ def CHECK_PERMISSION_QUERY(token,sql_table):
             return sql_str
         elif token == ZW_token:
             sql_list =ZW_OPPORTUNITY_QUERY
+            sql_str = ",".join(sql_list)
+            return sql_str
+        else:
+            return False
+    elif sql_table == "order":
+        if token == QY_token:
+            sql_list =QY_ORDER_QUERY
+            sql_str = ",".join(sql_list)
+            # sql_str = list_to_sql_string(sql_list)
+            return sql_str
+        elif token == ZW_token:
+            sql_list =ZW_ORDER_QUERY
             sql_str = ",".join(sql_list)
             return sql_str
         else:
