@@ -206,3 +206,55 @@ OPPORTUNITY_TABLE_STRING = """ALTER table `{}`
                   MODIFY `position` text COMMENT '联系人职务',
                   MODIFY `phone` varchar(100) COMMENT '电话',
                   MODIFY `xsy_id` text COMMENT '销售易id' """
+
+
+
+
+
+ORDER_DETAIL_API_NAME="ddmx"
+ORDER_DETAIL_SQL_TABLE="order_detail_back"
+ORDER_DETAIL_CLOUMNS_ORDER = ["id","crm_id","order_id","owner_id","name","contract_status","attribute","product_id","contract_back_date","performance","account_id","amount","server_start","server_end","contract_end","created_by","created_at","updated_by","updated_at","xsy_id"]
+ORDER_DETAIL_DICT={
+    "id":"crm_id",
+    "orderid":"order_id",
+    "ownerid":"owner_id",
+    # api 无po
+    # "po":"po",
+    "name":"name",
+    "customitem162": "contract_status",
+    "customitem156": "attribute",
+    "productid":"product_id",
+    "customitem163":"contract_back_date",
+    "customitem125": "performance",
+    "zzkhmc":"account_id",
+    "customitem183":"amount",
+    "customitem129":"server_start",
+    "customitem130": "server_end",
+    "customitem187": "contract_end",
+    "createbyid": "created_by",
+    "createdate": "created_at",
+    "lastmodifybyid": "updated_by",
+    "lastmodifydate": "updated_at",
+    "yid":"xsy_id",
+}
+ORDER_DETAIL_TABLE_STRING = """ALTER table `{}`
+                  MODIFY `id` varchar(50) COMMENT 'id',
+                  MODIFY `crm_id` varchar(50) COMMENT 'crm id   orderproduct 表中id',
+                  MODIFY `order_id` varchar(50) COMMENT '星光自建订单id',
+                  MODIFY `name` varchar(255) COMMENT '序号',
+                  MODIFY `contract_status` varchar(50) COMMENT '合同状态',
+                  MODIFY `attribute` varchar(50) COMMENT '属性 1新单 2续单',
+                  MODIFY `product_id` varchar(50) COMMENT '产品id',
+                  MODIFY `contract_back_date` varchar(50) COMMENT '合同归档日期',
+                  MODIFY `performance` varchar(100) COMMENT '业绩核算金额',
+                  MODIFY `owner_id` varchar(50) COMMENT '订单所属销售,星光自建销售id',
+                  MODIFY `account_id` varchar(50) COMMENT '客户id',
+                  MODIFY `amount` varchar(50) COMMENT '订单总金额',
+                  MODIFY `server_start` varchar(50) COMMENT '服务开始日期',
+                  MODIFY `server_end` varchar(50) COMMENT '服务结束日期',
+                  MODIFY `contract_end` varchar(50) COMMENT '最终合同截止日期', 
+                  MODIFY `created_at` varchar(50) COMMENT '创建日期', 
+                  MODIFY `created_by` varchar(50) COMMENT '创建人', 
+                  MODIFY `updated_at` varchar(50) COMMENT '更新日期', 
+                  MODIFY `updated_by` varchar(50) COMMENT '更新人', 
+                  MODIFY `xsy_id` varchar(50) COMMENT '销售易id'  """
