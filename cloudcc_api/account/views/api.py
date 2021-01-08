@@ -77,31 +77,33 @@ def account_query():
                                 new_data=[]
                                 # 入库信息
                                 id = account_insert_mysql(data)
-                                # id = ""
-                                for data_dict in local_data:
-                                    # 修改输出的key值,不暴露原有api的key
-                                    new_data_dict={}
-                                    for key,value in data_dict.items():
-                                        account_dict_key = ACCOUNT_DICT.get(key,"null")
-                                        if account_dict_key == "crm_id":
-                                            if id:
-                                                new_data_dict["id"]= id
+                                if id:
+                                    for data_dict in local_data:
+                                        # 修改输出的key值,不暴露原有api的key
+                                        new_data_dict={}
+                                        for key,value in data_dict.items():
+                                            account_dict_key = ACCOUNT_DICT.get(key,"null")
+                                            if account_dict_key == "crm_id":
+                                                if id:
+                                                    new_data_dict["id"]= id
+                                                else:
+                                                    new_data_dict["id"] =""
+                                            elif account_dict_key == "xsy_id":
+                                                # 去除 \t
+                                                new_data_dict[account_dict_key] = str(value).strip()
+                                            elif account_dict_key in ["push_sea_date","updated_at","created_at","recent_activity_time"]:
+                                                new_data_dict[account_dict_key] = time_ms(value)
                                             else:
-                                                new_data_dict["id"] =""
-                                        elif account_dict_key == "xsy_id":
-                                            # 去除 \t
-                                            new_data_dict[account_dict_key] = str(value).strip()
-                                        elif account_dict_key in ["push_sea_date","updated_at","created_at","recent_activity_time"]:
-                                            new_data_dict[account_dict_key] = time_ms(value)
-                                        else:
-                                            new_data_dict[account_dict_key] = value
-                                    try:
-                                        del new_data_dict["null"]
-                                    except:
-                                        pass
-                                    new_data.append(new_data_dict)
-                                result.data = new_data
-                                result.code = 1
+                                                new_data_dict[account_dict_key] = value
+                                        try:
+                                            del new_data_dict["null"]
+                                        except:
+                                            pass
+                                        new_data.append(new_data_dict)
+                                    result.data = new_data
+                                    result.code = 1
+                                else:
+                                    result.msg = "更新失败"
                             else:
                                 # 空数据
                                 pass
@@ -110,7 +112,7 @@ def account_query():
                 else:
                     result.msg = "暂无权限查询"
             except Exception as e:
-                print(e)
+                # print(e)
                 database.close()
                 result.msg = "获取data失败,请检查参数"
                 return json.dumps(result.dict(), ensure_ascii=False)
@@ -172,7 +174,7 @@ def account_modify():
                 result.data = res_data
                 result.code = 1
             except Exception as e:
-                print(e)
+                # print(e)
                 result.msg = "获取data失败,请检查参数"
                 database.close()
                 return json.dumps(result.dict(), ensure_ascii=False)

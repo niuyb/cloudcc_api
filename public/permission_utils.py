@@ -30,12 +30,13 @@ def CHECK_PERMISSION_QUERY(token,sql_table):
     elif sql_table == "opportunity":
         if token == QY_token:
             sql_list =QY_OPPORTUNITY_QUERY
-            sql_str = ",".join(sql_list)
-            # sql_str = list_to_sql_string(sql_list)
+            # sql_str = ",".join(sql_list)
+            sql_str = sql_list
             return sql_str
         elif token == ZW_token:
             sql_list =ZW_OPPORTUNITY_QUERY
-            sql_str = ",".join(sql_list)
+            # sql_str = ",".join(sql_list)
+            sql_str = sql_list
             return sql_str
         else:
             return False
