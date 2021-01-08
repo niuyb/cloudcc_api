@@ -14,22 +14,14 @@
 # import sys
 # import importlib
 # importlib.reload(sys)
+import datetime
+
 from public.utils import engine
 from settings import settings
 import pandas as pd
 
 
 
-database = engine(settings.db_new_data)
-query_sql  =""" select id from account_back """
-account_df = pd.read_sql_query(query_sql, database)
 
-query_sql  =""" select id from account_back_copy """
-account_copy_df = pd.read_sql_query(query_sql, database)
-
-account_add_df = account_df.append(account_copy_df, sort=False)
-account_add_df = account_add_df.drop_duplicates(subset=['id'], keep=False)
-
-
-print(account_add_df.shape)
-print(account_add_df)
+a = (datetime.datetime.now()-datetime.timedelta(hours=1.5)).strftime('%Y-%m-%d')
+print(a)

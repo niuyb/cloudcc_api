@@ -36,7 +36,7 @@ ACCOUNT_MAPPING={
     "id":"id",
     "name":"name",
     "zw_back_url":"zwyhxwfx",
-    "qy_back_url":"customItem178",
+    "qy_back_url":"customitem178",
 }
 # 以下都是接口字段
 # 客户  允许查询条件   字段名称
@@ -92,7 +92,7 @@ QY_ORDER_QUERY = ["name","id","byh","yid"]
 
 ZW_token = "4e33e00381c94a9bba251ebb44996c0f"
 # ZW账号允许查询返回的字段
-ZW_ACCOUNT_QUERY=["id","name","customItem151","customItem162","fState","fCity","fDistrict","yid"]
-ZW_OPPORTUNITY_QUERY = ["name","id","zzkh","yid"]
+ZW_ACCOUNT_QUERY=["id","name","customitem151","customitem162","fState","fCity","fDistrict","yid","ownerid","createdate","fenji","highSeaStatus","dianhua","recentActivityRecordTime"]
+ZW_OPPORTUNITY_QUERY = ["name","id","zzkh","yid","ownerid","customItem164","commitmentFlg","jsrq","customitem222","jieduan"]
 ZW_ORDER_QUERY = ["name","id","byh","yid"]
 

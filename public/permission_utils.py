@@ -15,12 +15,15 @@ def CHECK_PERMISSION_QUERY(token,sql_table):
     if sql_table == "account":
         if token == QY_token:
             sql_list =QY_ACCOUNT_QUERY
-            sql_str = ",".join(sql_list)
+            # sql_str = ",".join(sql_list)
+            sql_str = sql_list
+
             # sql_str = list_to_sql_string(sql_list)
             return sql_str
         elif token == ZW_token:
             sql_list =ZW_ACCOUNT_QUERY
-            sql_str = ",".join(sql_list)
+            # sql_str = ",".join(sql_list)
+            sql_str = sql_list
             return sql_str
         else:
             return False

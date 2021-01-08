@@ -9,8 +9,7 @@ import warnings
 from decimal import Decimal
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
-
-from django.conf import settings
+import pandas as pd
 
 """获取指定范围内的日期列表"""
 def gen_date_list(start=None, end=None, fmt=None):
@@ -304,11 +303,16 @@ def time_ms(date):
     datetime_obj = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
     obj_stamp = int(time.mktime(datetime_obj.timetuple()) * 1000.0 + datetime_obj.microsecond / 1000.0)
     return obj_stamp
-""" list to sql string  """
+""" 列表转sql 的字符串  """
 def list_to_sql_string(list):
     #  ["a","b"] -->  "a","b"
     list_str = '"' + '","'.join(list) + '"'
     return list_str
+
+
+
+
+
 
 
 

@@ -203,7 +203,7 @@ if __name__ == "__main__":
     # data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","dingdan","""select name,id,byh,yid from `dingdan` where `id` in ('a1320215866B50EliWrK')  and is_deleted="0" ""","558321A23E6CFFB4D290A9B378E68A8B")
     # print(data)
 
-    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account","""select * from `Account` where `id`='001202087FAE486Y2P4V' ""","C8F19CE08E946B64EBA015A232F4F557")
+    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Opportunity","""select * from `Opportunity` where `id`='00220214415897FqnlsB' and lastmodifydate like "%2021-01-07%" ""","FF97C3921572018CFC5F1D7C2A73DA6B")
     print(data)
 
     # data = modify_by_api("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","update","Account", [{'id':"0012020FE5A8EB0s9Ahn","name":"万科_modify_by_api"}], "F4318B05B7C1D4DC0CF165E0AB5421BC")

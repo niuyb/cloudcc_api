@@ -8,11 +8,12 @@ import json
 
 from flask import Blueprint, request
 import pandas as pd
+
+from public.api_update import  account_insert_mysql
 from public.cloudcc_utils import cloudcc_get_request_url, cloudcc_get_binding, cloudcc_query_sql, modify_by_api
 from public.permission_utils import CHECK_PERMISSION_QUERY
 from public.utils import Result, list_to_sql_string, engine
 from script.data_config import ACCOUNT_DICT, ACCOUNT_SQL_TABLE
-from script.data_utils import changecc_accountid
 from settings import settings
 from settings.config import ACCOUNT_QUERY_ALLOW, ACCESS_URL, ClOUDCC_USERNAME, ClOUDCC_PASSWORD, ClOUDCC_OBJECT, \
     ACCOUNT_MODIFY_ALLOW, ACCOUNT_MAPPING, QY_token, ZW_token, ACCOUNT_FUZZY_QUERY
@@ -41,58 +42,66 @@ def account_query():
                 result.msg = "获取binding失败,请检查配置"
                 return json.dumps(result.dict(), ensure_ascii=False)
             try:
-                sql_str=CHECK_PERMISSION_QUERY(token,"account")
-                if sql_str:
+                sql_list=CHECK_PERMISSION_QUERY(token,"account")
+                if sql_list:
+                    str_list=[]
+                    for sql_str in sql_list:
+                        sql_str = ACCOUNT_DICT.get(sql_str)
+                        str_list.append(sql_str)
+                    sql_str = ','.join(str_list)
+
                     if field_name in ACCOUNT_FUZZY_QUERY :
-                        sql_string = """ select {} from `{}` where `{}` like '%{}%' and is_deleted="0" limit 15"""
+                        query_sql = """ select id,{} from {} where {} like '%%{}%%' limit 15 """.format(sql_str,ACCOUNT_SQL_TABLE, ACCOUNT_DICT.get(field_name),field_value)
+                        sql_string = """ select * from `{}` where `{}` like '%%{}%%' and is_deleted="0" limit 15"""
                     else:
                         # 暂未添加多值处理
-                        sql_string = """ select {} from `{}` where `{}` in ('{}')  and is_deleted="0" """
-                        query_sql = """ select crm_id from {} where id in ("{}") """.format(ACCOUNT_SQL_TABLE,field_value)
-                        query_df = pd.read_sql_query(query_sql, database)
-                        if query_df.shape[0] > 0 :
-                            field_value = query_df.iloc[0].tolist()[0]
-                        else:
-                            result.msg = "暂无数据"
-                            return json.dumps(result.dict(), ensure_ascii=False)
-                    sql_name = ACCOUNT_MAPPING.get(field_name,None)
-                    if sql_name:
-                        cloudcc_object = ClOUDCC_OBJECT.get("account")
-                        sql = sql_string.format(sql_str,cloudcc_object, field_name,field_value)
-                        data = cloudcc_query_sql(access_url, "cqlQuery", cloudcc_object, sql, binding)
-                        # 取出所有id
-                        id_list = []
-                        for data_dict in data:
-                            id_list.append(data_dict.get("id"))
-                        df_sql = """ select id,crm_id from {} where crm_id in ({})""".format(ACCOUNT_SQL_TABLE,list_to_sql_string(id_list))
-                        df = pd.read_sql_query(df_sql, database)
-                        new_data=[]
-                        for data_dict in data:
-                            del data_dict["CCObjectAPI"]
-                            # 修改输出的key值,不暴露原有api的key
-                            new_data_dict={}
-                            for key,value in data_dict.items():
-                                if ACCOUNT_DICT.get(key) == "crm_id":
-                                    id = df.loc[df["crm_id"] == value, "id"].tolist()
-                                    if id:
-                                        new_data_dict["id"]= id[0]
-                                    else:
-                                        new_data_dict["id"] =""
-                                elif ACCOUNT_DICT.get(key) == "xsy_id":
-                                    # 去除 \t
-                                    new_data_dict[ACCOUNT_DICT.get(key, "null")] = str(value).strip()
-                                else:
-                                    new_data_dict[ACCOUNT_DICT.get(key,"null")] = value
-                            try:
-                                del new_data_dict["null"]
-                            except:
-                                pass
-                            new_data.append(new_data_dict)
-
-                        result.data = new_data
+                        sql_string = """ select * from `{}` where `{}` in ('{}')  and is_deleted="0" """
+                        query_sql = """ select id,{} from {} where {} in ("{}") """.format(sql_str,ACCOUNT_SQL_TABLE,field_name,field_value)
+                    query_df = pd.read_sql_query(query_sql, database)
+                    if query_df.shape[0] >0:
+                    # if False:
+                        query_dict = query_df.to_dict("records")
+                        result.data = query_dict
                         result.code = 1
                     else:
-                        result.msg = "field_name传参有误"
+                        sql_name = ACCOUNT_MAPPING.get(field_name,None)
+                        if sql_name:
+                            # sql_str = ",".join(sql_list)
+                            cloudcc_object = ClOUDCC_OBJECT.get("account")
+                            sql = sql_string.format(cloudcc_object, field_name,field_value)
+                            data = cloudcc_query_sql(access_url, "cqlQuery", cloudcc_object, sql, binding)
+                            if data:
+                                local_data=[{}]
+                                for key in sql_list:
+                                    local_data[0][key] = data[0].get(key)
+                                new_data=[]
+                                # 入库信息
+                                id = account_insert_mysql(data)
+                                for data_dict in local_data:
+                                    # 修改输出的key值,不暴露原有api的key
+                                    new_data_dict={}
+                                    for key,value in data_dict.items():
+                                        if ACCOUNT_DICT.get(key) == "crm_id":
+                                            if id:
+                                                new_data_dict["id"]= id
+                                            else:
+                                                new_data_dict["id"] =""
+                                        elif ACCOUNT_DICT.get(key) == "xsy_id":
+                                            # 去除 \t
+                                            new_data_dict[ACCOUNT_DICT.get(key, "null")] = str(value).strip()
+                                        else:
+                                            new_data_dict[ACCOUNT_DICT.get(key,"null")] = value
+                                    try:
+                                        del new_data_dict["null"]
+                                    except:
+                                        pass
+                                    new_data.append(new_data_dict)
+                                result.data = new_data
+                                result.code = 1
+                            else:
+                                pass
+                        else:
+                            result.msg = "field_name传参有误"
                 else:
                     result.msg = "暂无权限查询"
             except Exception as e:

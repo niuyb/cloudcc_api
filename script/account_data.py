@@ -14,24 +14,20 @@
 # import sys
 # import importlib
 # importlib.reload(sys)
+import datetime
+import sys,os
+path1 = os.path.abspath('/var/www/cloudcc_api')
+sys.path.append(path1)
 
+from multiprocessing import Process
 
-
-import hashlib
-import random
-from multiprocessing import Process,Queue
-
-import numpy as np
 import pymysql
 
-import time
-from datetime import datetime
 import pandas as pd
 
 from public.cloudcc_utils import cloudcc_get_request_url, cloudcc_get_binding, cloudcc_query_sql
-from public.utils import engine, list_to_sql_string, time_ms
-from script.data_config import OPPORTUNITY_DICT, \
-    OPPORTUNITY_TABLE_STRING, OPPORTUNITY_API_NAME, OPPORTUNITY_SQL_TABLE, OPPORTUNITY_CLOUMNS_ORDER, USER_SQL_TABLE, \
+from public.utils import engine, list_to_sql_string, time_ms, date_ms
+from script.data_config import  USER_SQL_TABLE, \
     ACCOUNT_SQL_TABLE, ACCOUNT_API_NAME, ACCOUNT_DICT, ACCOUNT_TABLE_STRING, ACCOUNT_CLOUMNS_ORDER
 from script.data_utils import create_id
 from settings import settings
@@ -63,7 +59,10 @@ class Order_Data():
         # self.account_table = "account_back_copy"
 
 
-        self.today = str(datetime.now().strftime('%Y-%m-%d'))
+        # self.today = str(datetime.now().strftime('%Y-%m-%d'))
+        self.today = (datetime.datetime.now() - datetime.timedelta(hours=1.5)).strftime('%Y-%m-%d')
+
+        # self.today_stamp =  date_ms(self.today)
         # self.today = "2021-01-06"
         print(self.today)
         self.one_times_num = 1000
@@ -145,6 +144,7 @@ class Order_Data():
             ccdf_name_list = list(self.sql_mapping.keys()) + ["is_deleted"]
             cc_df = cc_df[ccdf_name_list]
             cc_df = cc_df.rename(columns=self.sql_mapping)
+
 
             # 本次操作的cc id
             operate_list = cc_df["crm_id"].tolist()

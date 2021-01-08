@@ -14,18 +14,14 @@
 # import sys
 # import importlib
 # importlib.reload(sys)
+import datetime
+import sys,os
+path1 = os.path.abspath('/var/www/cloudcc_api')
+sys.path.append(path1)
 
 
-
-import hashlib
-import random
-from multiprocessing import Process,Queue
-
-import numpy as np
+from multiprocessing import Process
 import pymysql
-
-import time
-from datetime import datetime
 import pandas as pd
 
 from public.cloudcc_utils import cloudcc_get_request_url, cloudcc_get_binding, cloudcc_query_sql
@@ -54,17 +50,18 @@ class Order_Data():
         self.access_url  = ''
         self.binding = ''
         self.cloudcc_object=OPPORTUNITY_API_NAME
-        # self.sql_table= OPPORTUNITY_SQL_TABLE
-        self.sql_table= "opportunity_back"
+        self.sql_table= OPPORTUNITY_SQL_TABLE
+        # self.sql_table= "opportunity_back"
         self.sql_mapping= OPPORTUNITY_DICT
         self.sql_table_string = OPPORTUNITY_TABLE_STRING
         self.user_table = USER_SQL_TABLE
         self.account_table = ACCOUNT_SQL_TABLE
-        self.account_table = "account_back_copy"
+        # self.account_table = "account_back"
 
 
-        self.today = str(datetime.now().strftime('%Y-%m-%d'))
-        # self.today = "2021-01-06"
+        # self.today = str(datetime.now().strftime('%Y-%m-%d'))
+        self.today = (datetime.datetime.now() - datetime.timedelta(hours=1.5)).strftime('%Y-%m-%d')
+        # self.today = "2021-01-07"
         print(self.today)
         self.one_times_num = 1000
         self.sql_index_list=[]
@@ -135,7 +132,6 @@ class Order_Data():
         # try:
         sql_string = """ select {} from {} where left(lastmodifydate,10) = '{}' limit {},{} """
         sql = sql_string.format("*", self.cloudcc_object,self.today,index,self.one_times_num)
-        print(sql)
         data = cloudcc_query_sql(self.access_url, "cqlQuery",self.cloudcc_object, sql, self.binding)
         print("查询",len(data))
         if data:
@@ -209,6 +205,7 @@ class Order_Data():
             cc_df = pd.merge(cc_df, local_account_df, how='left', on="account_id")
             cc_df = cc_df.drop(["account_id"],axis=1)
             cc_df = cc_df.rename(columns={"local_account_id":"account_id"})
+            # print(cc_df)
             #owner_id
             local_user_sql = """select `id` as local_owner_id ,crm_id as owner_id from {}""".format(self.user_table)
             local_user_df = pd.read_sql_query(local_user_sql,new_data)
@@ -227,6 +224,7 @@ class Order_Data():
             cc_df = cc_df.rename(columns={"local_owner_id":"updated_by"})
 
             new_data.close()
+
             self.inster_sql(cc_df,local_str)
             print("入库",cc_df.shape)
 

@@ -14,24 +14,18 @@
 # import sys
 # import importlib
 # importlib.reload(sys)
+import datetime
+import sys,os
+path1 = os.path.abspath('/var/www/cloudcc_api')
+sys.path.append(path1)
 
-
-
-import hashlib
-import random
-from multiprocessing import Process,Queue
-
-import numpy as np
+from multiprocessing import Process
 import pymysql
-
-import time
-from datetime import datetime
 import pandas as pd
 
 from public.cloudcc_utils import cloudcc_get_request_url, cloudcc_get_binding, cloudcc_query_sql
 from public.utils import engine, list_to_sql_string, time_ms
-from script.data_config import OPPORTUNITY_DICT, \
-    OPPORTUNITY_TABLE_STRING, OPPORTUNITY_API_NAME, OPPORTUNITY_SQL_TABLE, OPPORTUNITY_CLOUMNS_ORDER, USER_SQL_TABLE, \
+from script.data_config import  OPPORTUNITY_SQL_TABLE, OPPORTUNITY_CLOUMNS_ORDER, USER_SQL_TABLE, \
     ACCOUNT_SQL_TABLE, ORDER_API_NAME, ORDER_TABLE_STRING, ORDER_DICT, ORDER_SQL_TABLE, ORDER_CLOUMNS_ORDER
 from script.data_utils import create_id
 from settings import settings
@@ -62,7 +56,9 @@ class Order_Data():
         self.account_table = ACCOUNT_SQL_TABLE
         self.opportunity_table = OPPORTUNITY_SQL_TABLE
 
-        self.today = str(datetime.now().strftime('%Y-%m-%d'))
+        # self.today = str(datetime.now().strftime('%Y-%m-%d'))
+        self.today = (datetime.datetime.now() - datetime.timedelta(hours=1.5)).strftime('%Y-%m-%d')
+
         # self.today = "2021-01-06"
         print(self.today)
         self.one_times_num = 1000
