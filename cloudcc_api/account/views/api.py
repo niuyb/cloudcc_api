@@ -12,7 +12,7 @@ import pandas as pd
 from public.api_update import  account_insert_mysql
 from public.cloudcc_utils import cloudcc_get_request_url, cloudcc_get_binding, cloudcc_query_sql, modify_by_api
 from public.permission_utils import CHECK_PERMISSION_QUERY
-from public.utils import Result, list_to_sql_string, engine
+from public.utils import Result, list_to_sql_string, engine, time_ms
 from script.data_config import ACCOUNT_DICT, ACCOUNT_SQL_TABLE
 from settings import settings
 from settings.config import ACCOUNT_QUERY_ALLOW, ACCESS_URL, ClOUDCC_USERNAME, ClOUDCC_PASSWORD, ClOUDCC_OBJECT, \
@@ -48,8 +48,8 @@ def account_query():
                     for sql_str in sql_list:
                         sql_str = ACCOUNT_DICT.get(sql_str)
                         str_list.append(sql_str)
+                    str_list.remove("crm_id")
                     sql_str = ','.join(str_list)
-
                     if field_name in ACCOUNT_FUZZY_QUERY :
                         query_sql = """ select id,{} from {} where {} like '%%{}%%' limit 15 """.format(sql_str,ACCOUNT_SQL_TABLE, ACCOUNT_DICT.get(field_name),field_value)
                         sql_string = """ select * from `{}` where `{}` like '%%{}%%' and is_deleted="0" limit 15"""
@@ -77,20 +77,24 @@ def account_query():
                                 new_data=[]
                                 # 入库信息
                                 id = account_insert_mysql(data)
+                                # id = ""
                                 for data_dict in local_data:
                                     # 修改输出的key值,不暴露原有api的key
                                     new_data_dict={}
                                     for key,value in data_dict.items():
-                                        if ACCOUNT_DICT.get(key) == "crm_id":
+                                        account_dict_key = ACCOUNT_DICT.get(key,"null")
+                                        if account_dict_key == "crm_id":
                                             if id:
                                                 new_data_dict["id"]= id
                                             else:
                                                 new_data_dict["id"] =""
-                                        elif ACCOUNT_DICT.get(key) == "xsy_id":
+                                        elif account_dict_key == "xsy_id":
                                             # 去除 \t
-                                            new_data_dict[ACCOUNT_DICT.get(key, "null")] = str(value).strip()
+                                            new_data_dict[account_dict_key] = str(value).strip()
+                                        elif account_dict_key in ["push_sea_date","updated_at","created_at","recent_activity_time"]:
+                                            new_data_dict[account_dict_key] = time_ms(value)
                                         else:
-                                            new_data_dict[ACCOUNT_DICT.get(key,"null")] = value
+                                            new_data_dict[account_dict_key] = value
                                     try:
                                         del new_data_dict["null"]
                                     except:
@@ -99,6 +103,7 @@ def account_query():
                                 result.data = new_data
                                 result.code = 1
                             else:
+                                # 空数据
                                 pass
                         else:
                             result.msg = "field_name传参有误"

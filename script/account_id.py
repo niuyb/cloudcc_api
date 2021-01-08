@@ -114,7 +114,7 @@ def test():
 
 def change():
     new_data = engine(settings.db_new_data)
-    sql = """ select * from account_back_copy """
+    sql = """ select * from account_back_copy1"""
     cc_df = pd.read_sql_query(sql,new_data)
 
     for row in cc_df.itertuples():
@@ -131,15 +131,23 @@ def change():
         except:
             pass
         created_at = getattr(row, 'created_at')
-        cc_df.at[df_index, 'created_at'] = time_ms(created_at)
+        try:
+            cc_df.at[df_index, 'created_at'] = time_ms(created_at)
+        except:
+            pass
         updated_at = getattr(row, 'updated_at')
-        cc_df.at[df_index, 'updated_at'] = time_ms(updated_at)
+        try:
+            cc_df.at[df_index, 'updated_at'] = time_ms(updated_at)
+        except:
+            pass
         xsy_id = getattr(row, 'xsy_id')
         try:
             xsy_id = str(xsy_id).strip()
         except:
             pass
         cc_df.at[df_index, 'xsy_id'] = xsy_id
+
+    # print(cc_df)
 
     # owner_id
     local_user_sql = """select `id` as local_owner_id ,crm_id as owner_id from {}""".format("user_back")
@@ -170,7 +178,7 @@ def change():
 
 
     print(cc_df)
-    sql_table = "account_back_copy"
+    sql_table = "account_back_copy1"
     cc_df.to_sql(sql_table, new_data, index=False, if_exists="replace")
     cur, conn = get_conn()
 
