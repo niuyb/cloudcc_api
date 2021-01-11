@@ -54,13 +54,14 @@ def test():
 
     sql = """ select * from opportunity_back_copy1 """
     df = pd.read_sql_query(sql,new_data)
+
     df = df.drop(['id'], axis=1)
     df = pd.merge(df, old_df, how='left', on="crm_id")
 
     sql_index = 0
     for row in df.itertuples():
         id = getattr(row, 'id')
-        if id:
+        if not id:
             index = getattr(row, 'Index')
             account_name = getattr(row, 'opportunity_name')
             created_at = getattr(row, 'created_at')
@@ -68,6 +69,8 @@ def test():
             id= create_id(account_name, timestamp, sql_index)
             sql_index +=1
             df.at[index, 'id'] = id
+        else:
+            pass
 
     print(df)
     sql_table = "opportunity_back_copy1"
@@ -118,7 +121,7 @@ def change_account_id():
 
 def change():
     new_data = engine(settings.db_new_data)
-    sql = """ select * from opportunity_back """
+    sql = """ select * from opportunity_back_copy1 """
     cc_df = pd.read_sql_query(sql,new_data)
 
     for row in cc_df.itertuples():
@@ -167,7 +170,7 @@ def change():
     print(cc_df)
 
 
-    sql_table = "opportunity_back"
+    sql_table = "opportunity_back_copy1"
     cc_df.to_sql(sql_table, new_data, index=False, if_exists="replace")
     cur, conn = get_conn()
 
@@ -181,28 +184,11 @@ def change():
 
 
 
-def update_account_id():
-    """ 补全accountid """
-    new_data = engine(settings.db_new_data)
-
-
-    sql = """ select crm_id from opportunity_back_copy2 where account_id is null """
-    df = pd.read_sql_query(sql,new_data)
-    null_id_list = df["crm_id"].tolist()[:100]
-    null_id_str = list_to_sql_string(null_id_list)
-    sql = """select * from Opportunity where id in ({})""".format(null_id_str)
-    data = cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com", "cqlQuery", "Opportunity", sql, "A5573D484A29CDF08A1130136E88FC52")
-    print(data)
-    data_df = pd.DataFrame(data)
-    print(df)
-
-
 
 if __name__ == "__main__":
     # test()
     # change_account_id()
     change()
-    # update_account_id()
 
 
 

@@ -81,10 +81,51 @@ def test():
 
 
 
+def test1():
+    new_data = engine(settings.db_new_data)
+
+    old_sql = """ select id,crm_id from user_back """
+    old_df = pd.read_sql_query(old_sql,new_data)
+
+    sql = """ select * from user_back_copy1 """
+    df = pd.read_sql_query(sql,new_data)
+    df = df.drop(['id'], axis=1)
+    df = pd.merge(df, old_df, how='left', on="crm_id")
+
+    sql_index = 0
+    for row in df.itertuples():
+        id = getattr(row, 'id')
+        if not id:
+            index = getattr(row, 'Index')
+            account_name = getattr(row, 'username')
+            created_at = getattr(row, 'hire_date')
+            timestamp  =time_ms(created_at)
+            id= create_id(account_name, timestamp, sql_index)
+            sql_index +=1
+            df.at[index, 'id'] = id
+
+    print(df)
+    sql_table = "user_back_copy1"
+    df.to_sql(sql_table, new_data, index=False, if_exists="replace")
+    cur, conn = get_conn()
+
+    sql_remarks = """ALTER table `{}`
+                    MODIFY column `id` varchar(100) COMMENT "星光自建 用户id",
+                    MODIFY column `crm_id` varchar(100) COMMENT "crm 用户id",
+                    MODIFY column `username` varchar(50) COMMENT "用户名称",
+                    MODIFY column `department_id` varchar(50) COMMENT "部门id",
+                    MODIFY column `status` tinyint(5) COMMENT "是否在职 1在职 0离职",
+                    MODIFY column `hire_date` varchar(100) COMMENT "入职时间ms",
+                    MODIFY column `email` varchar(100) COMMENT "邮箱" """.format( sql_table)
+    cur.execute(sql_remarks)
+
+    cur.close()
+    conn.close()
 
 
+    new_data.close()
 
-test()
+
 
 
 

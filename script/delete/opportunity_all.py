@@ -226,7 +226,7 @@ class Order_Data():
         conn.close()
         new_data.close()
 
-        time.sleep(random.randint(0,5))
+        # time.sleep(random.randint(0,5))
         self.inster_sql(cc_df)
 
 
@@ -276,9 +276,9 @@ class Order_Data():
             return False
         try:
             count_sql = """  select count(*) as nums from {} """.format(self.cloudcc_object)
-            # count_data = cloudcc_query_sql(self.access_url, "cqlQuery", self.cloudcc_object, count_sql, self.binding)
-            # nums = count_data[0].get("nums",0)
-            nums = 3001
+            count_data = cloudcc_query_sql(self.access_url, "cqlQuery", self.cloudcc_object, count_sql, self.binding)
+            nums = count_data[0].get("nums",0)
+            # nums = 500
         except:
             print("获取总数目失败")
             return False

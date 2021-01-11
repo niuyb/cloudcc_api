@@ -59,7 +59,7 @@ def test():
     sql_index = 0
     for row in df.itertuples():
         id = getattr(row, 'id')
-        if id:
+        if not id:
             index = getattr(row, 'Index')
             account_name = getattr(row, 'account_name')
             created_at = getattr(row, 'created_at')

@@ -88,14 +88,14 @@ def test():
     sql_index = 0
     for row in df.itertuples():
         id = getattr(row, 'id')
-        # if id:
-        index = getattr(row, 'Index')
-        account_name = getattr(row, 'name')
-        created_at = getattr(row, 'created_at')
-        timestamp  =time_ms(created_at)
-        id= create_id(account_name, timestamp, sql_index)
-        sql_index +=1
-        df.at[index, 'id'] = id
+        if not id:
+            index = getattr(row, 'Index')
+            account_name = getattr(row, 'name')
+            created_at = getattr(row, 'created_at')
+            timestamp  =time_ms(created_at)
+            id= create_id(account_name, timestamp, sql_index)
+            sql_index +=1
+            df.at[index, 'id'] = id
 
     print(df)
     sql_table = "order_detail_back_copy1"
