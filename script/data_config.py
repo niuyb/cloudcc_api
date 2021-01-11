@@ -155,7 +155,7 @@ USER_TABLE_STRING = """ALTER table `{}`
 # api 名称
 OPPORTUNITY_API_NAME = "Opportunity"
 # 数据库名称
-OPPORTUNITY_SQL_TABLE = "opportunity_back_copy1"
+OPPORTUNITY_SQL_TABLE = "opportunity_back"
 # 入库顺序
 OPPORTUNITY_CLOUMNS_ORDER = ["id","crm_id","entity_type","opportunity_name","owner_id","price_id","account_id","money","intended_product","sale_stage","win_rate","close_date","saler_promise","project_budget","created_by","created_at","updated_by","updated_at","contact","position","phone","xsy_id","week_top","month_top","season_top","saler_per","opportunity_num"]
 # api 与数据库字段映射关系
