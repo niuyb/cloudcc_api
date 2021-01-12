@@ -40,10 +40,10 @@ if __name__ == '__main__1':
 
         return checkcode
 
-if __name__ == '__main__2':
+if __name__ == '__main__':
     import urllib
     from urllib import parse
-    str1 = "account"
+    str1 = "鲁商置业+商情+新单"
     str2 = parse.quote(str1)  # quote()将字符串进行编码
     print(str2)
     rawurl = str2
@@ -54,7 +54,7 @@ if __name__ == '__main__2':
 
 
 
-if __name__ == "__main__":
+if __name__ == "__main__2":
     def logging(level):
         def wrapper(func):
             def inner_wrapper(*args, **kwargs):

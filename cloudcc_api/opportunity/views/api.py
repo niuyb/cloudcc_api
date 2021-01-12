@@ -5,6 +5,8 @@
 # 工具：PyCharm
 # Python版本：3.7.0
 import json
+from urllib import parse
+
 from flask import Blueprint, request
 
 from public.api_update import opportunity_into_mysql
@@ -27,7 +29,7 @@ def opportunity_query():
     """
     result = Result()
     field_name = request.args.get("field_name",None)
-    field_value = request.args.get("field_value",None)
+    field_value = parse.unquote(request.args.get("field_value",None))
     token = request.args.get("token", None)
     database = engine(settings.db_new_data)
 

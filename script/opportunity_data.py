@@ -226,6 +226,7 @@ class Order_Data():
             new_data.close()
 
             self.inster_sql(cc_df,local_str)
+            # print(cc_df)
             print("入库",cc_df.shape)
 
     def get_infos(self,p_index):

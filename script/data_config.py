@@ -13,7 +13,7 @@ ORDER_DICT={
     "name":"po",
     "ownerid":"owner_id",
     "poStatus":"status",
-    "accountId":"account_id",
+    "zzkh":"account_id",
     "orderRelQuotationEntity": "price_id",
     "opportunityId": "opportunity_id",
     "createbyid": "created_by",

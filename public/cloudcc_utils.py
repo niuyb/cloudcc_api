@@ -203,7 +203,7 @@ if __name__ == "__main__":
     # data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","dingdan","""select name,id,byh,yid from `dingdan` where `id` in ('a1320215866B50EliWrK')  and is_deleted="0" ""","558321A23E6CFFB4D290A9B378E68A8B")
     # print(data)
 
-    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","ddmx","""select * from `ddmx` where `id` = 'a1420212BDAEC4C3R2sf' ""","DF88566F13060B0DC909C2CD08A039BB")
+    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Opportunity","""select * from `Opportunity` where `name` like '%北京天使慧大%' limit 15""","2FFCD37C8BCD5D8D274608BE6C0D4B17")
     print(data)
 
     # data = modify_by_api("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","update","Account", [{'id':"0012020FE5A8EB0s9Ahn","name":"万科_modify_by_api"}], "F4318B05B7C1D4DC0CF165E0AB5421BC")
