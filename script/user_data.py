@@ -60,7 +60,7 @@ class Order_Data():
         self.today = datetime.now().strftime('%Y-%m-%d')
         print(self.today)
         # self.today = "2021-01-03"
-        self.one_times_num = 500
+        self.one_times_num = 1000
         self.sql_index_list=[]
         self.process_num = 1
 
@@ -128,12 +128,13 @@ class Order_Data():
 
         if index == 1:
             index = 0
+        elif index == 1000:
+            index=0
         # try:
-        sql_string = """ select {} from {} where lastmodifydate like "%{}%" limit {},{} """
-        sql = sql_string.format("*", self.cloudcc_object,self.today,index,self.one_times_num)
+        sql_string = """ select {} from {} where isusing = 1  limit {},{} """
+        sql = sql_string.format("*", self.cloudcc_object,index,self.one_times_num)
         data = cloudcc_query_sql(self.access_url, "cqlQuery",self.cloudcc_object, sql, self.binding)
         if data:
-
             cc_df = pd.DataFrame(columns=list(self.sql_mapping.keys()))
             cc_df = cc_df.append(data,ignore_index=True,sort=False)
             ccdf_name_list = list(self.sql_mapping.keys()) + ["is_deleted"]
@@ -160,22 +161,27 @@ class Order_Data():
             # 新增 数据
             local_merge_df = local_df[["id","crm_id"]]
             cc_df = pd.merge(cc_df, local_merge_df, how='left', on="crm_id")
-            index_sql = """ select count(*) as nums from %s where hire_date like "%s" """%(self.sql_table,self.today)
+            index_sql = """ select count(*) as nums from %s """%(self.sql_table)
             id_index = pd.read_sql_query(index_sql,new_data)["nums"].tolist()[0]
-            print(id_index)
             for row in cc_df.itertuples():
                 df_index = getattr(row, 'Index')
                 po = getattr(row, 'username')
                 created_at = getattr(row, 'hire_date')
                 timestamp = time_ms(created_at)
+                cc_df.at[df_index, 'hire_date'] = timestamp
                 id = getattr(row, 'id')
                 if isinstance(id,str):
                     pass
                 else:
-                    id = create_id(po, timestamp, id_index)
-                    print(id)
+                    id = create_id(po, timestamp, created_at)
                     cc_df.at[df_index, 'id'] = id
                 id_index+=1
+
+            ehr_sql = """ select work_email as email,department_code as department_id,department_name from `hr.employee`"""
+            ehr_df = pd.read_sql_query(ehr_sql,new_data)
+
+            cc_df = cc_df.drop(["department_id"], axis=1)
+            cc_df = pd.merge(cc_df, ehr_df, how='left', on="email")
 
             # 删除本次操作的所有local id
             delete_sql = """ delete from {} WHERE crm_id in ({}) """.format(self.sql_table,local_str)
@@ -188,6 +194,7 @@ class Order_Data():
             conn.close()
             new_data.close()
 
+            print(cc_df)
             self.inster_sql(cc_df)
 
 
@@ -229,7 +236,7 @@ class Order_Data():
             print("获取binding失败,请检查配置")
             return False
         try:
-            count_sql = """  select count(*) as nums from {} """.format(self.cloudcc_object)
+            count_sql = """  select count(*) as nums from {} where isusing = 1 """.format(self.cloudcc_object)
             count_data = cloudcc_query_sql(self.access_url, "cqlQuery", self.cloudcc_object, count_sql, self.binding)
             nums = count_data[0].get("nums",0)
         except:

@@ -76,6 +76,12 @@ ORDER_QUERY_ALLOW=["id","name"]
 ORDER_FUZZY_QUERY = ["name"]
 
 
+# -----------------------------------------USER-----------------------------------------------
+# update_append 更新字段
+USER_APPEND_ITEMS = ["id", "email", "department_id", "username", "department_name"]
+
+
+
 # -----------------------------------------TEMP-----------------------------------------------
 PERMISSION_DICT = {
     "account":"QY_ACCOUNT_QUERY",

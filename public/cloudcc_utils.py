@@ -202,10 +202,11 @@ if __name__ == "__main__":
     # "0012020FE5A8EB0s9Ahn"
     # data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account","select  *  from `Account` where id ='0012020B26843C18KDAP'  ","FAB429EB2370B7621897C28A5402DFC1")
 
-    str1 = """select name,lastmodifydate from `Opportunity` where `name` like '%%智慧商情%%' and is_deleted="0"  order by lastmodifydate DESC limit 15 """
-    # str2 = parse.quote(str1)
+    # str1 = """select name,lastmodifydate from `Opportunity` where `zzkh` ="001202191EFE31FES10P"  """
 
-    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Opportunity",str1,"32630CE7E95144E29A77DCD667AE219A")
+    str1 = """ select * from Ccuser where `name`="白东旺" """
+
+    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Ccuser",str1,"A6DC343D797134E2BE139F68E9760E27")
     print(data)
 
     # data = modify_by_api("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","update","Account", [{'id':"0012020FE5A8EB0s9Ahn","name":"万科_modify_by_api"}], "F4318B05B7C1D4DC0CF165E0AB5421BC")

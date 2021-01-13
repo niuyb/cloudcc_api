@@ -4,6 +4,7 @@ from cloudcc_api.account.views import init_account_views
 from cloudcc_api.general.views import init_general_views
 from cloudcc_api.opportunity.views import init_opportunity_views
 from cloudcc_api.order.views import init_order_views
+from cloudcc_api.user.views import init_user_views
 
 
 def create_app():
@@ -18,5 +19,6 @@ def create_app():
     init_account_views(app)
     init_opportunity_views(app)
     init_order_views(app)
+    init_user_views(app)
 
     return app

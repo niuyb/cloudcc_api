@@ -56,7 +56,7 @@ class Order_Data():
         self.access_url  = ''
         self.binding = ''
         self.cloudcc_object="Ccuser"
-        self.sql_table= "user_back"
+        self.sql_table= "user_back_copy1"
         self.sql_mapping= USER_DICT
 
         self.one_times_num = 1000
@@ -176,7 +176,7 @@ class Order_Data():
         if index == 1000:
             index = 0
         # try:
-        sql_string = """ select {} from {} limit {},{} """
+        sql_string = """ select {} from {} where isusing = 1 limit {},{} """
         sql = sql_string.format("*", self.cloudcc_object,index,self.one_times_num)
         # for i in range(3):
         data = cloudcc_query_sql(self.access_url, "cqlQuery",self.cloudcc_object, sql, self.binding)
