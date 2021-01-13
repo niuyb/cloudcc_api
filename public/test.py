@@ -43,7 +43,7 @@ if __name__ == '__main__1':
 if __name__ == '__main__':
     import urllib
     from urllib import parse
-    str1 = "鲁商置业+商情+新单"
+    str1 = "杉帝科技--商情--报告--新签"
     str2 = parse.quote(str1)  # quote()将字符串进行编码
     print(str2)
     rawurl = str2

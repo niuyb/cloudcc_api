@@ -18,17 +18,40 @@ pd.set_option('display.max_rows', None) # 展示所有行
 pd.set_option('display.max_columns', None) # 展示所有列
 pd.set_option('display.width', None)# 展示所有列
 
+def get_conn():
+    host = "192.168.185.129"
+    user = "nyb"
+    passwd = "nyb123"
+    db = "yydw"
+    port = 3306
+    conn = pymysql.connect(
+        host=host,
+        user=user,
+        passwd=passwd,
+        db=db,
+        port=port,
+        charset='utf8')
+    # 获得游标
+    cur = conn.cursor()
 
+    return cur, conn
 
-def inster_sql(new_data,sql_table,columns_order,df):
+def inster_sql(new_data,sql_table,columns_order,df,local_str):
+    cur, conn = get_conn()
     try:
+        # 删除本次操作的所有local id
+        delete_sql = """ delete from {} WHERE crm_id in ({}) """.format(sql_table, local_str)
+        cur.execute(delete_sql)
+        conn.commit()
         # 入库操作
         df = df[columns_order]
         df.to_sql(sql_table, new_data, index=False, if_exists="append")
     except Exception as e:
-        # print(e)
+        print(e)
         pass
-
+    finally:
+        cur.close()
+        conn.close()
 
 """ cloudcc account数据入库 """
 def account_insert_mysql(data):
@@ -46,6 +69,9 @@ def account_insert_mysql(data):
             cc_df = cc_df[ccdf_name_list]
             cc_df = cc_df.rename(columns=ACCOUNT_DICT)
             cc_df["id"]=None
+
+            local_list = cc_df["crm_id"].tolist()
+            local_str = list_to_sql_string(local_list)
 
             index_sql = """ select count(*) as nums from %s where created_at >= "%s" """ % (
             ACCOUNT_SQL_TABLE, today_stamp)
@@ -106,13 +132,13 @@ def account_insert_mysql(data):
             cc_df = cc_df.drop(["recent_activity_by"], axis=1)
             cc_df = cc_df.rename(columns={"local_owner_id": "recent_activity_by"})
 
-            inster_sql(new_data,ACCOUNT_SQL_TABLE,ACCOUNT_CLOUMNS_ORDER,cc_df)
+            inster_sql(new_data,ACCOUNT_SQL_TABLE,ACCOUNT_CLOUMNS_ORDER,cc_df,local_str)
             new_data.close()
             return cc_df["id"].tolist()[0]
         else:
             return False
     except Exception as e:
-        # print(e)
+        print(e)
         return False
 
 
@@ -133,10 +159,22 @@ def opportunity_into_mysql(data):
             cc_df = cc_df.rename(columns=OPPORTUNITY_DICT)
             cc_df["id"] = None
 
+            # 本次操作的cc id
+            # operate_list = cc_df["crm_id"].tolist()
+            # operate_str = list_to_sql_string(operate_list)
+            # local_sql = """ select id,crm_id,account_id from `{}` where crm_id in ({})""".format(OPPORTUNITY_SQL_TABLE,operate_str)
+            # local_df = pd.read_sql_query(local_sql,new_data)
+            # 本次操作local数据库id
+            local_list = cc_df["crm_id"].tolist()
+            local_str = list_to_sql_string(local_list)
+            print(local_str)
+
             index_sql = """ select count(*) as nums from %s where created_at >= "%s" """ % (OPPORTUNITY_SQL_TABLE, today_stamp)
             id_index = pd.read_sql_query(index_sql,new_data)["nums"].tolist()[0]
+            id_dict={}
             for row in cc_df.itertuples():
                 df_index = getattr(row, 'Index')
+                crm_id = getattr(row, 'crm_id')
                 close_date = getattr(row, 'close_date')
                 try:
                     cc_df.at[df_index, 'close_date'] = time_ms(close_date)
@@ -163,6 +201,9 @@ def opportunity_into_mysql(data):
                     cc_df.at[df_index, 'id'] = id
                 id_index+=1
 
+                id_dict[crm_id] = id
+
+
             # 在这里替换想相应的id
             # account_id
             cc_account_str = list_to_sql_string(cc_df["account_id"].dropna().tolist())
@@ -188,13 +229,17 @@ def opportunity_into_mysql(data):
             cc_df = cc_df.drop(["updated_by"],axis=1)
             cc_df = cc_df.rename(columns={"local_owner_id":"updated_by"})
 
-            inster_sql(new_data, OPPORTUNITY_SQL_TABLE, OPPORTUNITY_CLOUMNS_ORDER, cc_df)
+            inster_sql(new_data, OPPORTUNITY_SQL_TABLE, OPPORTUNITY_CLOUMNS_ORDER, cc_df,local_str)
             # print("入库",cc_df.shape)
+            print(cc_df)
             new_data.close()
-            return cc_df["id"].tolist()[0]
+
+            # return cc_df[["id","crm_id"]].to_dict(orient='records')
+            return id_dict
         else:
             return False
-    except:
+    except Exception as e:
+        print(e)
         return False
 
 

@@ -63,7 +63,7 @@ class Order_Data():
         self.today = (datetime.datetime.now() - datetime.timedelta(hours=1.5)).strftime('%Y-%m-%d')
 
         # self.today_stamp =  date_ms(self.today)
-        # self.today = "2021-01-11"
+        # self.today = "2021-01-06"
         print(self.today)
         self.one_times_num = 1000
         self.sql_index_list=[]
@@ -127,111 +127,45 @@ class Order_Data():
             conn.close()
             new_data.close()
 
-    def get_cloudcc_order(self,index):
+    def get_repeat_order(self,index):
         if index == 1:
             index = 0
         new_data = engine(settings.db_new_data)
         # try:
-        sql_string = """ select {} from {} where left(lastmodifydate,10) = '{}' limit {},{} """
-        sql = sql_string.format("*", self.cloudcc_object,self.today,index,self.one_times_num)
-        print(sql)
-        data = cloudcc_query_sql(self.access_url, "cqlQuery",self.cloudcc_object, sql, self.binding)
-        print("查询",len(data))
-        if data:
+        sql_string = """ select crm_id from opportunity_back """
+        cc_df = pd.read_sql_query(sql_string,new_data)
+        print(cc_df.shape)
+        delete_df = cc_df.drop_duplicates(keep=False)
+        print(delete_df.shape)
 
-            cc_df = pd.DataFrame(columns=list(self.sql_mapping.keys()))
-            cc_df = cc_df.append(data,ignore_index=True,sort=False)
-            ccdf_name_list = list(self.sql_mapping.keys()) + ["is_deleted"]
-            cc_df = cc_df[ccdf_name_list]
-            cc_df = cc_df.rename(columns=self.sql_mapping)
+        keep_df = cc_df.drop_duplicates(keep="first")
+        print(keep_df.shape)
 
+        id_df=delete_df.append(keep_df).drop_duplicates(keep=False)
+        print(id_df.shape)
+        print(id_df)
+        new_data.close()
 
-            # 本次操作的cc id
-            operate_list = cc_df["crm_id"].tolist()
-            operate_str = list_to_sql_string(operate_list)
-            local_sql = """ select id,crm_id from `{}` where crm_id in ({})""".format(self.sql_table,operate_str)
-            local_df = pd.read_sql_query(local_sql,new_data)
-            # 本次操作local数据库id
-            local_list = cc_df["crm_id"].tolist()
-            local_str = list_to_sql_string(local_list)
+    def get_cloudcc_order(self,index):
 
-            # 删除cc 与 local 中删除的数据
-            deleted_list = cc_df.loc[cc_df["is_deleted"] != "0","crm_id"].tolist()
-            for deleted_id in deleted_list:
-                local_df = local_df.drop(local_df[local_df['crm_id'] == deleted_id].index)
-                cc_df = cc_df.drop(cc_df[cc_df['crm_id'] == deleted_id].index)
-            print("已删除",len(deleted_list))
-            cc_df = cc_df.drop(["is_deleted"],axis=1)
+        new_data = engine(settings.db_new_data)
 
 
-            # 新增 数据
-            local_merge_df = local_df[["id","crm_id"]]
-            cc_df = pd.merge(cc_df, local_merge_df, how='left', on="crm_id")
-            index_sql = """ select count(*) as nums from %s where left(created_at,10)="%s" """%(self.sql_table,self.today)
-            print("index_sql",index_sql)
-            id_index = pd.read_sql_query(index_sql,new_data)["nums"].tolist()[0]
-            print("id_index",id_index)
-            for row in cc_df.itertuples():
-                df_index = getattr(row, 'Index')
-                recent_activity_time = getattr(row, 'recent_activity_time')
-                try:
-                    cc_df.at[df_index, 'recent_activity_time'] = time_ms(recent_activity_time)
-                except:
-                    pass
-                push_sea_date = getattr(row, 'push_sea_date')
-                try:
-                    cc_df.at[df_index, 'push_sea_date'] = time_ms(push_sea_date)
-                except:
-                    pass
-                created_at = getattr(row, 'created_at')
-                cc_df.at[df_index, 'created_at'] = time_ms(created_at)
-                updated_at = getattr(row, 'updated_at')
-                cc_df.at[df_index, 'updated_at'] = time_ms(updated_at)
-                xsy_id = getattr(row, 'xsy_id')
-                try:
-                    xsy_id = str(xsy_id).strip()
-                except:
-                    pass
-                cc_df.at[df_index, 'xsy_id'] = xsy_id
-                po = getattr(row, 'account_name')
-                created_at = getattr(row, 'created_at')
-                timestamp = time_ms(created_at)
-                id = getattr(row, 'id')
-                if isinstance(id,str):
-                    pass
-                else:
-                    id = create_id(po, timestamp, id_index)
-                    cc_df.at[df_index, 'id'] = id
-                id_index+=1
+        sql_string = """ select crm_id from account_back """
+        cc_df = pd.read_sql_query(sql_string,new_data)
+        print(cc_df.shape)
+        delete_df = cc_df.drop_duplicates(keep=False)
+        print(delete_df.shape)
+
+        keep_df = cc_df.drop_duplicates(keep="first")
+        print(keep_df.shape)
+
+        id_df=delete_df.append(keep_df).drop_duplicates(keep=False)
+        print(id_df.shape)
+
+        new_data.close()
 
 
-            # 在这里替换想相应的id
-            #owner_id
-            local_user_sql = """select `id` as local_owner_id ,crm_id as owner_id from {}""".format(self.user_table)
-            local_user_df = pd.read_sql_query(local_user_sql,new_data)
-            cc_df = pd.merge(cc_df, local_user_df, how='left', on="owner_id")
-            cc_df = cc_df.drop(["owner_id"],axis=1)
-            cc_df = cc_df.rename(columns={"local_owner_id":"owner_id"})
-            # created_by
-            local_user_df = local_user_df.rename(columns={"owner_id":"created_by"})
-            cc_df = pd.merge(cc_df, local_user_df, how='left', on="created_by")
-            cc_df = cc_df.drop(["created_by"],axis=1)
-            cc_df = cc_df.rename(columns={"local_owner_id":"created_by"})
-            # updated_by
-            local_user_df = local_user_df.rename(columns={"created_by":"updated_by"})
-            cc_df = pd.merge(cc_df, local_user_df, how='left', on="updated_by")
-            cc_df = cc_df.drop(["updated_by"],axis=1)
-            cc_df = cc_df.rename(columns={"local_owner_id":"updated_by"})
-            # recent_activity_by
-            local_user_df = local_user_df.rename(columns={"updated_by":"recent_activity_by"})
-            cc_df = pd.merge(cc_df, local_user_df, how='left', on="recent_activity_by")
-            cc_df = cc_df.drop(["recent_activity_by"],axis=1)
-            cc_df = cc_df.rename(columns={"local_owner_id":"recent_activity_by"})
-
-            new_data.close()
-            print(cc_df)
-            self.inster_sql(cc_df,local_str)
-            print("入库",cc_df.shape)
 
     def get_infos(self,p_index):
         list_index = p_index
@@ -291,8 +225,8 @@ class Order_Data():
 if __name__ == "__main__":
     o = Order_Data()
 
-    o.process_data()
-    # o.get_cloudcc_order(0)
+    # o.process_data()
+    o.get_repeat_order(0)
 
 
 
