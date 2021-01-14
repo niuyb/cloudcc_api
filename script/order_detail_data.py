@@ -28,7 +28,7 @@ from public.utils import engine, list_to_sql_string, time_ms
 from script.data_config import OPPORTUNITY_SQL_TABLE, OPPORTUNITY_CLOUMNS_ORDER, USER_SQL_TABLE, \
     ACCOUNT_SQL_TABLE, ORDER_API_NAME, ORDER_TABLE_STRING, ORDER_DICT, ORDER_SQL_TABLE, ORDER_CLOUMNS_ORDER, \
     ORDER_DETAIL_API_NAME, ORDER_DETAIL_TABLE_STRING, ORDER_DETAIL_DICT, ORDER_DETAIL_SQL_TABLE, \
-    ORDER_DETAIL_CLOUMNS_ORDER
+    ORDER_DETAIL_CLOUMNS_ORDER, PRODUCT_SQL_TABLE
 from script.data_utils import create_id
 from settings import settings
 from settings.config import ACCESS_URL, ClOUDCC_USERNAME, ClOUDCC_PASSWORD
@@ -57,6 +57,8 @@ class Order_Data():
         self.user_table = USER_SQL_TABLE
         self.account_table = ACCOUNT_SQL_TABLE
         self.order_table = ORDER_SQL_TABLE
+        self.product_table = PRODUCT_SQL_TABLE
+
 
         # self.today = str(datetime.now().strftime('%Y-%m-%d'))
         self.today = (datetime.datetime.now() - datetime.timedelta(hours=1.5)).strftime('%Y-%m-%d')
@@ -228,6 +230,13 @@ class Order_Data():
             cc_df = pd.merge(cc_df, local_order_df, how='left', on="order_id")
             cc_df = cc_df.drop(["order_id"],axis=1)
             cc_df = cc_df.rename(columns={"local_order_id":"order_id"})
+            # product_id
+            cc_product_str = list_to_sql_string(cc_df["product_id"].dropna().tolist())
+            local_product_sql = """ select id as local_product_id,crm_id as product_id  from `{}` where crm_id in ({})""".format(self.product_table,cc_product_str)
+            local_product_df = pd.read_sql_query(local_product_sql,new_data)
+            cc_df = pd.merge(cc_df, local_product_df, how='left', on="product_id")
+            cc_df = cc_df.drop(["product_id"],axis=1)
+            cc_df = cc_df.rename(columns={"local_product_id":"product_id"})
             #owner_id
             local_user_sql = """select `id` as local_owner_id ,crm_id as owner_id from {}""".format(self.user_table)
             local_user_df = pd.read_sql_query(local_user_sql,new_data)
@@ -247,7 +256,7 @@ class Order_Data():
 
             new_data.close()
             print(cc_df)
-            self.inster_sql(cc_df,local_str)
+            # self.inster_sql(cc_df,local_str)
             print("入库",cc_df.shape)
 
     def get_infos(self,p_index):

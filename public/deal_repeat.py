@@ -132,7 +132,7 @@ class Order_Data():
             index = 0
         new_data = engine(settings.db_new_data)
         # try:
-        sql_string = """ select crm_id from opportunity_back """
+        sql_string = """ select crm_id from account_back """
         cc_df = pd.read_sql_query(sql_string,new_data)
         print(cc_df.shape)
         delete_df = cc_df.drop_duplicates(keep=False)

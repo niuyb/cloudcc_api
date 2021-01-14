@@ -50,7 +50,7 @@ class Order_Data():
         self.access_url  = ''
         self.binding = ''
         self.cloudcc_object="ddmx"
-        self.sql_table= "order_detail_back"
+        self.sql_table= "order_detail_back_copy1"
         self.sql_mapping= ORDER_DETAIL_DICT
         self.sql_table_string = ORDER_DETAIL_TABLE_STRING
 

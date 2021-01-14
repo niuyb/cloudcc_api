@@ -40,11 +40,12 @@ if __name__ == '__main__1':
 
         return checkcode
 
-if __name__ == '__main__':
+if __name__ == '__main__1':
     import urllib
     from urllib import parse
-    str1 = "杉帝科技--商情--报告--新签"
+    str1 = """ select  *  from Account where name like "%上海华瑞银行%" """
     str2 = parse.quote(str1)  # quote()将字符串进行编码
+    # str2="%E4%B8%8A%E6%B5%B7%E5%8D%8E%E7%91%9E%E9%93%B6%E8%A1%8C%E8%82%A1%E4%BB%BD%E6%9C%89"
     print(str2)
     rawurl = str2
     url = parse.unquote(rawurl)
@@ -54,32 +55,24 @@ if __name__ == '__main__':
 
 
 
-if __name__ == "__main__2":
-    def logging(level):
-        def wrapper(func):
-            def inner_wrapper(*args, **kwargs):
-                print(args)
-                print("[{level}]: enter function {func}()".format(level=level,func=func.__name__))
-                return func(*args, **kwargs)
+if __name__ == "__main__":
+    sql_index_list=[]
+    nums=1002
+    one_times_num=1000
 
-            return inner_wrapper
+    if nums % one_times_num > 0:
+        num_times = int(nums / one_times_num) + 1
+    elif nums % one_times_num == 0:
+        num_times = int(nums / one_times_num)
+    else:
+        num_times = 0
+    print(num_times)
+    for index in range(num_times):
+        if num_times == 1:
+            index = 0
+        start = int(index) * one_times_num
+        if index == 0:
+            start = 1
+        sql_index_list.append(start)
 
-        return wrapper
-
-
-    @logging(level='INFO')
-    def say(something):
-        print("say {}!".format(something))
-
-
-    # 如果没有使用@语法，等同于
-    # say = logging(level='INFO')(say)
-
-    @logging(level='DEBUG')
-    def do(something):
-        print("do {}...".format(something))
-
-
-    if __name__ == '__main__':
-        say('hello')
-        do("my work")
+    print(sql_index_list)

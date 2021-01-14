@@ -72,7 +72,7 @@ def test():
         else:
             pass
 
-    print(df)
+    # print(df)
     sql_table = "opportunity_back_copy1"
     df.to_sql(sql_table, new_data, index=False, if_exists="replace")
     cur, conn = get_conn()

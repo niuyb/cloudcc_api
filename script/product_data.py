@@ -31,7 +31,8 @@ import pandas as pd
 from public.cloudcc_utils import cloudcc_get_request_url, cloudcc_get_binding, cloudcc_query_sql
 from public.utils import engine, list_to_sql_string, time_ms
 from script.data_config import ORDER_DICT, ACCOUNT_DICT, OPPORTUNITY_DICT, USER_DICT, ORDER_TABLE_STRING, USER_API_NAME, \
-    USER_SQL_TABLE, USER_TABLE_STRING
+    USER_SQL_TABLE, USER_TABLE_STRING, PRODUCT_LINE_API_NAME, PRODUCT_LINE_TABLE_STRING, PRODUCT_LINE_DICT, \
+    PRODUCT_LINE_SQL_TABLE, PRODUCT_TABLE_STRING, PRODUCT_DICT, PRODUCT_SQL_TABLE, PRODUCT_API_NAME
 from script.data_utils import create_id
 from settings import settings
 from settings.config import ACCESS_URL, ClOUDCC_USERNAME, ClOUDCC_PASSWORD
@@ -52,13 +53,14 @@ class Order_Data():
         # self.new_data = engine(settings.db_new_data)
         self.access_url  = ''
         self.binding = ''
-        self.cloudcc_object=USER_API_NAME
-        self.sql_table= USER_SQL_TABLE
-        self.sql_mapping= USER_DICT
-        self.sql_table_string = USER_TABLE_STRING
+        self.cloudcc_object=PRODUCT_API_NAME
+        self.sql_table= PRODUCT_SQL_TABLE
+        self.sql_mapping= PRODUCT_DICT
+        self.sql_table_string = PRODUCT_TABLE_STRING
+        self.product_line = PRODUCT_LINE_SQL_TABLE
 
-        self.today = datetime.now().strftime('%Y-%m-%d')
-        print(self.today)
+        # self.today = datetime.now().strftime('%Y-%m-%d')
+        # print(self.today)
         # self.today = "2021-01-03"
         self.one_times_num = 1000
         self.sql_index_list=[]
@@ -131,7 +133,7 @@ class Order_Data():
         elif index == 1000:
             index=0
         # try:
-        sql_string = """ select {} from {} where isusing = 1  limit {},{} """
+        sql_string = """ select {} from {}  limit {},{} """
         sql = sql_string.format("*", self.cloudcc_object,index,self.one_times_num)
         data = cloudcc_query_sql(self.access_url, "cqlQuery",self.cloudcc_object, sql, self.binding)
         if data:
@@ -165,10 +167,12 @@ class Order_Data():
             id_index = pd.read_sql_query(index_sql,new_data)["nums"].tolist()[0]
             for row in cc_df.itertuples():
                 df_index = getattr(row, 'Index')
-                po = getattr(row, 'username')
-                created_at = getattr(row, 'hire_date')
-                timestamp = time_ms(created_at)
-                cc_df.at[df_index, 'hire_date'] = timestamp
+                po = getattr(row, 'product_name')
+                updated_at = getattr(row, 'updated_at')
+                timestamp = time_ms(updated_at)
+                cc_df.at[df_index, 'updated_at'] = timestamp
+                created_at = getattr(row, 'created_at')
+                cc_df.at[df_index, 'created_at'] = time_ms(created_at)
                 id = getattr(row, 'id')
                 if isinstance(id,str):
                     pass
@@ -177,11 +181,28 @@ class Order_Data():
                     cc_df.at[df_index, 'id'] = id
                 id_index+=1
 
-            ehr_sql = """ select work_email as email,department_code as department_id,department_name from `hr.employee`"""
-            ehr_df = pd.read_sql_query(ehr_sql,new_data)
+            cc_product_str = list_to_sql_string(cc_df["product_line"].dropna().tolist())
+            local_product_sql = """ select id as local_product_id,crm_id as product_line  from `{}` where crm_id in ({})""".format(self.product_line,cc_product_str)
+            local_product_df = pd.read_sql_query(local_product_sql,new_data)
+            cc_df = pd.merge(cc_df, local_product_df, how='left', on="product_line")
+            cc_df = cc_df.drop(["product_line"],axis=1)
+            cc_df = cc_df.rename(columns={"local_product_id":"product_line"})
 
-            cc_df = cc_df.drop(["department_id"], axis=1)
-            cc_df = pd.merge(cc_df, ehr_df, how='left', on="email")
+            local_user_sql = """select `id` as local_created_by ,crm_id as created_by from {}""".format("user_back")
+            local_user_df = pd.read_sql_query(local_user_sql, new_data)
+            cc_df = pd.merge(cc_df, local_user_df, how='left', on="created_by")
+            cc_df = cc_df.drop(["created_by"], axis=1)
+            cc_df = cc_df.rename(columns={"local_created_by": "created_by"})
+            # updated_by
+            local_user_df = local_user_df.rename(columns={"created_by": "updated_by"})
+            cc_df = pd.merge(cc_df, local_user_df, how='left', on="updated_by")
+            cc_df = cc_df.drop(["updated_by"], axis=1)
+            cc_df = cc_df.rename(columns={"local_created_by": "updated_by"})
+
+            # ehr_sql = """ select work_email as email,department_code as department_id,department_name from `hr.employee`"""
+            # ehr_df = pd.read_sql_query(ehr_sql,new_data)
+            # cc_df = cc_df.drop(["department_id"], axis=1)
+            # cc_df = pd.merge(cc_df, ehr_df, how='left', on="email")
 
             # 删除本次操作的所有local id
             delete_sql = """ delete from {} WHERE crm_id in ({}) """.format(self.sql_table,local_str)
@@ -236,7 +257,7 @@ class Order_Data():
             print("获取binding失败,请检查配置")
             return False
         try:
-            count_sql = """  select count(*) as nums from {} where isusing = 1 """.format(self.cloudcc_object)
+            count_sql = """  select count(*) as nums from {} """.format(self.cloudcc_object)
             count_data = cloudcc_query_sql(self.access_url, "cqlQuery", self.cloudcc_object, count_sql, self.binding)
             nums = count_data[0].get("nums",0)
         except:
