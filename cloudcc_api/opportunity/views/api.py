@@ -96,7 +96,7 @@ def opportunity_query():
                                     for key, value in data_dict.items():
                                         dict_key = OPPORTUNITY_DICT.get(key, "null")
                                         if dict_key == "crm_id":
-                                            new_data_dict[dict_key] = id.get(value,"")
+                                            new_data_dict["id"] = id.get(value,"")
                                         elif dict_key == "account_id":
                                             account_df_list = pd.read_sql_query(change_df_sql.format(ACCOUNT_SQL_TABLE,value),database)["id"].tolist()
                                             if account_df_list:
