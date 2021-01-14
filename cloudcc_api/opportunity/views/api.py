@@ -13,7 +13,7 @@ from public.api_update import opportunity_into_mysql
 from public.cloudcc_utils import cloudcc_get_request_url, cloudcc_get_binding, cloudcc_query_sql
 from public.permission_utils import CHECK_PERMISSION_QUERY
 from public.utils import Result, engine, list_to_sql_string, time_ms
-from script.data_config import OPPORTUNITY_SQL_TABLE, OPPORTUNITY_DICT, ACCOUNT_SQL_TABLE
+from script.data_config import OPPORTUNITY_SQL_TABLE, OPPORTUNITY_DICT, ACCOUNT_SQL_TABLE, USER_SQL_TABLE
 from settings import settings
 from settings.config import OPPORTUNITY_QUERY_ALLOW, ACCESS_URL, ClOUDCC_USERNAME, ClOUDCC_PASSWORD, ClOUDCC_OBJECT, \
     OPPORTUNITY_MAPPING, OPPORTUNITY_FUZZY_QUERY
@@ -88,6 +88,7 @@ def opportunity_query():
                             new_data = []
                             # 入库信息
                             id = opportunity_into_mysql(data)
+                            change_df_sql = """ select id from {} where crm_id ="{}" """
                             if id:
                                 for data_dict in local_data:
                                     # 修改输出的key值,不暴露原有api的key
@@ -95,11 +96,19 @@ def opportunity_query():
                                     for key, value in data_dict.items():
                                         dict_key = OPPORTUNITY_DICT.get(key, "null")
                                         if dict_key == "crm_id":
-                                            new_data_dict["id"] = id.get(value,"")
-                                            # if id:
-                                            #     new_data_dict["id"] = id
-                                            # else:
-                                            #     new_data_dict["id"] = ""
+                                            new_data_dict[dict_key] = id.get(value,"")
+                                        elif dict_key == "account_id":
+                                            account_df_list = pd.read_sql_query(change_df_sql.format(ACCOUNT_SQL_TABLE,value),database)["id"].tolist()
+                                            if account_df_list:
+                                                new_data_dict[dict_key] = account_df_list[0]
+                                            else:
+                                                new_data_dict[dict_key] = ""
+                                        elif dict_key in ["owner_id","updated_by","created_by"]:
+                                            user_df_list = pd.read_sql_query(change_df_sql.format(USER_SQL_TABLE,value),database)["id"].tolist()
+                                            if user_df_list:
+                                                new_data_dict[dict_key] = user_df_list[0]
+                                            else:
+                                                new_data_dict[dict_key] = ""
                                         elif dict_key == "xsy_id":
                                             # 去除 \t
                                             new_data_dict[dict_key] = str(value).strip()
