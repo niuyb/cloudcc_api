@@ -70,7 +70,6 @@ def account_query():
                             # sql_str = ",".join(sql_list)
                             cloudcc_object = ClOUDCC_OBJECT.get("account")
                             sql = sql_string.format(cloudcc_object, field_name,field_value)
-                            sql = parse.quote(sql)
                             data = cloudcc_query_sql(access_url, "cqlQuery", cloudcc_object, sql, binding)
                             if data:
                                 local_data=[{}]

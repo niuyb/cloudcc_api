@@ -171,7 +171,7 @@ OPPORTUNITY_DICT = {
     "jieduan": "sale_stage",
     "knx": "win_rate",
     "jsrq": "close_date",
-    "commitmentFlg": "saler_promise",
+    "customitem262": "saler_promise",
     "projectBudget": "project_budget",
     "createbyid": "created_by",
     "createdate": "created_at",
@@ -233,7 +233,7 @@ ORDER_DETAIL_DICT={
     # "po":"po",
     "name":"name",
     "customitem162": "contract_status",
-    "customitem156": "attribute",
+    "customitem149": "attribute",
     "productid":"product_id",
     "customitem163":"contract_back_date",
     "customitem125": "performance",
@@ -269,3 +269,50 @@ ORDER_DETAIL_TABLE_STRING = """ALTER table `{}`
                   MODIFY `updated_at` varchar(50) COMMENT '更新日期', 
                   MODIFY `updated_by` varchar(50) COMMENT '更新人', 
                   MODIFY `xsy_id` varchar(50) COMMENT '销售易id'  """
+
+
+
+PRODUCT_LINE_API_NAME="cpx"
+PRODUCT_LINE_SQL_TABLE="product_line_back"
+PRODUCT_LINE_CLOUMNS_ORDER = ["id","crm_id","name"]
+PRODUCT_LINE_DICT={
+    "id":"crm_id",
+    "name":"name",
+    "createbyid": "created_by",
+    "createdate": "created_at",
+    "lastmodifybyid": "updated_by",
+    "lastmodifydate": "updated_at",
+}
+PRODUCT_LINE_TABLE_STRING = """ALTER table `{}`
+                          MODIFY `id` varchar(50) COMMENT '星光自建产品线id',
+                          MODIFY `crm_id` varchar(50) COMMENT 'crm_产品线id',
+                          MODIFY `name` varchar(200) COMMENT '产品线名',
+                          MODIFY `created_at` varchar(50) COMMENT '创建日期', 
+                          MODIFY `created_by` varchar(50) COMMENT '创建人', 
+                          MODIFY `updated_at` varchar(50) COMMENT '更新日期', 
+                          MODIFY `updated_by` varchar(50) COMMENT '更新人' """
+
+
+PRODUCT_API_NAME="Product"
+PRODUCT_SQL_TABLE="product_back"
+PRODUCT_CLOUMNS_ORDER = ["id","crm_id","name"]
+PRODUCT_DICT={
+    "id":"crm_id",
+    "name":"product_name",
+    "cpdj": "price_unit",
+    "customitem147": "product_line",
+    "createbyid": "created_by",
+    "createdate": "created_at",
+    "lastmodifybyid": "updated_by",
+    "lastmodifydate": "updated_at",
+}
+PRODUCT_TABLE_STRING= """ALTER table `{}` 
+                          MODIFY `id` varchar(100) COMMENT 'id',
+                          MODIFY `crm_id` varchar(100) COMMENT 'crm_产品id',
+                          MODIFY `product_name` varchar(255) COMMENT '产品名称',
+                          MODIFY `price_unit` varchar(255) COMMENT '标准价',
+                          MODIFY `product_line` varchar(255) COMMENT '产品线(实体)',
+                          MODIFY `created_at` varchar(50) COMMENT '创建日期', 
+                          MODIFY `created_by` varchar(50) COMMENT '创建人', 
+                          MODIFY `updated_at` varchar(50) COMMENT '更新日期', 
+                          MODIFY `updated_by` varchar(50) COMMENT '更新人' """

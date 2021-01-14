@@ -55,7 +55,7 @@ ACCOUNT_APPEND_ITEMS = ["id", "owner_id", "account_name", "created_at", "address
 OPPORTUNITY_MAPPING={
     "id":"id",
     "name":"name",
-    "account_id":"khmc",
+    "account_id":"zzkh",
 }
 #允许 查询条件 字段名称
 OPPORTUNITY_QUERY_ALLOW=["id","name","account_id"]
