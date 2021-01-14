@@ -100,6 +100,6 @@ QY_ORDER_QUERY = ["name","id","byh","yid"]
 ZW_token = "4e33e00381c94a9bba251ebb44996c0f"
 # ZW账号允许查询返回的字段
 ZW_ACCOUNT_QUERY=["id","name","customitem151","customitem162","fState","fCity","fDistrict","yid","ownerid","createdate","fenji","highSeaStatus","dianhua","recentActivityRecordTime"]
-ZW_OPPORTUNITY_QUERY = ["name","id","zzkh","yid","ownerid","customItem164","commitmentFlg","jsrq","customitem222","jieduan"]
+ZW_OPPORTUNITY_QUERY = ["name","id","zzkh","yid","ownerid","customItem164","commitmentFlg","jsrq","customitem222","jieduan","customitem262"]
 ZW_ORDER_QUERY = ["name","id","byh","yid"]
 
