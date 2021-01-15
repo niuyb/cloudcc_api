@@ -204,6 +204,8 @@ class Order_Data():
             # cc_df = cc_df.drop(["department_id"], axis=1)
             # cc_df = pd.merge(cc_df, ehr_df, how='left', on="email")
 
+            cc_df = cc_df.drop_duplicates(["crm_id"], keep="first")
+
             # 删除本次操作的所有local id
             delete_sql = """ delete from {} WHERE crm_id in ({}) """.format(self.sql_table,local_str)
             cur.execute(delete_sql)
@@ -217,8 +219,6 @@ class Order_Data():
 
             print(cc_df)
             self.inster_sql(cc_df)
-
-
 
 
 

@@ -19,7 +19,9 @@ import datetime
 from public.utils import engine
 from settings import settings
 import pandas as pd
-
+pd.set_option('display.max_rows', None) # 展示所有行
+pd.set_option('display.max_columns', None) # 展示所有列
+pd.set_option('display.width', None)# 展示所有列
 
 
 
@@ -40,7 +42,8 @@ if __name__ == '__main__1':
 
         return checkcode
 
-if __name__ == '__main__':
+
+if __name__ == '__main__1':
     import urllib
     from urllib import parse
     str1 = """select t0.*, t1.type, t1.name group_name, concat(cast(IFNULL(t2.last_name,'') as char),cast(IFNULL(t2.first_name,'') as char))  username from  tp_std_datatable1share t0 left outer join tp_sys_group t1 on t0.userorgroupid=t1.id left outer join tp_sys_user t2 on t0.userorgroupid=t2.id where parentId='记录id' order by t0.id asc """
@@ -53,26 +56,35 @@ if __name__ == '__main__':
 
 
 
+if __name__ == '__main__':
+    # a142021103651973Tp9i
+
+    database = engine(settings.db_new_data)
+    sql_string = """ select crm_id,account_name from {} """.format("account_back_copy1")
+    cc_df = pd.read_sql_query(sql_string, database)
+
+    sql_string = """ select crm_id,account_name from {} """.format("account_back")
+    local_df = pd.read_sql_query(sql_string, database)
 
 
-if __name__ == "__main__1":
-    sql_index_list=[]
-    nums=1002
-    one_times_num=1000
+    # print(cc_df.shape)
+    # delete_df = cc_df.drop_duplicates(keep=False)
+    # print(delete_df.shape)
+    #
+    # keep_df = cc_df.drop_duplicates(keep="first")
+    # print(keep_df.shape)
 
-    if nums % one_times_num > 0:
-        num_times = int(nums / one_times_num) + 1
-    elif nums % one_times_num == 0:
-        num_times = int(nums / one_times_num)
-    else:
-        num_times = 0
-    print(num_times)
-    for index in range(num_times):
-        if num_times == 1:
-            index = 0
-        start = int(index) * one_times_num
-        if index == 0:
-            start = 1
-        sql_index_list.append(start)
+    re_df = cc_df.append(local_df).drop_duplicates(keep=False)
 
-    print(sql_index_list)
+    print(re_df.shape)
+    print(re_df)
+    database.close()
+
+
+"""
+51042   0012021DB8A6057oehWb  国网河北省电力有限公司保定供电公司
+"""
+
+
+
+

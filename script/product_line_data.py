@@ -189,6 +189,7 @@ class Order_Data():
             cc_df = cc_df.drop(["updated_by"], axis=1)
             cc_df = cc_df.rename(columns={"local_created_by": "updated_by"})
 
+            cc_df = cc_df.drop_duplicates(["crm_id"], keep="first")
             print(cc_df)
 
 

@@ -204,9 +204,9 @@ if __name__ == "__main__":
 
     # str1 = """select name,lastmodifydate from `Opportunity` where `zzkh` ="001202191EFE31FES10P"  """
 
-    str1 = """ select count(*) as nums from ddmx where is_deleted ="0" """
+    str1 = """ select * from Account where id="0012021DB8A6057oehWb" """
 
-    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","ddmx",str1,"16A5C86E78D1F0F3CA995056F3073CE7")
+    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account",str1,"635888B46344BB60CEA243397845E7E4")
     print(data)
 
     # data = modify_by_api("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","update","Account", [{'id':"0012020FE5A8EB0s9Ahn","name":"万科_modify_by_api"}], "F4318B05B7C1D4DC0CF165E0AB5421BC")

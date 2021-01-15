@@ -61,9 +61,8 @@ class Order_Data():
 
         # self.today = str(datetime.now().strftime('%Y-%m-%d'))
         self.today = (datetime.datetime.now() - datetime.timedelta(hours=1.5)).strftime('%Y-%m-%d')
-
-        # self.today_stamp =  date_ms(self.today)
-        # self.today = "2021-01-11"
+        # self.today = "2021-01-09"
+        self.today_stamp =  date_ms(self.today)
         print(self.today)
         self.one_times_num = 1000
         self.sql_index_list=[]
@@ -167,7 +166,7 @@ class Order_Data():
             # 新增 数据
             local_merge_df = local_df[["id","crm_id"]]
             cc_df = pd.merge(cc_df, local_merge_df, how='left', on="crm_id")
-            index_sql = """ select count(*) as nums from %s where left(created_at,10)="%s" """%(self.sql_table,self.today)
+            index_sql = """ select count(*) as nums from %s where created_at >= "%s" """%(self.sql_table,self.today_stamp)
             print("index_sql",index_sql)
             id_index = pd.read_sql_query(index_sql,new_data)["nums"].tolist()[0]
             print("id_index",id_index)
@@ -228,6 +227,7 @@ class Order_Data():
             cc_df = cc_df.drop(["recent_activity_by"],axis=1)
             cc_df = cc_df.rename(columns={"local_owner_id":"recent_activity_by"})
 
+            cc_df = cc_df.drop_duplicates(["crm_id"], keep="first")
             new_data.close()
             self.inster_sql(cc_df,local_str)
             print("入库",cc_df.shape)

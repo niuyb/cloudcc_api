@@ -95,10 +95,10 @@ def delete_repeat(sql_table,sql_table_string):
 
 if __name__ == "__main__":
 
-    # get_repeat("order_detail_back_copy2")
+    get_repeat("account_back")
 
 
-    delete_repeat("order_detail_back_copy1",ORDER_DETAIL_TABLE_STRING)
+    # delete_repeat("order_detail_back_copy1",ORDER_DETAIL_TABLE_STRING)
     # delete_repeat("order_back_copy1",ORDER_TABLE_STRING)
 
 
