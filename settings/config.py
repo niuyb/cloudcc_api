@@ -79,17 +79,15 @@ ORDER_FUZZY_QUERY = ["name"]
 # -----------------------------------------USER-----------------------------------------------
 # update_append 更新字段
 USER_APPEND_ITEMS = ["id", "email", "department_id", "username", "department_name"]
-
-
-
-# -----------------------------------------TEMP-----------------------------------------------
-PERMISSION_DICT = {
-    "account":"QY_ACCOUNT_QUERY",
-
+# 允许查询团队成员 type
+USER_MEMBER_QUERY_ALLOW = ["account","opportunity"]
+# 参数 与 api 数据库对应关系
+USER_MEMBER_MAPPING={
+    "account":"tp_std_datatable1share",
+    "opportunity":"tp_std_datatable2share",
 }
 
-
-
+# -----------------------------------------TEMP-----------------------------------------------
 
 QY_token = "457d6a5e009f1ebb0906f03b32d0881f"
 # QY账号允许查询返回的字段

@@ -24,11 +24,6 @@ def user_update_append():
     :return: data [{},{}]
     """
     result = Result()
-    # try:
-    #     date_stamp = int(request.args.get("date",None))
-    # except:
-    #     result.msg = "请输入正确的时间戳"
-    #     return json.dumps(result.dict(), ensure_ascii=False)
     token = request.args.get("token", None)
     page = request.args.get("page",None)
     try:

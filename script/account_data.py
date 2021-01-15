@@ -229,7 +229,6 @@ class Order_Data():
             cc_df = cc_df.rename(columns={"local_owner_id":"recent_activity_by"})
 
             new_data.close()
-            print(cc_df)
             self.inster_sql(cc_df,local_str)
             print("入库",cc_df.shape)
 

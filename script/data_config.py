@@ -142,6 +142,7 @@ USER_DICT={
     "department":"department_id",
     "isusing":"status",
     "createdate":"hire_date",
+    "role": "crm_role",
     "email":"email",
 }
 USER_TABLE_STRING = """ALTER table `{}`
@@ -151,6 +152,8 @@ USER_TABLE_STRING = """ALTER table `{}`
                 MODIFY column `department_id` varchar(50) COMMENT "部门id",
                 MODIFY column `status` tinyint(5) COMMENT "是否在职 1在职 0离职",
                 MODIFY column `hire_date` varchar(100) COMMENT "入职时间ms",
+                MODIFY column `crm_role` varchar(100) COMMENT "crm 角色",
+                MODIFY column `department_name` varchar(100) COMMENT "部门名称",
                 MODIFY column `email` varchar(100) COMMENT "邮箱" """
 # api 名称
 OPPORTUNITY_API_NAME = "Opportunity"
