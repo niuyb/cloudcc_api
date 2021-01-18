@@ -168,7 +168,6 @@ def opportunity_into_mysql(data):
             # 本次操作local数据库id
             local_list = cc_df["crm_id"].tolist()
             local_str = list_to_sql_string(local_list)
-            print(local_str)
 
             index_sql = """ select count(*) as nums from %s where created_at >= "%s" """ % (OPPORTUNITY_SQL_TABLE, today_stamp)
             id_index = pd.read_sql_query(index_sql,new_data)["nums"].tolist()[0]
@@ -202,6 +201,9 @@ def opportunity_into_mysql(data):
                     id = create_id(po, timestamp, id_index)
                     cc_df.at[df_index, 'id'] = id
                 id_index+=1
+
+                id_dict[crm_id] = id
+
                 crm_id = getattr(row, 'crm_id')
                 cc_df.at[df_index, 'url'] = url_str.format(crm_id)
 
@@ -232,8 +234,6 @@ def opportunity_into_mysql(data):
             cc_df = cc_df.rename(columns={"local_owner_id":"updated_by"})
 
             inster_sql(new_data, OPPORTUNITY_SQL_TABLE, OPPORTUNITY_CLOUMNS_ORDER, cc_df,local_str)
-            # print("入库",cc_df.shape)
-            print(cc_df)
             new_data.close()
 
             # return cc_df[["id","crm_id"]].to_dict(orient='records')
