@@ -147,6 +147,7 @@ def opportunity_into_mysql(data):
     new_data = engine(settings.db_new_data)
     today = str(datetime.now().strftime('%Y-%m-%d'))
     today_stamp = date_ms(today)
+    url_str="https://k8mm3cmt3235c7ed72cede6e.cloudcc.com/queryframe.action?id={}&m=query"
     # test
     # id 9ddf8a1bf6d48236
     # data=[{'customitem199': None, 'customitem231': None, 'customitem198': None, 'customitem234': '集团', 'customitem233': '企业', 'customitem195': None, 'recentactivityrecordtime': '2020-10-29 00:00:00', 'customitem194': None, 'customitem230': None, 'customitem197': None, 'jine': '60000', 'customitem196': None, 'createdate': '2020-08-21 11:48:00', 'customitem193': None, 'loststageid': None, 'pricebook2id': None, 'createbyid': '0052020A8D8B44BQLOfD', 'customItem263': '已领取', 'ywjhsm': None, 'ywlx': '产品新单', 'sjlx': None, 'latestcontact': None, 'isLocked': None, 'lockstatus': '未锁定', 'customitem239': None, 'commitmentFlg': '否', 'id': '0022021FAD3F80BcQobP', 'priceid': 'a0720208E1B9A9FMsTxU', 'customitem236': None, 'customitem238': None, 'gcz': None, 'customitem237': None, 'customitem243': None, 'customitem245': None, 'customitem244': None, 'customitem240': None, 'ownerid': '0052020A8D8B44BQLOfD', 'commitmentflg': '否', 'customitem247': None, 'customitem246': None, 'customitem249': None, 'customitem248': None, 'htsx': None, 'jingweidula': None, 'customitem253': '安徽省', 'cloudcctag': None, 'customitem250': None, 'customitem252': None, 'customitem251': None, 'jingweiduco': None, 'zhzqzkh': None, 'dqzj': None, 'isDeleted': '0', 'yid': '\t1363425390330269', 'bz': None, 'currency': 'CNY', 'customitem258': None, 'lastmodifybyid': '0052020A8D8B44BQLOfD', 'customitem257': None, 'customitem139': None, 'customitem259': None, 'CCObjectAPI': 'Opportunity', 'sourceid': None, 'customitem265': None, 'sybzj': None, 'customitem267': None, 'customitem145': None, 'customitem266': None, 'customitem261': None, 'customitem140': None, 'customitem263': '已领取', 'customitem142': None, 'sz': None, 'customitem262': None, 'customitem141': None, 'actualcost': None, 'customItem253': '安徽省', 'knx': '0', 'dimDepart': '一区安徽', 'jsrq': '2021-12-02 00:00:00', 'forecasttype': None, 'lbsaddress': None, 'customitem269': None, 'customitem148': None, 'priceId': 'a0720208E1B9A9FMsTxU', 'customitem268': None, 'customitem147': None, 'xyb': None, 'khxxdz02': None, 'khmc': '00120218C661F78uKtV8', 'khxxdz01': None, 'customitem154': None, 'is_locked': None, 'khxxdz04': None, 'customitem157': None, 'khxxdz03': None, 'customitem156': None, 'customitem151': None, 'customitem272': None, 'customitem150': None, 'customitem271': None, 'khxxdz00': None, 'customitem153': None, 'customitem152': None, 'customItem222': '0551-63659958', 'sqfzr': None, 'customItem223': '待提交', 'customitem270': None, 'customItem220': '可以续单', 'customItem187': '未成交', 'customItem188': '企业事业部', 'khxxdz05': None, 'ddyy': None, 'customItem229': 'OPP202008210076', 'customItem226': '开发客户', 'customitem159': None, 'customitem158': None, 'lastmodifydate': '2020-10-29 11:45:00', 'customitem166': None, 'customitem165': '企划部', 'customitem201': None, 'customitem200': None, 'zzkh': '00120218C661F78uKtV8', 'customitem162': '主动开拓', 'customitem161': '企业', 'customitem164': '标准化产品-舆情秘书服务系统', 'customItem233': '企业', 'customItem234': '集团', 'customitem160': None, 'name': '同庆楼商情', 'campaign': None, 'jieduan': '潜在商机(新)', 'customitem203': None, 'customitem202': None, 'customitem204': None, 'customItem165': '企划部', 'customItem164': '标准化产品-舆情秘书服务系统', 'customItem161': '企业', 'customItem162': '主动开拓', 'is_deleted': '0', 'lockStatus': '未锁定', 'recordtype': None, 'customitem218': '待提交', 'customitem217': None, 'customitem219': '待提交', 'customitem214': None, 'projectbudget': None, 'zwyhxwfx': None, 'customitem213': None, 'customitem216': None, 'customitem215': None, 'customitem188': '企业事业部', 'customitem221': None, 'customitem220': '可以续单', 'customitem187': '未成交', 'customitem223': '待提交', 'customitem222': '0551-63659958', 'customitem186': None, 'customitem185': None, 'sjbh': 'CCSJ2021010347224', 'jingweidu': ',', 'dls': None, 'jzds': None, 'stageupdatedat': None, 'customItem219': '待提交', 'customItem218': '待提交', 'ddsm': None, 'zwzhmc': None, 'customitem229': 'OPP202008210076', 'dlsqr': None, 'customitem228': None, 'dimdepart': '一区安徽', 'khxxdz': '', 'recentActivityRecordTime': '2020-10-29 00:00:00', 'customitem225': None, 'customitem224': None, 'customitem227': None, 'customitem226': '开发客户'}]
@@ -172,6 +173,7 @@ def opportunity_into_mysql(data):
             index_sql = """ select count(*) as nums from %s where created_at >= "%s" """ % (OPPORTUNITY_SQL_TABLE, today_stamp)
             id_index = pd.read_sql_query(index_sql,new_data)["nums"].tolist()[0]
             id_dict={}
+            cc_df["url"]=''
             for row in cc_df.itertuples():
                 df_index = getattr(row, 'Index')
                 crm_id = getattr(row, 'crm_id')
@@ -200,8 +202,8 @@ def opportunity_into_mysql(data):
                     id = create_id(po, timestamp, id_index)
                     cc_df.at[df_index, 'id'] = id
                 id_index+=1
-
-                id_dict[crm_id] = id
+                crm_id = getattr(row, 'crm_id')
+                cc_df.at[df_index, 'url'] = url_str.format(crm_id)
 
 
             # 在这里替换想相应的id

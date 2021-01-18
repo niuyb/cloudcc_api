@@ -56,6 +56,7 @@ class Order_Data():
         self.sql_table_string = OPPORTUNITY_TABLE_STRING
         self.user_table = USER_SQL_TABLE
         self.account_table = ACCOUNT_SQL_TABLE
+        self.url_str = "https://k8mm3cmt3235c7ed72cede6e.cloudcc.com/queryframe.action?id={}&m=query"
         # self.account_table = "account_back"
 
         self.today = (datetime.datetime.now() - datetime.timedelta(hours=1.5)).strftime('%Y-%m-%d')
@@ -166,6 +167,7 @@ class Order_Data():
             print("index_sql",index_sql)
             id_index = pd.read_sql_query(index_sql,new_data)["nums"].tolist()[0]
             print("id_index",id_index)
+            cc_df["url"]=''
             for row in cc_df.itertuples():
                 df_index = getattr(row, 'Index')
                 close_date = getattr(row, 'close_date')
@@ -193,6 +195,8 @@ class Order_Data():
                     id = create_id(po, timestamp, id_index)
                     # print(id)
                     cc_df.at[df_index, 'id'] = id
+                crm_id = getattr(row, 'crm_id')
+                cc_df.at[df_index, 'url'] = self.url_str.format(crm_id)
                 id_index+=1
 
 
