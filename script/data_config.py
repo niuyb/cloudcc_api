@@ -160,7 +160,7 @@ OPPORTUNITY_API_NAME = "Opportunity"
 # 数据库名称
 OPPORTUNITY_SQL_TABLE = "opportunity_back"
 # 入库顺序
-OPPORTUNITY_CLOUMNS_ORDER = ["id","crm_id","entity_type","opportunity_name","owner_id","price_id","account_id","money","intended_product","sale_stage","win_rate","close_date","saler_promise","project_budget","created_by","created_at","updated_by","updated_at","contact","position","phone","xsy_id","week_top","month_top","season_top","saler_per","opportunity_num","url"]
+OPPORTUNITY_CLOUMNS_ORDER = ["id","crm_id","entity_type","opportunity_name","owner_id","price_id","account_name","account_id","money","intended_product","sale_stage","win_rate","close_date","saler_promise","project_budget","created_by","created_at","updated_by","updated_at","contact","position","phone","xsy_id","week_top","month_top","season_top","saler_per","opportunity_num","url"]
 # api 与数据库字段映射关系
 OPPORTUNITY_DICT = {
     "id": "crm_id",
@@ -168,6 +168,7 @@ OPPORTUNITY_DICT = {
     "name": "opportunity_name",
     "ownerid": "owner_id",
     "priceid": "price_id",
+    "khmc":"account_name",
     "zzkh": "account_id",
     "jine": "money",
     "customItem164": "intended_product",
@@ -199,6 +200,7 @@ OPPORTUNITY_TABLE_STRING = """ALTER table `{}`
                   MODIFY `opportunity_name` varchar(500) COMMENT '商机名称',
                   MODIFY `owner_id` varchar (100) COMMENT '星光自建销售id',
                   MODIFY `price_id` varchar(50) COMMENT '价格表id',
+                  MODIFY `account_name` varchar(100) COMMENT '客户id',
                   MODIFY `account_id` varchar(100) COMMENT '最终客户id ',
                   MODIFY `money` varchar(50) COMMENT '商机金额',
                   MODIFY `intended_product` varchar(500) COMMENT '意向产品',

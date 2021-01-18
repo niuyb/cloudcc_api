@@ -208,6 +208,12 @@ class Order_Data():
             cc_df = pd.merge(cc_df, local_account_df, how='left', on="account_id")
             cc_df = cc_df.drop(["account_id"],axis=1)
             cc_df = cc_df.rename(columns={"local_account_id":"account_id"})
+            # account_name
+            account_df = local_account_df.rename(columns={"account_id": "account_name"})
+            cc_df = pd.merge(cc_df, account_df, how='left', on="account_name")
+            cc_df = cc_df.drop(["account_name"], axis=1)
+            cc_df = cc_df.rename(columns={"local_account_id": "account_name"})
+
             # print(cc_df)
             #owner_id
             local_user_sql = """select `id` as local_owner_id ,crm_id as owner_id from {}""".format(self.user_table)
