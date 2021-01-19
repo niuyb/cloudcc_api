@@ -55,6 +55,10 @@ def inster_sql(new_data,sql_table,columns_order,df,local_str):
 
 """ cloudcc account数据入库 """
 def account_insert_mysql(data):
+    """
+    account/api
+    接口中先查数据库,数据库中无信息则去查询cloudcc之后同步数据库所以此处id均为新增id
+    """
     new_data = engine(settings.db_new_data)
     today = str(datetime.now().strftime('%Y-%m-%d'))
     today_stamp = date_ms(today)
@@ -144,6 +148,10 @@ def account_insert_mysql(data):
 
 
 def opportunity_into_mysql(data):
+    """
+    opportunity/api
+    不管数据库有无信息均查询cloudcc,然后刷新数据库,所以此处id需要查询是否存在,不存在则需要新建,存在则保持原有id
+    """
     new_data = engine(settings.db_new_data)
     today = str(datetime.now().strftime('%Y-%m-%d'))
     today_stamp = date_ms(today)
