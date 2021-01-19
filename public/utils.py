@@ -295,6 +295,9 @@ def ms_time(ms_time):
 """日期转成毫秒级别时间戳 """
 def date_ms(date):
     # timestr = '2020-09-14'
+    years = str(date).split("-")[0]
+    if int(years) <= 1970:
+        return 0
     datetime_obj = datetime.strptime(date, "%Y-%m-%d")
     obj_stamp = int(time.mktime(datetime_obj.timetuple()) * 1000.0 + datetime_obj.microsecond / 1000.0)
     return obj_stamp
@@ -313,6 +316,6 @@ def list_to_sql_string(list):
 
 
 
-
-
-
+if __name__ == "__main__":
+    q  =date_ms("1899-12-31 00:00:00")
+    print(q)

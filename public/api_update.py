@@ -160,14 +160,15 @@ def opportunity_into_mysql(data):
             cc_df = cc_df.rename(columns=OPPORTUNITY_DICT)
             cc_df["id"] = None
 
-            # 本次操作的cc id
-            # operate_list = cc_df["crm_id"].tolist()
-            # operate_str = list_to_sql_string(operate_list)
-            # local_sql = """ select id,crm_id,account_id from `{}` where crm_id in ({})""".format(OPPORTUNITY_SQL_TABLE,operate_str)
-            # local_df = pd.read_sql_query(local_sql,new_data)
-            # 本次操作local数据库id
             local_list = cc_df["crm_id"].tolist()
             local_str = list_to_sql_string(local_list)
+            # 替换id
+            id_sql = """ select crm_id,id from {} where crm_id in ({}) """.format(OPPORTUNITY_SQL_TABLE,local_str)
+            id_list = pd.read_sql_query(id_sql,new_data).to_dict("records")
+            local_id_dict={}
+            if id_list:
+                for dict in id_list:
+                    local_id_dict[dict["crm_id"]]=dict["id"]
 
             index_sql = """ select count(*) as nums from %s where created_at >= "%s" """ % (OPPORTUNITY_SQL_TABLE, today_stamp)
             id_index = pd.read_sql_query(index_sql,new_data)["nums"].tolist()[0]
@@ -194,19 +195,17 @@ def opportunity_into_mysql(data):
                 po = getattr(row, 'opportunity_name')
                 created_at = getattr(row, 'created_at')
                 timestamp = time_ms(created_at)
-                id = getattr(row, 'id')
-                if isinstance(id,str):
-                    pass
-                else:
+
+                id=local_id_dict.get(crm_id,None)
+                if not id:
                     id = create_id(po, timestamp, id_index)
-                    cc_df.at[df_index, 'id'] = id
-                id_index+=1
+                    id_index += 1
+                cc_df.at[df_index, 'id'] = id
 
                 id_dict[crm_id] = id
 
                 crm_id = getattr(row, 'crm_id')
                 cc_df.at[df_index, 'url'] = url_str.format(crm_id)
-
 
             # 在这里替换想相应的id
             # account_id
@@ -220,7 +219,7 @@ def opportunity_into_mysql(data):
             account_df = local_account_df.rename(columns={"account_id": "account_name"})
             cc_df = pd.merge(cc_df, account_df, how='left', on="account_name")
             cc_df = cc_df.drop(["account_name"], axis=1)
-            cc_df = cc_df.rename(columns={"new_account_id": "account_name"})
+            cc_df = cc_df.rename(columns={"local_account_id": "account_name"})
             #owner_id
             local_user_sql = """select `id` as local_owner_id ,crm_id as owner_id from {}""".format(USER_SQL_TABLE)
             local_user_df = pd.read_sql_query(local_user_sql,new_data)
@@ -250,9 +249,6 @@ def opportunity_into_mysql(data):
         return False
 
 
-def account_into_mysql(data):
-    data =[{'leixing': '终端客户', 'parent': None, 'recentactivityrecordtime': None, 'customitem195': None, 'customitem194': None,'createdate': '2021-01-07 15:57:22', 'createbyid': '0052020DA39F266VGBTc', 'highseastatus': '自建', 'fkdwkhyh': None, 'twitter': None, 'lastcontactdate': '2021-01-07 16:05:15', 'zys': None, 'doNotDisturb': 'false', 'isLocked': None, 'customItem148': '主动开拓', 'lockstatus': None, 'fcity': '沧州市', 'id': '0012021A7AF8F65wuyLR', 'fax': None, 'fState': '河北省', 'releasereason': None, 'customItem156': '企业事业部', 'customItem157': '销售一部', 'customItem155': '初次沟通', 'ownerid': '0052020DA39F266VGBTc', 'txdz': None, 'customItem151': '政府', 'customItem159': '李玉清', 'highseaaccountsource': None, 'beizhu': None, 'jingweidula': None, 'cloudcctag': None, 'jingweiduco': None, 'nsr': None, 'fCity': '沧州市', 'srcflg': None, 'ces': None, 'khbh': 'CC20210107130690', 'bjdmx': None, 'weibo': None, 'isDeleted': '0', 'yid': None, 'gsgpdm': None, 'currency': 'CNY', 'lastmodifybyid': '0052020DA39F266VGBTc', 'CCObjectAPI': 'Account', 'customitem146': None, 'facebook': None, 'lqtime': None, 'qyyx': None, 'fstate': '河北省', 'gsownerid': None, 'dimDepart': '销售一部', 'lbsaddress': None, 'customitem148': '主动开拓', 'customitem147': None, 'khxxdz02': None, 'customitem155': '初次沟通', 'show_on_map': None, 'khxxdz01': None, 'is_locked': None, 'khxxdz04': None, 'customitem157': '销售一部', 'recentactivitycreatedby': None, 'khxxdz03': None, 'customitem156': '企业事业部', 'bzhyfldm': None, 'customitem151': '政府', 'khxxdz00': None, 'fdistrict': None, 'khxxdz05': None, 'fkdwdz': None, 'releasetime': None, 'returntimes': None, 'customitem159': '李玉清', 'kddz': None, 'customitem158': None, 'lastmodifydate': '2021-01-07 15:57:22', 'customitem166': None, 'customitem165': None, 'customitem168': None, 'customitem167': None, 'customitem162': '环保局', 'customitem161': None, 'customitem164': '否', 'customitem163': None, 'showOnMap': None, 'postcode': None, 'customitem160': '15803173022', 'ispartner': None, 'lrr': None, 'khdd':None, 'weixin': None, 'name': '沧州市生态环境局', 'fkdwdh': None, 'customitem169': None, 'customitem210': None, 'customitem177': None, 'customItem160': '15803173022', 'fenji': '开发客户', 'customitem212': None, 'customitem179': None, 'customitem178': None, 'customitem211': None, 'employeenumber': None, 'customitem174': None, 'fkdwyhzh': None, 'customitem171': None, 'linkedin': None, 'customitem170': None, 'customItem164': '否', 'customItem162': '环保局', 'wangzhi': None, 'is_deleted': '0', 'recordtype': '2019593FC86B601GFelY', 'customitem214': None, 'zwyhxwfx': None, 'customitem213': '否', 'customitem216': None, 'releasedefinition': None, 'dianhua': '0317-3022715', 'customitem184': None, 'customitem183': None, 'customitem186': None, 'customitem185': None, 'jingweidu': ',', 'dls': None, 'tyshxydm': None, 'donotdisturb': 'false', 'xsdt': None, 'zwzhmc': None, 'iscustomer': None, 'customItem213': '否', 'fhdz': None, 'highSeaStatus': '自建', 'dimdepart': '销售一部', 'khxxdz': '', 'hangye': None, 'sflzqzkh': None}]
-    return "aaaa"
 
 
 if __name__ == "__main__":
