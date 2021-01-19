@@ -7,7 +7,7 @@
 
 ORDER_API_NAME="dingdan"
 ORDER_SQL_TABLE="order_back"
-ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","amount","discount_amount","contract_status","contract_attribute","contract_id","contract_start","contract_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id"]
+ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","amount","discount_amount","contract_status","contract_attribute","contract_id","contract_start","contract_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id","order_manager"]
 ORDER_DICT={
     "id":"crm_id",
     "name":"po",
@@ -31,6 +31,7 @@ ORDER_DICT={
     "customitem164": "total_performance",
     "customitem182": "approve_date",
     "customitem294": "payback_type",
+    "customItem184":"order_manager",
     "yid":"xsy_id",
 }
 ORDER_TABLE_STRING="""ALTER table `{}`
@@ -57,6 +58,7 @@ ORDER_TABLE_STRING="""ALTER table `{}`
       MODIFY `total_performance` varchar(50) COMMENT '业绩核算(成本）总额',
       MODIFY `approve_date` varchar(50) COMMENT '审批通过时间',
       MODIFY `payback_type` varchar(20) COMMENT '回款计划类型',
+      MODIFY `order_manager` varchar(50) COMMENT '订单负责人',
       MODIFY `xsy_id` varchar(20) COMMENT '销售易id' """
 
 
