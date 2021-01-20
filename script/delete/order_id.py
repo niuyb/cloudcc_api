@@ -132,10 +132,15 @@ def change_account_id():
     df = df.drop(["opportunity_id"], axis=1)
     df = df.rename(columns={"local_opportunity_id": "opportunity_id"})
 
-    # print(account_df)
+    # account_id
     df = pd.merge(df, account_df, how='left', on="account_id")
     df = df.drop(["account_id"],axis=1)
     df = df.rename(columns = {"new_account_id":"account_id"})
+    # account_name
+    account_df = account_df.rename(columns = {"account_id":"account_name"})
+    df = pd.merge(df, account_df, how='left', on="account_name")
+    df = df.drop(["account_name"],axis=1)
+    df = df.rename(columns = {"new_account_id":"account_name"})
     print(df)
 
     sql_table = "order_back_copy1"

@@ -218,6 +218,11 @@ class Order_Data():
             cc_df = pd.merge(cc_df, local_account_df, how='left', on="account_id")
             cc_df = cc_df.drop(["account_id"],axis=1)
             cc_df = cc_df.rename(columns={"local_account_id":"account_id"})
+            # account_name
+            local_account_df = local_account_df.rename(columns={"account_id": "account_name"})
+            cc_df = pd.merge(cc_df, local_account_df, how='left', on="account_name")
+            cc_df = cc_df.drop(["account_name"], axis=1)
+            cc_df = cc_df.rename(columns={"local_account_id": "account_name"})
             # opportunity_id
             cc_opportunity_str = list_to_sql_string(cc_df["opportunity_id"].dropna().tolist())
             local_opp_sql = """ select id as local_opportunity_id,crm_id as opportunity_id  from `{}` where crm_id in ({})""".format(self.opportunity_table,cc_opportunity_str)

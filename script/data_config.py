@@ -7,12 +7,13 @@
 
 ORDER_API_NAME="dingdan"
 ORDER_SQL_TABLE="order_back"
-ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","amount","discount_amount","contract_status","contract_attribute","contract_id","contract_start","contract_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id","order_manager"]
+ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_name","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","amount","discount_amount","contract_status","contract_attribute","contract_id","contract_start","contract_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id","order_manager"]
 ORDER_DICT={
     "id":"crm_id",
     "name":"po",
     "ownerid":"owner_id",
     "poStatus":"status",
+    "accountId":"account_name",
     "zzkh":"account_id",
     "orderRelQuotationEntity": "price_id",
     "opportunityId": "opportunity_id",
@@ -40,6 +41,7 @@ ORDER_TABLE_STRING="""ALTER table `{}`
       MODIFY `po` varchar(50) COMMENT '流水号',
       MODIFY `owner_id` varchar(50) COMMENT '销售负责人 对应星光salerid',
       MODIFY `status` varchar(20) COMMENT '订单状态',
+      MODIFY `account_name` varchar(50) COMMENT '客户id',
       MODIFY `account_id` varchar(50) COMMENT '最终客户id 对应account 星光id',
       MODIFY `price_id` varchar(50) COMMENT '价格表名称',
       MODIFY `opportunity_id` varchar(100) COMMENT '商机id',
