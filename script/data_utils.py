@@ -25,16 +25,6 @@ def create_id(name,timestamp,index):
             encoding='UTF-8')).hexdigest()[8:-8]
     return md5_str
 
-def changecc_accountid(df,account_id):
-    id = ""
-    id  = df.loc[df["crm_id"] == account_id].tolist()
-
-    return id
-
-
-
-
-
 
 
 

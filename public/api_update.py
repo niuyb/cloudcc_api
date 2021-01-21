@@ -217,7 +217,7 @@ def opportunity_into_mysql(data):
 
             # 在这里替换想相应的id
             # account_id
-            cc_account_str = list_to_sql_string(cc_df["account_id"].dropna().tolist())
+            cc_account_str = list_to_sql_string(cc_df["account_id"].dropna().tolist()+cc_df["account_name"].dropna().tolist())
             local_account_sql = """ select id as local_account_id,crm_id as account_id  from `{}` where crm_id in ({})""".format(ACCOUNT_SQL_TABLE,cc_account_str)
             local_account_df = pd.read_sql_query(local_account_sql,new_data)
             cc_df = pd.merge(cc_df, local_account_df, how='left', on="account_id")
@@ -248,7 +248,6 @@ def opportunity_into_mysql(data):
             inster_sql(new_data, OPPORTUNITY_SQL_TABLE, OPPORTUNITY_CLOUMNS_ORDER, cc_df,local_str)
             new_data.close()
 
-            # return cc_df[["id","crm_id"]].to_dict(orient='records')
             return id_dict
         else:
             return False

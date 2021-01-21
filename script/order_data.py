@@ -57,7 +57,7 @@ class Order_Data():
         self.opportunity_table = OPPORTUNITY_SQL_TABLE
 
         self.today = (datetime.datetime.now() - datetime.timedelta(hours=1.5)).strftime('%Y-%m-%d')
-        # self.today = "2021-01-06"
+        self.today = "2021-01-20"
         self.today_stamp =  date_ms(self.today)
         print(self.today)
         self.one_times_num = 1000
@@ -212,7 +212,7 @@ class Order_Data():
 
             # 在这里替换想相应的id
             # account_id
-            cc_account_str = list_to_sql_string(cc_df["account_id"].dropna().tolist())
+            cc_account_str = list_to_sql_string(cc_df["account_id"].dropna().tolist()+cc_df["account_name"].dropna().tolist())
             local_account_sql = """ select id as local_account_id,crm_id as account_id  from `{}` where crm_id in ({})""".format(self.account_table,cc_account_str)
             local_account_df = pd.read_sql_query(local_account_sql,new_data)
             cc_df = pd.merge(cc_df, local_account_df, how='left', on="account_id")

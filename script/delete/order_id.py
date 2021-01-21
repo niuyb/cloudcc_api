@@ -212,7 +212,6 @@ def change():
     cc_df = cc_df.drop(["order_manager"], axis=1)
     cc_df = cc_df.rename(columns={"local_owner_id": "order_manager"})
     local_user_df = local_user_df.rename(columns = {"order_manager":"owner_id"})
-
     # created_by
     local_user_df = local_user_df.rename(columns={"owner_id": "created_by"})
     cc_df = pd.merge(cc_df, local_user_df, how='left', on="created_by")

@@ -21,7 +21,6 @@ import hashlib
 import random
 from multiprocessing import Process,Queue
 
-import numpy as np
 import pymysql
 
 import time
