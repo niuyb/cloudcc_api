@@ -57,7 +57,7 @@ class Order_Data():
         self.opportunity_table = OPPORTUNITY_SQL_TABLE
 
         self.today = (datetime.datetime.now() - datetime.timedelta(hours=1.5)).strftime('%Y-%m-%d')
-        self.today = "2021-01-20"
+        # self.today = "2021-01-20"
         self.today_stamp =  date_ms(self.today)
         print(self.today)
         self.one_times_num = 1000

@@ -6,7 +6,7 @@
 # Python版本：3.7.0
 
 import time
-from celery_dir import celery_app
+from local_celery.celery_dir import celery_app
 
 
 @celery_app.task

@@ -18,6 +18,13 @@ pd.set_option('display.max_rows', None) # 展示所有行
 pd.set_option('display.max_columns', None) # 展示所有列
 pd.set_option('display.width', None)# 展示所有列
 
+
+"""
+暂不使用
+由celery操作sql
+"""
+
+
 def get_conn():
     host = "192.168.185.129"
     user = "nyb"

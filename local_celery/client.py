@@ -6,10 +6,11 @@
 # Python版本：3.7.0
 
 
-from celery_dir import task1
-from celery_dir import task2
+from local_celery.celery_dir import task1
+from local_celery.celery_dir import task2
 
-task1.add.apply_async(args=[2, 8])        # 也可用 task1.add.delay(2, 8)
-task2.multiply.apply_async(args=[3, 7])   # 也可用 task2.multiply.delay(3, 7)
+# task1.add.apply_async(args=[2, 8])        # 也可用 task1.add.delay(2, 8)
+task1.add.delay(2, 8)
+task2.celery_multiply.apply_async(args=[3, 7])   # 也可用 task2.multiply.delay(3, 7)
 
 print('hello world')
