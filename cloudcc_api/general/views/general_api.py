@@ -13,7 +13,7 @@ from public.utils import Result
 
 blue_general = Blueprint("blue_general",__name__)
 
-@blue_general.route("/token/api",methods=["GET"])
+@blue_general.route("/general/token",methods=["GET"])
 def get_token():
     """
     :param request: username,password
