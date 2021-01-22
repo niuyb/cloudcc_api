@@ -26,6 +26,7 @@ def opportunity_query():
     """
     :param request: field_name,field_value,token
     :return: data [{},{}]
+    商机名称不允许重复
     """
     result = Result()
     field_name = request.args.get("field_name",None)

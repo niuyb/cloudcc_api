@@ -314,6 +314,17 @@ def list_to_sql_string(list):
 
 
 
+def timer(func):
+    def call_func(*args, **kwargs):
+        # print("计时开始")
+        start_time = time.time()
+        func(*args, **kwargs)
+        end_time = time.time()
+        total_time = end_time - start_time
+        # print("计时结束")
+        print("程序用时",total_time)
+    return call_func
+
 
 
 if __name__ == "__main__":

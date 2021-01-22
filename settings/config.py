@@ -38,6 +38,7 @@ ACCOUNT_MAPPING={
     "name":"name",
     "zw_back_url":"zwyhxwfx",
     "qy_back_url":"customitem178",
+    "created_at":"createdate",
 }
 # 以下都是接口字段
 # 客户  允许查询条件   字段名称

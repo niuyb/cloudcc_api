@@ -37,7 +37,7 @@ def get_team_member():
                 result.msg = "获取binding失败,请检查配置"
                 return json.dumps(result.dict(), ensure_ascii=False)
             try:
-                cc_query_sql = """ select t0.userorgroupid,t0.rowcause,t1.type,t1.related_id from  {} t0 left outer join tp_sys_group t1 on t0.userorgroupid=t1.id  where parentId='{}'"""
+                cc_query_sql = """ select t0.userorgroupid,t0.rowcause,t1.type,t1.related_id from  {} t0 left outer join tp_sys_group t1 on t0.userorgroupid=t1.id  where parentId='{}' and isdeleted ="0"  """
                 user_sql = """ select id,`username`,email,crm_role,crm_id from {}""".format(USER_SQL_TABLE)
                 user_df = pd.read_sql_query(user_sql, database)
                 # 个人user
