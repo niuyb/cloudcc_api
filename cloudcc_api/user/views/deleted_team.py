@@ -68,14 +68,12 @@ def get_delete_team_member():
                 cc_query_sql = cc_query_sql.format(share_table,date,page*APPEND_PAGE_NUMS,APPEND_PAGE_NUMS)
                 data = cloudcc_query_sql(access_url, "cqlQuery",share_table, cc_query_sql, binding)
                 cc_total_sql = total_sql.format(share_table,date)
-                print(cc_total_sql)
                 total_data = cloudcc_query_sql(access_url, "cqlQuery",share_table, cc_total_sql, binding)
                 if total_data:
                     total_num = total_data[0]["total_num"]
                 else:
                     total_num = ""
 
-                print("total_num",total_num)
                 for data_dict in data:
                     object_crm_id.append(data_dict.get("parentid",""))
                 object_crm_id_str = list_to_sql_string(object_crm_id)
