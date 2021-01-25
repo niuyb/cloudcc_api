@@ -87,6 +87,11 @@ USER_MEMBER_MAPPING={
     "account":"tp_std_datatable1share",
     "opportunity":"tp_std_datatable2share",
 }
+# -----------------------------------------GENERAL-----------------------------------------------
+# 允许查询团队成员 type
+GENERAL_DELETED_TYPE_ALLOW = ["account","opportunity"]
+
+
 
 # -----------------------------------------TEMP-----------------------------------------------
 

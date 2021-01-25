@@ -19,10 +19,6 @@ def account_insert_mysql(id_dict,data):
     """
     account/api
     接口中先查数据库,数据库中无信息则去查询cloudcc之后同步数据库所以此处id均为新增id
-    id_dict={
-    "crm_id":"id"
-    }
-    data=[{},{}]
     """
     new_data = engine(settings.db_new_data)
     try:
@@ -62,7 +58,6 @@ def account_insert_mysql(id_dict,data):
                 cc_df.at[df_index, 'xsy_id'] = xsy_id
                 cc_df.at[df_index, 'id'] = id_dict.get(crm_id,"")
 
-
             # 在这里替换想相应的id
             # owner_id
             local_user_sql = """select `id` as local_owner_id ,crm_id as owner_id from {}""".format(USER_SQL_TABLE)
@@ -88,7 +83,7 @@ def account_insert_mysql(id_dict,data):
 
             inster_sql(new_data,ACCOUNT_SQL_TABLE,ACCOUNT_CLOUMNS_ORDER,cc_df,local_str)
             new_data.close()
-            return cc_df["id"].tolist()[0]
+            return cc_df["id"].tolist()
         else:
             return False
     except Exception as e:

@@ -15,7 +15,6 @@ from public.utils import Result, engine, ms_date, list_to_sql_string
 from script.data_config import ACCOUNT_SQL_TABLE, OPPORTUNITY_SQL_TABLE, OPPORTUNITY_API_NAME, ACCOUNT_API_NAME
 from settings import settings
 from settings.config import GENERAL_DELETED_TYPE_ALLOW, ClOUDCC_USERNAME, ClOUDCC_PASSWORD, ACCESS_URL
-import pandas as pd
 
 @blue_general.route("/general/deleted_infos",methods=["GET"])
 def get_deleted_infos():
