@@ -245,7 +245,7 @@ ORDER_DETAIL_DICT={
     "customitem162": "contract_status",
     "customitem149": "attribute",
     "productid":"product_id",
-    "customitem163":"contract_back_date",
+    "htgdrqx":"contract_back_date",
     "customitem125": "performance",
     "zzkhmc":"account_id",
     "customitem183":"amount",
