@@ -62,7 +62,7 @@ class Order_Data():
 
         # self.today = str(datetime.now().strftime('%Y-%m-%d'))
         self.today = (datetime.datetime.now() - datetime.timedelta(hours=1.5)).strftime('%Y-%m-%d')
-        # self.today = "2021-01-06"
+        # self.today = "2021-01-21"
         self.today_stamp =  date_ms(self.today)
         print(self.today)
         self.one_times_num = 1000
@@ -166,7 +166,7 @@ class Order_Data():
             # 新增 数据
             local_merge_df = local_df[["id","crm_id"]]
             cc_df = pd.merge(cc_df, local_merge_df, how='left', on="crm_id")
-            index_sql = """ select count(*) as nums from %s where created_at,10 >= "%s" """%(self.sql_table,self.today_stamp)
+            index_sql = """ select count(*) as nums from %s where created_at >= "%s" """%(self.sql_table,self.today_stamp)
             print("index_sql",index_sql)
             id_index = pd.read_sql_query(index_sql,new_data)["nums"].tolist()[0]
             print("id_index",id_index)
