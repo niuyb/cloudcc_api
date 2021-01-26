@@ -21,7 +21,7 @@ def create_id(name,timestamp,index):
     if not name:
         name = ""
     md5_str = hashlib.md5(
-        name.encode(encoding='UTF-8') + str(timestamp).encode(encoding='UTF-8') + str(index).encode(
+        str(name).encode(encoding='UTF-8') + str(timestamp).encode(encoding='UTF-8') + str(index).encode(
             encoding='UTF-8')).hexdigest()[8:-8]
     return md5_str
 

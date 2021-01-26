@@ -60,7 +60,7 @@ ORDER_TABLE_STRING="""ALTER table `{}`
       MODIFY `total_performance` varchar(50) COMMENT '业绩核算(成本）总额',
       MODIFY `approve_date` varchar(50) COMMENT '审批通过时间',
       MODIFY `payback_type` varchar(20) COMMENT '回款计划类型',
-      MODIFY `order_manager` varchar(50) COMMENT '订单负责人',
+      MODIFY `order_manager` varchar(50) COMMENT '订单实际负责人',
       MODIFY `xsy_id` varchar(20) COMMENT '销售易id' """
 
 
@@ -322,6 +322,47 @@ PRODUCT_TABLE_STRING= """ALTER table `{}`
                           MODIFY `product_name` varchar(255) COMMENT '产品名称',
                           MODIFY `price_unit` varchar(255) COMMENT '标准价',
                           MODIFY `product_line` varchar(255) COMMENT '产品线(实体)',
+                          MODIFY `created_at` varchar(50) COMMENT '创建日期', 
+                          MODIFY `created_by` varchar(50) COMMENT '创建人', 
+                          MODIFY `updated_at` varchar(50) COMMENT '更新日期', 
+                          MODIFY `updated_by` varchar(50) COMMENT '更新人' """
+
+# ORDER_CHANGE
+ORDER_CHANGE_API_NAME="ddbg"
+ORDER_CHANGE_SQL_TABLE="order_change"
+ORDER_CHANGE_CLOUMNS_ORDER = ["id","crm_id" ,"owner_id","status" ,"department","content" ,"order_id","changed_at","contract_money" ,"changed_money" ,"performance","changed_performance","changed_type","created_at","created_by","updated_at","updated_by"]
+ORDER_CHANGE_DICT={
+    "id":"crm_id",
+    "ownerid":"owner_id",
+    "customitem1":"order_id",
+    "customitem10": "changed_at",
+    "customitem18": "contract_money",
+    "customitem19": "changed_money",
+    "customitem20":"performance",
+    "customitem21": "changed_performance",
+    "customitem4": "changed_type",
+    "spzt": "status",
+    "ssbm": "department",
+    "customitem5": "content",
+    "createbyid": "created_by",
+    "createdate": "created_at",
+    "lastmodifybyid": "updated_by",
+    "lastmodifydate": "updated_at",
+}
+ORDER_CHANGE_TABLE_STRING= """ALTER table `{}` 
+                          MODIFY `id` varchar(100) COMMENT 'id',
+                          MODIFY `crm_id` varchar(100) COMMENT 'crm_订单变更id',
+                          MODIFY `owner_id` varchar(255) COMMENT '所有人id',
+                          MODIFY `status` varchar(255) COMMENT '审批状态',
+                          MODIFY `department` varchar(255) COMMENT '所有人部门',
+                          MODIFY `content` text COMMENT '变更后内容', 
+                          MODIFY `order_id` varchar(50) COMMENT '订单id', 
+                          MODIFY `changed_at` varchar(50) COMMENT '审批通过时间', 
+                          MODIFY `contract_money` varchar(100) COMMENT '变更前合同金额',
+                          MODIFY `changed_money` varchar(255) COMMENT '变更后合同金额（元）',
+                          MODIFY `performance` varchar(255) COMMENT '变更前实际金额（元）',
+                          MODIFY `changed_performance` varchar(255) COMMENT '变更后实际金额（元）',
+                          MODIFY `changed_type` varchar(50) COMMENT '变更类型', 
                           MODIFY `created_at` varchar(50) COMMENT '创建日期', 
                           MODIFY `created_by` varchar(50) COMMENT '创建人', 
                           MODIFY `updated_at` varchar(50) COMMENT '更新日期', 

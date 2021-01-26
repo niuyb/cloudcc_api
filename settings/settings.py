@@ -5,6 +5,7 @@
 # 工具：PyCharm
 # Python版本：3.7.0
 
+# 可以注册到flask config对象中
 
 
 # 33数据库的连接信息  暂不使用
