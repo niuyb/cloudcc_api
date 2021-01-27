@@ -127,7 +127,7 @@ def change_account_id():
     account_df = pd.read_sql_query(account_sql,new_data)
 
     # cc_opportunity_str = list_to_sql_string(cc_df["opportunity_id"].dropna().tolist())
-    local_opp_sql = """ select id as local_order_id,crm_id as order_id  from `{}`""".format("order_back")
+    local_opp_sql = """ select id as local_order_id,crm_id as order_id,contract_back_date  from `{}`""".format("order_back")
     local_opp_df = pd.read_sql_query(local_opp_sql, new_data)
 
     local_product_sql = """ select id as local_product_id,crm_id as product_id  from `{}`""".format(PRODUCT_SQL_TABLE)
@@ -189,11 +189,6 @@ def change():
         contract_end = getattr(row, 'contract_end')
         try:
             cc_df.at[df_index, 'contract_end'] = time_ms(contract_end)
-        except:
-            pass
-        contract_end = getattr(row, 'contract_back_date')
-        try:
-            cc_df.at[df_index, 'contract_back_date'] = time_ms(contract_end)
         except:
             pass
         xsy_id = getattr(row, 'xsy_id')
