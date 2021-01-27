@@ -62,7 +62,7 @@ class Order_Data():
 
         # self.today = str(datetime.now().strftime('%Y-%m-%d'))
         self.today = (datetime.datetime.now() - datetime.timedelta(hours=1.5)).strftime('%Y-%m-%d')
-        # self.today = "2021-01-21"
+        # self.today = "2021-01-20"
         self.today_stamp =  date_ms(self.today)
         print(self.today)
         self.one_times_num = 1000
@@ -225,7 +225,7 @@ class Order_Data():
             cc_df = cc_df.rename(columns={"local_account_id":"account_id"})
             # order_id
             cc_order_str = list_to_sql_string(cc_df["order_id"].dropna().tolist())
-            local_order_sql = """ select id as local_order_id,crm_id as order_id  from `{}` where crm_id in ({})""".format(self.order_table,cc_order_str)
+            local_order_sql = """ select id as local_order_id,crm_id as order_id,contract_back_date  from `{}` where crm_id in ({})""".format(self.order_table,cc_order_str)
             local_order_df = pd.read_sql_query(local_order_sql,new_data)
             cc_df = pd.merge(cc_df, local_order_df, how='left', on="order_id")
             cc_df = cc_df.drop(["order_id"],axis=1)
