@@ -184,6 +184,12 @@ def change():
 
         except:
             pass
+        contract_server_end = getattr(row, 'contract_server_end')
+        try:
+            cc_df.at[df_index, 'contract_server_end'] = time_ms(contract_server_end)
+
+        except:
+            pass
         contract_end = getattr(row, 'contract_end')
         try:
             cc_df.at[df_index, 'contract_end'] = time_ms(contract_end)
