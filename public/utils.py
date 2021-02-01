@@ -303,8 +303,11 @@ def date_ms(date):
     return obj_stamp
 """时间转成毫秒级别时间戳 """
 def time_ms(date):
-    datetime_obj = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
-    obj_stamp = int(time.mktime(datetime_obj.timetuple()) * 1000.0 + datetime_obj.microsecond / 1000.0)
+    try:
+        datetime_obj = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+        obj_stamp = int(time.mktime(datetime_obj.timetuple()) * 1000.0 + datetime_obj.microsecond / 1000.0)
+    except:
+        obj_stamp = None
     return obj_stamp
 """ 列表转sql 的字符串  """
 def list_to_sql_string(list):

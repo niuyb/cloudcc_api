@@ -52,12 +52,12 @@ def account_query():
                     str_list.remove("crm_id")
                     sql_str = ','.join(str_list)
                     if field_name in ACCOUNT_FUZZY_QUERY :
-                        query_sql = """ select id,{} from {} where {} like '%%{}%%' limit 15 """.format(sql_str,ACCOUNT_SQL_TABLE, ACCOUNT_DICT.get(field_name),field_value)
+                        query_sql = """ select id,crm_id,{} from {} where {} like '%%{}%%' limit 15 """.format(sql_str,ACCOUNT_SQL_TABLE, ACCOUNT_DICT.get(field_name),field_value)
                         sql_string = """ select * from `{}` where `{}` like '%%{}%%' and is_deleted="0" limit 15"""
                     else:
                         # 暂未添加多值处理
                         sql_string = """ select * from `{}` where `{}` in ('{}')  and is_deleted="0" """
-                        query_sql = """ select id,{} from {} where {} in ("{}") """.format(sql_str,ACCOUNT_SQL_TABLE,field_name,field_value)
+                        query_sql = """ select id,crm_id,{} from {} where {} in ("{}") """.format(sql_str,ACCOUNT_SQL_TABLE,field_name,field_value)
                     query_df = pd.read_sql_query(query_sql, database)
                     if query_df.shape[0] >0:
                     # if False:
@@ -85,6 +85,7 @@ def account_query():
                                         for key,value in data_dict.items():
                                             account_dict_key = ACCOUNT_DICT.get(key,"null")
                                             if account_dict_key == "crm_id":
+                                                new_data_dict["crm_id"] = account_dict_key
                                                 if id:
                                                     new_data_dict["id"]= id
                                                 else:

@@ -123,6 +123,9 @@ def change_account_id():
 
     sql = """ select * from order_detail_back_copy1 """
     df = pd.read_sql_query(sql,new_data)
+    df = df.drop(["contract_back_date"],axis=1)
+
+
     account_sql = """ select id as new_account_id, crm_id as account_id from account_back """
     account_df = pd.read_sql_query(account_sql,new_data)
 
@@ -150,6 +153,8 @@ def change_account_id():
 
 
     sql_table = "order_detail_back_copy1"
+
+
     df.to_sql(sql_table, new_data, index=False, if_exists="replace")
     cur, conn = get_conn()
     sql_remarks = ORDER_DETAIL_TABLE_STRING.format(sql_table)
@@ -238,8 +243,8 @@ def change():
 
 if __name__ == "__main__":
     # test()
-    change_account_id()
-    # change()
+    # change_account_id()
+    change()
 
 
 
