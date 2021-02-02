@@ -142,6 +142,7 @@ def modify_by_api(access_url,server_name,objectapi_name,data,binding):
     session.keep_alive = False
     try:
         data=json.dumps(data)
+        data = parse.quote(data)
         access_url = access_url+"/distributor.action?serviceName="+server_name+"&objectApiName="+objectapi_name+"&data="+data+"&binding="+binding
         # print(access_url)
         response = json.loads(session.get(access_url).text)
@@ -204,9 +205,10 @@ if __name__ == "__main__":
 
     # str1 = """select name,lastmodifydate from `Opportunity` where `zzkh` ="001202191EFE31FES10P"  """
 
-    str1 = """ select * from Account where id="0012021DB8A6057oehWb" """
+    # str1 = """ select count(*) as nums from ddmx where left(lastmodifydate,10) = '2021-01-18' """
+    str1 = """ select *  from dingdan where `id` = 'a132021C9A05875CF6pj' """
 
-    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Account",str1,"635888B46344BB60CEA243397845E7E4")
+    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","dingdan",str1,"2251EB53E8509B57692C836849A8A0C0")
     print(data)
 
     # data = modify_by_api("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","update","Account", [{'id':"0012020FE5A8EB0s9Ahn","name":"万科_modify_by_api"}], "F4318B05B7C1D4DC0CF165E0AB5421BC")
