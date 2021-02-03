@@ -40,16 +40,16 @@ def CHECK_PERMISSION_QUERY(token,sql_table):
             return sql_str
         else:
             return False
-    elif sql_table == "order":
+    elif sql_table == "post_order":
         if token == QY_token:
             sql_list =QY_ORDER_QUERY
-            sql_str = ",".join(sql_list)
+            # sql_str = ",".join(sql_list)
             # sql_str = list_to_sql_string(sql_list)
-            return sql_str
+            return sql_list
         elif token == ZW_token:
             sql_list =ZW_ORDER_QUERY
-            sql_str = ",".join(sql_list)
-            return sql_str
+            # sql_str = ",".join(sql_list)
+            return sql_list
         else:
             return False
 

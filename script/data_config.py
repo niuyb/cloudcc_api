@@ -72,7 +72,7 @@ ORDER_TABLE_STRING="""ALTER table `{}`
 # 数据库名称
 ACCOUNT_API_NAME = "Account"
 ACCOUNT_SQL_TABLE = "account_back"
-ACCOUNT_CLOUMNS_ORDER = ["id","crm_id","entity_type","account_name","owner_id","level","sea_status","longitude","address","address_province","address_city","address_area","recent_activity_time","recent_activity_by","sea_id","created_by","created_at","updated_by","updated_at","industry_1","industry_2","contact","contact_phone","contact_post","department_top","department","sea_push","push_sea_date","xsy_id"]
+ACCOUNT_CLOUMNS_ORDER = ["id","crm_id","entity_type","account_name","owner_id","level","sea_status","longitude","address","address_province","address_city","address_area","recent_activity_time","recent_activity_by","sea_id","created_by","created_at","updated_by","updated_at","industry_1","industry_2","contact","contact_phone","contact_post","department_top","department","sea_push","push_sea_date","xsy_id","zw_back_url","qy_back_url"]
 ACCOUNT_DICT={
     "id":"crm_id",
     "leixing":"entity_type",
@@ -104,6 +104,8 @@ ACCOUNT_DICT={
     "customitem156": "department",
     "customitem214": "sea_push",
     "customitem216": "push_sea_date",
+    "zwyhxwfx":"zw_back_url",
+    "customItem178": "qy_back_url",
     "yid":"xsy_id"
 }
 ACCOUNT_TABLE_STRING = """ALTER table `{}` 
@@ -135,7 +137,9 @@ ACCOUNT_TABLE_STRING = """ALTER table `{}`
                     MODIFY column `department_top` varchar(20) COMMENT '所属事业部  对应星光自建部门id',
                     MODIFY column `department` varchar(20) COMMENT '客户所属部门  对应星光自建部门id',
                     MODIFY column `sea_push` varchar(20) COMMENT '是否为公海池推送客户',
-                    MODIFY column `push_sea_date` varchar(20) COMMENT '公海池推送时间' """
+                    MODIFY column `push_sea_date` varchar(20) COMMENT '公海池推送时间',
+                    MODIFY column `zw_back_url` text COMMENT '政务用户行为分析',
+                    MODIFY column `qy_back_url` text COMMENT '企业用户行为分析' """
 
 
 
@@ -166,7 +170,7 @@ OPPORTUNITY_API_NAME = "Opportunity"
 # 数据库名称
 OPPORTUNITY_SQL_TABLE = "opportunity_back"
 # 入库顺序
-OPPORTUNITY_CLOUMNS_ORDER = ["id","crm_id","entity_type","type","opportunity_name","owner_id","price_id","account_name","account_id","money","intended_product","sale_stage","win_rate","close_date","saler_promise","project_budget","created_by","created_at","updated_by","updated_at","contact","position","phone","xsy_id","week_top","month_top","season_top","saler_per","opportunity_num","url"]
+OPPORTUNITY_CLOUMNS_ORDER = ["id","crm_id","entity_type","type","opportunity_name","owner_id","price_id","account_name","account_id","money","intended_product","sale_stage","win_rate","close_date","saler_promise","project_budget","created_by","created_at","updated_by","updated_at","contact","position","phone","xsy_id","week_top","month_top","season_top","saler_per","opportunity_num","url","zw_back_url","qy_back_url"]
 # api 与数据库字段映射关系
 OPPORTUNITY_DICT = {
     "id": "crm_id",
@@ -197,6 +201,8 @@ OPPORTUNITY_DICT = {
     "customitem269": "season_top",
     "sqfzr": "saler_per",
     "sjbh": "opportunity_num",
+    "customItem231":"qy_back_url",
+    "zwyhxwfx": "zw_back_url",
 }
 
 # 数据库类型格式
@@ -230,7 +236,9 @@ OPPORTUNITY_TABLE_STRING = """ALTER table `{}`
                   MODIFY `season_top` text COMMENT '季度top',
                   MODIFY `saler_per` varchar(100) COMMENT '	售前负责人',
                   MODIFY `opportunity_num` varchar(100) COMMENT '商机编号',
-                  MODIFY `url` varchar(100) COMMENT '商机网址'  """
+                  MODIFY `url` varchar(100) COMMENT '商机网址',
+                  MODIFY `zw_back_url` text COMMENT '政务用户行为分析',
+                  MODIFY `qy_back_url` text COMMENT '企业用户行为分析' """
 
 
 
