@@ -117,86 +117,91 @@ def order_post_query():
     """
     result = Result()
     try:
-        try:
-            query_data = request.form["query_data"]
-            query_data = json.loads(query_data)
-        except:
-            query_data={}
-        page = int(request.form["page"])
+        args_data=request.get_data()
+        args_data = json.loads(args_data)
+        query_data = args_data.get("query_data",{})
+        page = int(args_data.get("page",1))
         page = int(page) - 1
         if page < 0:
             page = 0
-
-        token = request.form["token"]
+        token = args_data.get("token",None)
     except:
         result.msg = "获取data失败,请检查参数"
         return json.dumps(result.dict(), ensure_ascii=False)
 
     database = engine(settings.db_new_data)
     back_url = ""
-    sql_list = CHECK_PERMISSION_QUERY(token, "post_order")
-    try:
-        sql_list.remove("account_name")
-        sql_list.remove("opportunity_name")
-        sql_list.remove("product_id")
+    if token:
+        sql_list = CHECK_PERMISSION_QUERY(token, "post_order")
         try:
-            sql_list.remove("qy_back_url")
-        except:
-            back_url = "zw_back_url"
-        try:
-            sql_list.remove("zw_back_url")
-        except:
-            back_url = "qy_back_url"
+            sql_list.remove("account_name")
+            sql_list.remove("opportunity_name")
+            sql_list.remove("product_id")
+            try:
+                sql_list.remove("qy_back_url")
+            except:
+                back_url = "zw_back_url"
+            try:
+                sql_list.remove("zw_back_url")
+            except:
+                back_url = "qy_back_url"
 
-        sql_str = "a."+',a.'.join(sql_list) + ",b.product_id"
-        temp_sql = ""
-        for args_key,value in query_data.items():
-            if args_key in ORDER_POST_QUERY_ALLOW:
-                if args_key in ["updated_start"]:
-                    temp_sql += "and a.{} >= {} ".format("updated_at", value)
-                elif args_key in ["updated_end"]:
-                    temp_sql += "and a.{} <= {} ".format("updated_at", value)
-                elif args_key in ["product_id"]:
-                    temp_sql += "and b.{} = '{}' ".format(args_key, value)
+            sql_str = "a."+',a.'.join(sql_list) + ",b.product_id"
+            temp_sql = ""
+            for args_key,value in query_data.items():
+                if args_key in ORDER_POST_QUERY_ALLOW:
+                    if args_key in ["updated_start"]:
+                        temp_sql += "and a.{} >= {} ".format("updated_at", value)
+                    elif args_key in ["updated_end"]:
+                        temp_sql += "and a.{} <= {} ".format("updated_at", value)
+                    elif args_key in ["product_id"]:
+                        temp_sql += "and b.{} = '{}' ".format(args_key, value)
+                    else:
+                        temp_sql += "and a.{} = '{}' ".format(args_key,value)
                 else:
-                    temp_sql += "and a.{} = '{}' ".format(args_key,value)
+                    pass
+
+            if back_url == "qy_back_url":
+                temp_sql += "and product_name like '%%{}%%'".format("智慧商情")
+            elif back_url == "zw_back_url":
+                temp_sql += "and product_name like '%%{}%%'".format("舆情秘书")
             else:
                 pass
 
-        if back_url == "qy_back_url":
-            temp_sql += "and product_name like '%%{}%%'".format("智慧商情")
-        elif back_url == "zw_back_url":
-            temp_sql += "and product_name like '%%{}%%'".format("舆情秘书")
-        else:
-            pass
+            sql_string = """ select {},product_name from {} a left join {} b on a.id = b.order_id left join {} c on b.product_id = c.id  where true {}  limit {},{}""".format(sql_str,ORDER_SQL_TABLE,ORDER_DETAIL_SQL_TABLE,PRODUCT_SQL_TABLE,temp_sql,page*PAGE_NUMS,PAGE_NUMS)
+            total_sql = """ select count(*) as total from {} a left join {} b on a.id = b.order_id left join {} c on b.product_id = c.id  where true {}""".format(ORDER_SQL_TABLE,ORDER_DETAIL_SQL_TABLE,PRODUCT_SQL_TABLE,temp_sql)
+            total_df = pd.read_sql_query(total_sql, database)
+            total = total_df["total"].to_list()[0]
+            query_df = pd.read_sql_query(sql_string, database)
+            opportunity_id_list= query_df["opportunity_id"].to_list()
+            opportunity_id_list = list(set(opportunity_id_list))
+            if None in opportunity_id_list:
+                opportunity_id_list.remove(None)
+            account_id_list= query_df["account_id"].to_list()
+            account_id_list = list(set(account_id_list))
+            if None in account_id_list:
+                account_id_list.remove(None)
+            opportunity_str = list_to_sql_string(opportunity_id_list)
+            account_str = list_to_sql_string(account_id_list)
 
-        sql_string = """ select {},product_name from {} a left join {} b on a.id = b.order_id left join {} c on b.product_id = c.id  where true {}  limit {},{}""".format(sql_str,ORDER_SQL_TABLE,ORDER_DETAIL_SQL_TABLE,PRODUCT_SQL_TABLE,temp_sql,page*PAGE_NUMS,PAGE_NUMS)
-        query_df = pd.read_sql_query(sql_string, database)
-        opportunity_id_list= query_df["opportunity_id"].to_list()
-        opportunity_id_list = list(set(opportunity_id_list))
-        if None in opportunity_id_list:
-            opportunity_id_list.remove(None)
-        account_id_list= query_df["account_id"].to_list()
-        account_id_list = list(set(account_id_list))
-        if None in account_id_list:
-            account_id_list.remove(None)
-        opportunity_str = list_to_sql_string(opportunity_id_list)
-        account_str = list_to_sql_string(account_id_list)
-
-        opportunity_sql = """ select id as opportunity_id,opportunity_name,{} from {} where id in ({}) """.format(back_url,OPPORTUNITY_SQL_TABLE,opportunity_str)
-        opportunity_df = pd.read_sql_query(opportunity_sql, database)
-        account_sql = """ select id as account_id,account_name from {} where id in ({}) """.format(ACCOUNT_SQL_TABLE,account_str)
-        account_df = pd.read_sql_query(account_sql, database)
-        # account_name
-        query_df = pd.merge(query_df, account_df, how='left', on="account_id")
-        # opportunity_name
-        query_df = pd.merge(query_df, opportunity_df, how='left', on="opportunity_id")
-
-        data_dict=query_df.to_dict("records")
-        result.data = data_dict
-        result.code = 1
-    except:
-        result.msg = "获取data失败"
+            opportunity_sql = """ select id as opportunity_id,opportunity_name,{} from {} where id in ({}) """.format(back_url,OPPORTUNITY_SQL_TABLE,opportunity_str)
+            opportunity_df = pd.read_sql_query(opportunity_sql, database)
+            account_sql = """ select id as account_id,account_name from {} where id in ({}) """.format(ACCOUNT_SQL_TABLE,account_str)
+            account_df = pd.read_sql_query(account_sql, database)
+            # account_name
+            query_df = pd.merge(query_df, account_df, how='left', on="account_id")
+            # opportunity_name
+            query_df = pd.merge(query_df, opportunity_df, how='left', on="opportunity_id")
+            # 转str格式
+            query_df = query_df.where(query_df.notnull(), None)
+            data_dict=query_df.to_dict("records")
+            result.data = data_dict
+            result.total = total
+            result.code = 1
+        except:
+            result.msg = "获取data失败"
+    else:
+        result.msg = "token无效"
 
     database.close()
     return json.dumps(result.dict(),ensure_ascii=False)
