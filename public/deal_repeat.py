@@ -17,7 +17,8 @@
 import datetime
 import sys,os
 
-from script.data_config import ORDER_DETAIL_DICT, ORDER_DETAIL_TABLE_STRING, ORDER_TABLE_STRING
+from script.data_config import ORDER_DETAIL_DICT, ORDER_DETAIL_TABLE_STRING, ORDER_TABLE_STRING, ACCOUNT_TABLE_STRING, \
+    OPPORTUNITY_TABLE_STRING
 
 path1 = os.path.abspath('/var/www/cloudcc_api')
 sys.path.append(path1)
@@ -95,11 +96,16 @@ def delete_repeat(sql_table,sql_table_string):
 
 if __name__ == "__main__":
 
+    # get_repeat("order_detail_back")
+    # get_repeat("order_back")
     get_repeat("account_back")
 
 
+    # delete_repeat("account_back",ACCOUNT_TABLE_STRING)
+    # delete_repeat("order_back",ORDER_TABLE_STRING)
+    # delete_repeat("opportunity_back_copy1",OPPORTUNITY_TABLE_STRING)
+    # delete_repeat("order_detail_back",ORDER_DETAIL_TABLE_STRING)
     # delete_repeat("order_detail_back_copy1",ORDER_DETAIL_TABLE_STRING)
-    # delete_repeat("order_back_copy1",ORDER_TABLE_STRING)
 
 
 

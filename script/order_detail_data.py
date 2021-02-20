@@ -148,7 +148,7 @@ class Order_Data():
             # 本次操作的cc id
             operate_list = cc_df["crm_id"].tolist()
             operate_str = list_to_sql_string(operate_list)
-            local_sql = """ select id,crm_id,account_id from `{}` where crm_id in ({})""".format(self.sql_table,operate_str)
+            local_sql = """ select id,crm_id from `{}` where crm_id in ({})""".format(self.sql_table,operate_str)
             local_df = pd.read_sql_query(local_sql,new_data)
             # 本次操作local数据库id
             local_list = cc_df["crm_id"].tolist()
