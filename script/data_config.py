@@ -7,7 +7,7 @@
 
 ORDER_API_NAME="dingdan"
 ORDER_SQL_TABLE="order_back"
-ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_name","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","amount","discount_amount","contract_status","contract_attribute","contract_id","contract_start","contract_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id","order_manager"]
+ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_name","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","amount","discount_amount","contract_status","contract_attribute","contract_id","contract_start","contract_end","contract_server_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id","order_manager"]
 ORDER_DICT={
     "id":"crm_id",
     "name":"po",
@@ -28,7 +28,7 @@ ORDER_DICT={
     "customitem166": "contract_id",
     "customitem147": "contract_start",
     "customitem148": "contract_end",
-    "customItem174": "contract_server_end",
+    "customitem174": "contract_server_end",
     "customitem156": "contract_back_date",
     "customitem164": "total_performance",
     "customitem182": "approve_date",
@@ -138,6 +138,7 @@ ACCOUNT_TABLE_STRING = """ALTER table `{}`
                     MODIFY column `department` varchar(20) COMMENT '客户所属部门  对应星光自建部门id',
                     MODIFY column `sea_push` varchar(20) COMMENT '是否为公海池推送客户',
                     MODIFY column `push_sea_date` varchar(20) COMMENT '公海池推送时间',
+                    MODIFY column `xsy_id` varchar(50) COMMENT '销售易id',
                     MODIFY column `zw_back_url` text COMMENT '政务用户行为分析',
                     MODIFY column `qy_back_url` text COMMENT '企业用户行为分析' """
 
@@ -380,3 +381,216 @@ ORDER_CHANGE_TABLE_STRING= """ALTER table `{}`
                           MODIFY `created_by` varchar(50) COMMENT '创建人', 
                           MODIFY `updated_at` varchar(50) COMMENT '更新日期', 
                           MODIFY `updated_by` varchar(50) COMMENT '更新人' """
+
+
+
+
+# ORDER_CHANGE
+PAYMENT_PLAN_API_NAME="hkjh"
+PAYMENT_PLAN_SQL_TABLE="payment_plan"
+PAYMENT_PLAN_CLOUMNS_ORDER = ["id","crm_id","name","owner_id","industry_l1","inform_date","call_back","dunning_num","dunning_team_record","dunning_record_date","dunning_team_owner","level","overdue_date","payment_batch","payment_actual_money","payment_plan_review","count_unpaid_amount","paid_back_situation","remarks","contract","lawyer_letter_date","deduction_by","deduction_reason","deduction_date","deduction_progress","promise_payment_date","saler_promise_payment_date","is_agent","is_client","is_inform","dunning_owner","call_back_status","overdue_status","feedback_date","register_date","code","Resigners_order","payment_date","payment_amount","litigation_decision","overdue_deal_date","dunning_reason","overdue_hand_over","overdue_deal","overdue_type","created_by","created_at","updated_by","updated_at"]
+PAYMENT_PLAN_DICT={
+    "id":"crm_id",
+    "name":"name",
+    "ownerid": "owner_id",
+    "yjhy":"industry_l1",
+    "cghfsrq":"inform_date",
+    # "chkx":"call_back",
+    "ckhbh":"dunning_num",
+    "csxzgt":"dunning_team_record",
+    "ckxzgtjlgxsj":"dunning_record_date",
+    "ckxzfzer11":"dunning_team_owner",
+    "swbgjjb":"level",
+    # "hkyyqts":"overdue_date",
+    "hkqc":"payment_batch",
+    # "actualAmount":"payment_actual_money",
+    "hkjhsfsh":"payment_plan_review",
+    # "hkjhwhkje":"count_unpaid_amount",
+    "hbqk":"paid_back_situation",
+    "beizhu":"remarks",
+    "customit12":"contract",
+    "lshfsrq":"lawyer_letter_date",
+    # 所属部门
+    "kkty":"deduction_by",
+    "kkyy":"deduction_reason",
+    "kkrq":"deduction_date",
+    "kfjz":"deduction_progress",
+    "cnhkrqsd":"promise_payment_date",
+    "cnhkrq":"saler_promise_payment_date",
+    "sfdls":"is_agent",
+    "sfgskh":"is_client",
+    "sfyfcgh":"is_inform",
+    "bqckfzr":"dunning_owner",
+    "bqhkzt":"call_back_status",
+    "bqyqzt":"overdue_status",
+    "bcfkrqbt":"feedback_date",
+    "larq":"register_date",
+    "code":"code",
+    "rwlzrydd":"resigners_order",
+    "planTime":"payment_date",
+    "amount":"payment_amount",
+    "sssxpdjcs":"litigation_decision",
+    "yqclbfgxsj":"overdue_deal_date",
+    "yqwhkxxyy":"dunning_reason",
+    "yqkxjj":"overdue_hand_over",
+    "yqkxclbf":"overdue_deal",
+    "yqlx":"overdue_type",
+    "createbyid": "created_by",
+    "createdate": "created_at",
+    "lastmodifybyid": "updated_by",
+    "lastmodifydate": "updated_at",
+}
+
+""" 'hkjhwhkje', 'actualAmount', 'chkx', 'hkyyqts' 
+                                MODIFY column `overdue_date` varchar(50) COMMENT '回款已逾期天数', 
+                                MODIFY column `count_unpaid_amount` varchar(50) COMMENT '回款计划未回款金额（计算）', 
+                                MODIFY column `call_back` varchar(50) COMMENT '催回款项', 
+                                MODIFY column `payment_actual_money` varchar(50) COMMENT '回款计划实际回款金额', 
+
+
+
+"""
+
+PAYMENT_PLAN_TABLE_STRING= """ALTER table `{}` 
+                                MODIFY column `id` varchar(50) COMMENT 'id', 
+                                MODIFY column `crm_id` varchar(50) COMMENT 'crm_id', 
+                                MODIFY column `name` varchar(50) COMMENT '回款计划编号', 
+                                MODIFY column `owner_id` varchar(50) COMMENT '回款计划所有人', 
+                                MODIFY column `industry_l1` varchar(50) COMMENT '一级行业', 
+                                MODIFY column `inform_date` varchar(50) COMMENT '催告函发送日期', 
+                                MODIFY column `dunning_num` varchar(50) COMMENT '催款函编号', 
+                                MODIFY column `dunning_team_record` varchar(50) COMMENT '催款小组沟通记录', 
+                                MODIFY column `dunning_record_date` varchar(50) COMMENT '催款小组沟通记录更新时间', 
+                                MODIFY column `dunning_team_owner` varchar(50) COMMENT '催款小组负责人', 
+                                MODIFY column `level` varchar(50) COMMENT '商务部跟进级别', 
+                                MODIFY column `payment_batch` varchar(50) COMMENT '回款期次', 
+                                MODIFY column `payment_plan_review` varchar(50) COMMENT '回款计划是否审核', 
+                                MODIFY column `paid_back_situation` varchar(50) COMMENT '回补情况', 
+                                MODIFY column `remarks` text COMMENT '备注', 
+                                MODIFY column `contract` text COMMENT '客户联系人、联系方式、详细地址（申请发送律师函必填项）', 
+                                MODIFY column `department` varchar(50) COMMENT '所属部门', 
+                                MODIFY column `lawyer_letter_date` varchar(50) COMMENT '律师函发送日期', 
+                                MODIFY column `deduction_by` varchar(50) COMMENT '扣款人员', 
+                                MODIFY column `deduction_reason` varchar(50) COMMENT '扣款原因', 
+                                MODIFY column `deduction_date` varchar(50) COMMENT '扣款日期', 
+                                MODIFY column `deduction_progress` varchar(50) COMMENT '扣费进展（未回款的5%）', 
+                                MODIFY column `promise_payment_date` varchar(50) COMMENT '承诺回款日期锁定（逾期扣费依据）', 
+                                MODIFY column `saler_promise_payment_date` varchar(50) COMMENT '承诺回款日期（销售填写）', 
+                                MODIFY column `is_agent` varchar(50) COMMENT '是否代理商', 
+                                MODIFY column `is_client` varchar(50) COMMENT '是否公司客户', 
+                                MODIFY column `is_inform` varchar(50) COMMENT '是否已发催告函', 
+                                MODIFY column `dunning_owner` varchar(50) COMMENT '本期催款负责人（必填）', 
+                                MODIFY column `call_back_status` varchar(50) COMMENT '本期回款状态', 
+                                MODIFY column `overdue_status` varchar(50) COMMENT '本期逾期状态', 
+                                MODIFY column `feedback_date` varchar(50) COMMENT '本次反馈日期（必填）', 
+                                MODIFY column `register_date` varchar(50) COMMENT '立案日期', 
+                                MODIFY column `code` varchar(50) COMMENT '编号', 
+                                MODIFY column `resigners_order` varchar(50) COMMENT '若为离职人员订单（填写离职人员姓名）', 
+                                MODIFY column `payment_date` varchar(50) COMMENT '计划回款日期', 
+                                MODIFY column `payment_amount` varchar(50) COMMENT '计划回款金额', 
+                                MODIFY column `litigation_decision` varchar(50) COMMENT '诉讼时效判定及措施', 
+                                MODIFY column `overdue_deal_date` varchar(50) COMMENT '逾期处理办法更新时间', 
+                                MODIFY column `dunning_reason` text COMMENT '逾期未回款详细原因（申请发送律师函必填项）', 
+                                MODIFY column `overdue_hand_over` varchar(50) COMMENT '逾期款项交接', 
+                                MODIFY column `overdue_deal` varchar(50) COMMENT '逾期款项处理办法', 
+                                MODIFY column `overdue_type` varchar(50) COMMENT '逾期类型（必填）', 
+                                MODIFY column `created_at` varchar(50) COMMENT '创建日期', 
+                                MODIFY column `created_by` varchar(50) COMMENT '创建人', 
+                                MODIFY column `updated_at` varchar(50) COMMENT '更新日期', 
+                                MODIFY column `updated_by` varchar(50) COMMENT '更新人' """
+
+
+
+
+
+# ORDER_CHANGE
+PAYMENT_RECORD_API_NAME="hkjl"
+PAYMENT_RECORD_SQL_TABLE="payment_record"
+PAYMENT_RECORD_CLOUMNS_ORDER = ["id","crm_id","name","owner_id","contract_id","contract_status","contract_num","overdue_date","payment_batch","payment_num","remarks","actual_payment_date","actual_payment_amount","back_date","code","payment_date","payment_amount","order_id","order_actual_owner","order_owner","created_by","created_at","updated_by","updated_at"]
+PAYMENT_RECORD_DICT={
+    "id":"crm_id",
+    "name":"name",
+    "ownerid":"owner_id",
+    "contractid":"contract_id",
+    "htzt":"contract_status",
+    "htbh":"contract_num",
+    "customitem150":"overdue_date",
+    "hkqc":"payment_batch",
+    "hkjh":"payment_num",
+    "cloudcctag": "remarks",
+    "actualTime":"actual_payment_date",
+    "amount":"actual_payment_amount",
+    "accountId":"account_id",
+    "gdrq":"back_date",
+    # 所属部门
+    "code":"code",
+    "jhhkrq":"payment_date",
+    "jhhkje":"payment_amount",
+    "orderId":"order_id",
+    "ddsjfzr":"order_actual_owner",
+    "ddsyr":"order_owner",
+    "createbyid": "created_by",
+    "createdate": "created_at",
+    "lastmodifybyid": "updated_by",
+    "lastmodifydate": "updated_at",
+}
+PAYMENT_RECORD_TABLE_STRING= """ALTER table `{}` 
+                                MODIFY column `crm_id` varchar(50) COMMENT 'crm_id',
+                                MODIFY column `name` varchar(50) COMMENT '回款记录',
+                                MODIFY column `owner_id` varchar(50) COMMENT '所有人',
+                                MODIFY column `contract_id` varchar(50) COMMENT '合同',
+                                MODIFY column `contract_status` varchar(50) COMMENT '合同状态',
+                                MODIFY column `contract_num` varchar(50) COMMENT '合同编号',
+                                MODIFY column `overdue_date` varchar(50) COMMENT '回款已逾期天数',
+                                MODIFY column `payment_batch` varchar(50) COMMENT '回款期次',
+                                MODIFY column `payment_num` varchar(50) COMMENT '回款计划',
+                                MODIFY column `remarks` varchar(50) COMMENT '备注',
+                                MODIFY column `actual_payment_date` varchar(50) COMMENT '实际回款日期',
+                                MODIFY column `actual_payment_amount` varchar(50) COMMENT '实际回款金额',
+                                MODIFY column `account_id` varchar(50) COMMENT '客户名称',
+                                MODIFY column `back_date` varchar(50) COMMENT '归档日期',
+                                MODIFY column `department` varchar(50) COMMENT '所属部门',
+                                MODIFY column `code` varchar(50) COMMENT '编号',
+                                MODIFY column `payment_date` varchar(50) COMMENT '计划回款日期',
+                                MODIFY column `payment_amount` varchar(50) COMMENT '计划回款金额',
+                                MODIFY column `order_id` varchar(50) COMMENT '订单',
+                                MODIFY column `order_actual_owner` varchar(50) COMMENT '订单实际负责人',
+                                MODIFY column `order_owner` varchar(50) COMMENT '订单所有人',
+                                MODIFY column `created_at` varchar(50) COMMENT '创建日期', 
+                                MODIFY column `created_by` varchar(50) COMMENT '创建人', 
+                                MODIFY column `updated_at` varchar(50) COMMENT '更新日期', 
+                                MODIFY column `updated_by` varchar(50) COMMENT '更新人' """
+
+
+
+
+ACTIVITY_API_NAME="Activity"
+ACTIVITY_SQL_TABLE="activity"
+ACTIVITY_CLOUMNS_ORDER = ["id","crm_id","name"]
+ACTIVITY_DICT={
+    "id":"crm_id",
+    "name":"name",
+    "subject":"subject",
+    "relateobj":"object_type",
+    "relateid": "object_id",
+    "remark":"remark",
+    "ownerid":"owner_id",
+    "createbyid": "created_by",
+    "createdate": "created_at",
+    "lastmodifybyid": "updated_by",
+    "lastmodifydate": "updated_at",
+}
+ACTIVITY_TABLE_STRING = """ALTER table `{}`
+                          MODIFY column `id` varchar(50) COMMENT '星光自建 activity id',
+                          MODIFY column `crm_id` varchar(50) COMMENT 'crmid',
+                          MODIFY column `name` text COMMENT 'name',
+                          MODIFY column `subject` varchar(100) COMMENT '类型名称',
+                          MODIFY column `object_type` varchar(100) COMMENT '对象类型 1客户2商机',
+                          MODIFY column `object_id` varchar(100) COMMENT '对象id',
+                          MODIFY column `remark` text COMMENT '备注',
+                          MODIFY column `owner_id` varchar(200) COMMENT '所属人',
+                          MODIFY column `created_at` varchar(50) COMMENT '创建日期', 
+                          MODIFY column `created_by` varchar(50) COMMENT '创建人', 
+                          MODIFY column `updated_at` varchar(50) COMMENT '更新日期', 
+                          MODIFY column `updated_by` varchar(50) COMMENT '更新人' """
+
