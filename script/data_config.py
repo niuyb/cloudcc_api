@@ -255,7 +255,7 @@ ORDER_DETAIL_DICT={
     # api 无po
     # "po":"po",
     "name":"name",
-    "customitem162": "contract_status",
+    # "customitem162": "contract_status",
     "customitem149": "attribute",
     "productid":"product_id",
     # contract_back_date 从order中关联

@@ -130,12 +130,13 @@ def change_account_id():
     account_df = pd.read_sql_query(account_sql,new_data)
 
     # cc_opportunity_str = list_to_sql_string(cc_df["opportunity_id"].dropna().tolist())
-    local_opp_sql = """ select id as local_order_id,crm_id as order_id,contract_back_date  from `{}`""".format("order_back")
+    local_opp_sql = """ select id as local_order_id,crm_id as order_id,contract_back_date,contract_status  from `{}`""".format("order_back")
     local_opp_df = pd.read_sql_query(local_opp_sql, new_data)
 
     local_product_sql = """ select id as local_product_id,crm_id as product_id  from `{}`""".format(PRODUCT_SQL_TABLE)
     local_product_df = pd.read_sql_query(local_product_sql, new_data)
 
+    df = df.drop(["contract_status"], axis=1)
     df = pd.merge(df, local_opp_df, how='left', on="order_id")
     df = df.drop(["order_id"], axis=1)
     df = df.rename(columns={"local_order_id": "order_id"})
