@@ -247,7 +247,7 @@ OPPORTUNITY_TABLE_STRING = """ALTER table `{}`
 
 ORDER_DETAIL_API_NAME="ddmx"
 ORDER_DETAIL_SQL_TABLE="order_detail_back"
-ORDER_DETAIL_CLOUMNS_ORDER = ["id","crm_id","order_id","owner_id","name","contract_status","attribute","product_id","contract_back_date","performance","account_id","amount","server_start","server_end","contract_end","created_by","created_at","updated_by","updated_at","xsy_id"]
+ORDER_DETAIL_CLOUMNS_ORDER = ["id","crm_id","order_id","owner_id","name","contract_status","attribute","product_id","contract_back_date","saler_amount","performance","account_id","amount","server_start","server_end","contract_end","created_by","created_at","updated_by","updated_at","xsy_id"]
 ORDER_DETAIL_DICT={
     "id":"crm_id",
     "orderid":"order_id",
@@ -258,6 +258,7 @@ ORDER_DETAIL_DICT={
     # "customitem162": "contract_status",
     "customitem149": "attribute",
     "productid":"product_id",
+    "ddmxxsje":"saler_amount",
     # contract_back_date 从order中关联
     # "customitem163":"contract_back_date",
     "customitem125": "performance",
@@ -282,6 +283,7 @@ ORDER_DETAIL_TABLE_STRING = """ALTER table `{}`
                   MODIFY `product_id` varchar(50) COMMENT '产品id',
                   MODIFY `contract_back_date` varchar(50) COMMENT '合同归档日期',
                   MODIFY `performance` varchar(100) COMMENT '业绩核算金额',
+                  MODIFY `saler_amount` varchar(100) COMMENT '销售金额',
                   MODIFY `owner_id` varchar(50) COMMENT '订单所属销售,星光自建销售id',
                   MODIFY `account_id` varchar(50) COMMENT '客户id',
                   MODIFY `amount` varchar(50) COMMENT '订单总金额',
