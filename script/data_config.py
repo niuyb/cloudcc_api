@@ -7,7 +7,7 @@
 
 ORDER_API_NAME="dingdan"
 ORDER_SQL_TABLE="order_back"
-ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_name","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","amount","discount_amount","contract_status","contract_attribute","contract_id","contract_start","contract_end","contract_server_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id","order_manager"]
+ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_name","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","amount","discount_amount","contract_status","contract_attribute","contract_id","contract_start","contract_end","contract_server_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id","contract_abnormal_status","order_manager"]
 ORDER_DICT={
     "id":"crm_id",
     "name":"po",
@@ -33,7 +33,8 @@ ORDER_DICT={
     "customitem164": "total_performance",
     "customitem182": "approve_date",
     "customitem294": "payback_type",
-    "customItem184":"order_manager",
+    "customitem184": "order_manager",
+    "customitem210": "contract_abnormal_status",
     "yid":"xsy_id",
 }
 ORDER_TABLE_STRING="""ALTER table `{}`
@@ -53,6 +54,7 @@ ORDER_TABLE_STRING="""ALTER table `{}`
       MODIFY `amount` varchar(50) COMMENT '订单总金额',
       MODIFY `discount_amount` varchar(50) COMMENT '总折扣额',
       MODIFY `contract_status` varchar(20) COMMENT '合同状态',
+      MODIFY `contract_abnormal_status` varchar(20) COMMENT '合同异常状态',
       MODIFY `contract_attribute` varchar(10) COMMENT '合同属性 1新签 2续签',
       MODIFY `contract_id` varchar(50) COMMENT '合同编号',
       MODIFY `contract_start` varchar(50) COMMENT '合同开始日期',
@@ -105,7 +107,7 @@ ACCOUNT_DICT={
     "customitem214": "sea_push",
     "customitem216": "push_sea_date",
     "zwyhxwfx":"zw_back_url",
-    "customItem178": "qy_back_url",
+    "customitem178": "qy_back_url",
     "yid":"xsy_id"
 }
 ACCOUNT_TABLE_STRING = """ALTER table `{}` 
@@ -183,7 +185,7 @@ OPPORTUNITY_DICT = {
     "khmc":"account_name",
     "zzkh": "account_id",
     "jine": "money",
-    "customItem164": "intended_product",
+    "customitem164": "intended_product",
     "jieduan": "sale_stage",
     "knx": "win_rate",
     "jsrq": "close_date",
@@ -197,12 +199,12 @@ OPPORTUNITY_DICT = {
     "customitem166": "position",
     "customitem222":"phone",
     "yid": "xsy_id",
-    "customItem267": "week_top",
+    "customitem267": "week_top",
     "customitem268": "month_top",
     "customitem269": "season_top",
     "sqfzr": "saler_per",
     "sjbh": "opportunity_num",
-    "customItem231":"qy_back_url",
+    "customitem231":"qy_back_url",
     "zwyhxwfx": "zw_back_url",
 }
 
