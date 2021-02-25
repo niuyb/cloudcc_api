@@ -19,23 +19,17 @@ path1 = os.path.abspath('/var/www/cloudcc_api')
 sys.path.append(path1)
 
 
-import hashlib
 import json
-import random
-from multiprocessing import Process,Queue
 
-import numpy as np
 import pymysql
 
-import time
-from datetime import datetime
 import pandas as pd
 import requests
 
 from public.cloudcc_utils import cloudcc_get_request_url, cloudcc_get_binding, cloudcc_query_sql
 from public.utils import engine, list_to_sql_string
-from script.data_config import ORDER_DICT, ACCOUNT_DICT, OPPORTUNITY_DICT, USER_DICT, MICROPOST_DICT, \
-    MICROPOST_CLOUMNS_ORDER, MICROPOST_TABLE_STRING, ACCOUNT_API_NAME, OPPORTUNITY_API_NAME, OPPORTUNITY_SQL_TABLE, \
+from script.data_config import  MICROPOST_DICT, \
+    MICROPOST_CLOUMNS_ORDER, MICROPOST_TABLE_STRING, OPPORTUNITY_SQL_TABLE, \
     ACCOUNT_SQL_TABLE, USER_SQL_TABLE
 from script.data_utils import create_id
 from settings import settings
@@ -46,14 +40,6 @@ pd.set_option('display.max_columns', None) # 展示所有列
 pd.set_option('display.width', None)
 
 
-"""
-order_id 生成规则
-
-年份取后两位
-
-"ZO" + md5('order_name + timestamp')+ index
-
-"""
 
 
 class Order_Data():
@@ -109,16 +95,24 @@ class Order_Data():
         sql = """ select crm_id from user_back """
         df = pd.read_sql_query(sql, new_data)
 
+
+        local_account_sql = """ select id,crm_id  from `{}` """.format(self.account_sql_table)
+        local_account_df = pd.read_sql_query(local_account_sql, new_data)
+        local_opp_sql = """ select id,crm_id  from `{}`""".format(self.opportunity_sql_table)
+        local_opp_df = pd.read_sql_query(local_opp_sql, new_data)
+
         for row in df.itertuples():
             # index = getattr(row, 'Index')
             user_id = getattr(row, 'crm_id')
-            self.get_cc_micropost(user_id,new_data)
+            self.get_cc_micropost(user_id,new_data,local_account_df,local_opp_df)
             print(user_id)
 
+        new_data.close()
 
 
 
-    def get_cc_micropost(self,user_id,new_data):
+
+    def get_cc_micropost(self,user_id,new_data,local_account_df,local_opp_df):
         try:
             access_url = cloudcc_get_request_url(ACCESS_URL, ClOUDCC_USERNAME)
             binding = cloudcc_get_binding(access_url, ClOUDCC_USERNAME, ClOUDCC_PASSWORD)
@@ -134,11 +128,13 @@ class Order_Data():
         response = requests.post(self.cc_micropost_url, data=datas).text
         response_data = json.loads(response)
         res_data = response_data["data"]
+        if res_data:
+            self.change_data(res_data,new_data,local_account_df,local_opp_df)
+        else:
+            pass
 
-        self.change_data(res_data,new_data)
 
-
-    def change_data(self,data,new_data):
+    def change_data(self,data,new_data,local_account_df,local_opp_df):
 
         cc_df = pd.DataFrame(data)
         ccdf_name_list = list(self.sql_mapping.keys())
@@ -157,11 +153,6 @@ class Order_Data():
         local_list = cc_df["crm_id"].tolist()
         local_str = list_to_sql_string(local_list)
 
-
-        local_account_sql = """ select id,crm_id  from `{}` """.format(self.account_sql_table)
-        local_account_df = pd.read_sql_query(local_account_sql, new_data)
-        local_opp_sql = """ select id,crm_id  from `{}`""".format(self.opportunity_sql_table)
-        local_opp_df = pd.read_sql_query(local_opp_sql, new_data)
 
         index_sql = """ select count(id) as nums from {} """.format(self.sql_table)
         id_index = pd.read_sql_query(index_sql, new_data)["nums"].tolist()[0]
@@ -204,9 +195,11 @@ class Order_Data():
         cc_df = cc_df.drop(["created_by"], axis=1)
         cc_df = cc_df.rename(columns={"local_owner_id": "created_by"})
 
-        print(cc_df)
-        self.inster_sql(cc_df,local_str,new_data)
-
+        print(cc_df.shape)
+        if cc_df.shape[0] > 0:
+            self.inster_sql(cc_df,local_str,new_data)
+        else:
+            pass
 
 
 
@@ -223,7 +216,6 @@ class Order_Data():
         cur.execute(sql_remarks)
         cur.close()
         conn.close()
-        new_data.close()
 
 
 
@@ -231,10 +223,10 @@ if __name__ == "__main__":
     o = Order_Data()
 
 
-    # o.get_micro_post()
-    new_data = engine(settings.db_new_data)
+    o.get_micro_post()
+    # new_data = engine(settings.db_new_data)
 
-    o.get_cc_micropost("0052017BE8702F1PIi4j",new_data)
+    # o.get_cc_micropost("0052017BE8702F1PIi4j",new_data)
 
 
 
