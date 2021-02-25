@@ -111,7 +111,7 @@ QY_ORDER_QUERY = ["id","crm_id","contract_status","contract_start","contract_ser
 ZW_token = "4e33e00381c94a9bba251ebb44996c0f"
 # ZW账号允许查询返回的字段
 ZW_ACCOUNT_QUERY=["id","name","customitem151","customitem162","fState","fCity","fDistrict","yid","ownerid","createdate","fenji","highSeaStatus","dianhua","recentActivityRecordTime"]
-ZW_OPPORTUNITY_QUERY = ["name","id","zzkh","yid","ownerid","customItem164","commitmentFlg","jsrq","customitem222","jieduan","customitem262"]
+ZW_OPPORTUNITY_QUERY = ["name","id","zzkh","yid","ownerid","customitem164","commitmentFlg","jsrq","customitem222","jieduan","customitem262"]
 # ZW_ORDER_QUERY = ["name","htzt","customitem147","customItem174","lastmodifydate","zzkh","opportunityId","ownerid",""]
 # 输出字段
 ZW_ORDER_QUERY = ["id","crm_id","contract_status","contract_start","contract_server_end","updated_at","account_id","opportunity_id","account_name","opportunity_name","owner_id","product_id","zw_back_url"]
