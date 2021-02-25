@@ -14,7 +14,9 @@
 import sys
 import importlib
 importlib.reload(sys)
-
+import os
+path1 = os.path.abspath('/var/www/cloudcc_api')
+sys.path.append(path1)
 
 
 import hashlib
