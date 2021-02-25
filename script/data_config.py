@@ -64,7 +64,7 @@ ORDER_TABLE_STRING="""ALTER table `{}`
       MODIFY `total_performance` varchar(50) COMMENT '业绩核算(成本）总额',
       MODIFY `approve_date` varchar(50) COMMENT '审批通过时间',
       MODIFY `payback_type` varchar(20) COMMENT '回款计划类型',
-      MODIFY `order_manager` varchar(50) COMMENT '订单实际负责人',
+      MODIFY `order_manager` varchar(50) COMMENT '订单实际负责人 业绩负责人',
       MODIFY `xsy_id` varchar(20) COMMENT '销售易id' """
 
 
@@ -598,3 +598,74 @@ ACTIVITY_TABLE_STRING = """ALTER table `{}`
                           MODIFY column `updated_at` varchar(50) COMMENT '更新日期', 
                           MODIFY column `updated_by` varchar(50) COMMENT '更新人' """
 
+
+
+
+OPPORTUNITY_DETAIL_API_NAME="sjmx"
+OPPORTUNITY_DETAIL_SQL_TABLE="opportunity_detail"
+OPPORTUNITY_DETAIL_CLOUMNS_ORDER = ["id","crm_id","name","product_id","amount","opportunity_id","price_amount","product_name","price_unit","price_id","discount_off","created_by","created_at","updated_by","updated_at"]
+OPPORTUNITY_DETAIL_DICT={
+    "id":"crm_id",
+    "name":"name",
+    "cp":"product_id",
+    "amount":"amount",
+    "opportunityId":"opportunity_id",
+    "standardPrice":"price_amount",
+    "cpmc":"product_name",
+    "priceUnit":"price_unit",
+    # "priceTotal":"price_total",
+    # "discount":"discount",
+    "jgb":"price_id",
+    "discountOff":"discount_off",
+    "createbyid": "created_by",
+    "createdate": "created_at",
+    "lastmodifybyid": "updated_by",
+    "lastmodifydate": "updated_at",
+}
+OPPORTUNITY_DETAIL_TABLE_STRING = """ALTER table `{}`
+                          MODIFY column `id` varchar(50) COMMENT '星光自建 activity id',
+                          MODIFY column `crm_id` varchar(50) COMMENT 'crmid',
+                          MODIFY column `name` text COMMENT '编号',
+                          MODIFY column `product_id` varchar(100) COMMENT '	产品编号',
+                          MODIFY column `amount` varchar(100) COMMENT '	数量',
+                          MODIFY column `opportunity_id` varchar(100) COMMENT '	商机id',
+                          MODIFY column `price_amount` varchar(100) COMMENT '价格表价格',
+                          MODIFY column `product_name` varchar(100) COMMENT '	产品名称',
+                          MODIFY column `price_unit` varchar(100) COMMENT '	销售单价',
+                          MODIFY column `price_id` varchar(100) COMMENT '	价格表',
+                          MODIFY column `discount_off` varchar(100) COMMENT '	减价',
+                          MODIFY column `created_at` varchar(50) COMMENT '创建日期', 
+                          MODIFY column `created_by` varchar(50) COMMENT '创建人', 
+                          MODIFY column `updated_at` varchar(50) COMMENT '更新日期', 
+                          MODIFY column `updated_by` varchar(50) COMMENT '更新人' """
+
+
+
+
+
+MICROPOST_API_NAME="getChatters01"
+MICROPOST_SQL_TABLE="micropost"
+MICROPOST_CLOUMNS_ORDER = ["id","crm_id","target_name","author_name","target_object","target_id","target_type","content","created_by","created_at","isdelete"]
+MICROPOST_DICT={
+    "id":"crm_id",
+    "targetIdname":"target_name",
+    "authorIdname":"author_name",
+    "targetId":"target_id",
+    "targetType":"target_type",
+    "editBody":"content",
+    "authorId": "created_by",
+    "createDateTime1": "created_at",
+    "isdelete":"isdelete",
+}
+MICROPOST_TABLE_STRING = """ALTER table `{}`
+                          MODIFY column `id` varchar(50) COMMENT '星光自建 activity id',
+                          MODIFY column `crm_id` varchar(50) COMMENT 'crmid',
+                          MODIFY column `target_name` text COMMENT '目标名称',
+                          MODIFY column `author_name` varchar(100) COMMENT '作者名称',
+                          MODIFY column `target_object` varchar(20) COMMENT '目标业务类型',
+                          MODIFY column `target_id` varchar(100) COMMENT '目标id',
+                          MODIFY column `target_type` varchar(100) COMMENT '目标类型',
+                          MODIFY column `content` text COMMENT '内容',
+                          MODIFY column `isdelete` varchar(20) COMMENT '是否删除',
+                          MODIFY column `created_at` varchar(50) COMMENT '创建日期', 
+                          MODIFY column `created_by` varchar(50) COMMENT '创建人' """
