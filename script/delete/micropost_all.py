@@ -92,7 +92,7 @@ class Order_Data():
 
     def get_micro_post(self):
         new_data = engine(settings.db_new_data)
-        sql = """ select crm_id from user_back """
+        sql = """ select crm_id from user_back  where crm_id="00520205F8BD4FEjm7Tw" """
         df = pd.read_sql_query(sql, new_data)
 
 
@@ -122,12 +122,11 @@ class Order_Data():
 
 
         datas = {"serviceName": self.cloudcc_object, "binding": binding,
-                 "data": {"queryType": "zone", "userId": user_id, "limit":500}}
-
+                 "data": {"queryType": "zone", "userId": user_id}}
         datas['data'] = json.dumps(datas['data'])
         response = requests.post(self.cc_micropost_url, data=datas).text
         response_data = json.loads(response)
-        res_data = response_data["data"]
+        res_data = response_data.get("data",None)
         if res_data:
             self.change_data(res_data,new_data,local_account_df,local_opp_df)
         else:
