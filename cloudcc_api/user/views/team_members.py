@@ -5,6 +5,7 @@
 # 工具：PyCharm
 # Python版本：3.7.0
 import json
+from copy import deepcopy
 from urllib import parse
 
 from flask import request
@@ -37,7 +38,7 @@ def get_team_member():
                 result.msg = "获取binding失败,请检查配置"
                 return json.dumps(result.dict(), ensure_ascii=False)
             try:
-                cc_query_sql = """ select t0.userorgroupid,t0.rowcause,t1.type,t1.related_id from  {} t0 left outer join tp_sys_group t1 on t0.userorgroupid=t1.id  where parentId='{}' and isdeleted ="0"  """
+                cc_query_sql = """ select t0.userorgroupid,t0.rowcause,t1.type,t1.related_id from  {} t0 left outer join tp_sys_group t1 on t0.userorgroupid=t1.id  where parentId='{}'  """
                 user_sql = """ select id,`username`,email,crm_role,crm_id from {}""".format(USER_SQL_TABLE)
                 user_df = pd.read_sql_query(user_sql, database)
                 # 个人user
@@ -87,8 +88,14 @@ def get_team_member():
                         role_list.append(related_id)
                     else:
                         pass
+                # 复制rowcause_dict
+                temp_rowcause_dict = deepcopy(rowcause_dict)
                 role_user_list = user_df[user_df["crm_role"].isin(role_list)]["crm_id"].tolist()
                 crm_user_list +=role_user_list
+                for key in temp_rowcause_dict.keys():
+                    temp_list = user_df[user_df["crm_role"]== key]["crm_id"].tolist()
+                    for uid in temp_list:
+                        rowcause_dict[uid] = rowcause_dict.get(key,None)
                 for crm_user in crm_user_list:
                     temp_df =user_df.loc[user_df["crm_id"]==crm_user,["id","username","email"]].to_dict("records")
                     if temp_df:
