@@ -104,7 +104,7 @@ class Order_Data():
         for row in df.itertuples():
             # index = getattr(row, 'Index')
             user_id = getattr(row, 'crm_id')
-            self.get_cc_micropost(user_id,new_data,local_account_df,local_opp_df)
+            self.get_cc_micropost(user_id,local_account_df,local_opp_df)
             print(user_id)
 
         new_data.close()
@@ -112,7 +112,7 @@ class Order_Data():
 
 
 
-    def get_cc_micropost(self,user_id,new_data,local_account_df,local_opp_df):
+    def get_cc_micropost(self,user_id,local_account_df,local_opp_df):
         try:
             access_url = cloudcc_get_request_url(ACCESS_URL, ClOUDCC_USERNAME)
             binding = cloudcc_get_binding(access_url, ClOUDCC_USERNAME, ClOUDCC_PASSWORD)
@@ -128,13 +128,14 @@ class Order_Data():
         response_data = json.loads(response)
         res_data = response_data.get("data",None)
         if res_data:
-            self.change_data(res_data,new_data,local_account_df,local_opp_df)
+            self.change_data(res_data,local_account_df,local_opp_df)
         else:
             pass
 
 
-    def change_data(self,data,new_data,local_account_df,local_opp_df):
+    def change_data(self,data,local_account_df,local_opp_df):
 
+        new_data = engine(settings.db_new_data)
         cc_df = pd.DataFrame(data)
         ccdf_name_list = list(self.sql_mapping.keys())
         cc_df = cc_df[ccdf_name_list]
@@ -199,6 +200,9 @@ class Order_Data():
             self.inster_sql(cc_df,local_str,new_data)
         else:
             pass
+
+        new_data.close()
+
 
 
 

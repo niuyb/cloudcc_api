@@ -61,7 +61,10 @@ def test():
     sql_index = 0
     for row in df.itertuples():
         id = getattr(row, 'id')
-        if not id:
+        print(id,type(id))
+        if isinstance(id,str):
+            pass
+        else:
             index = getattr(row, 'Index')
             account_name = getattr(row, 'remark')
             created_at = getattr(row, 'created_at')
@@ -69,14 +72,11 @@ def test():
             id= create_id(account_name, timestamp, sql_index)
             sql_index +=1
             df.at[index, 'id'] = id
-        else:
-            pass
 
-    # print(df)
+    print(df)
     sql_table = "activity_copy1"
     df.to_sql(sql_table, new_data, index=False, if_exists="replace")
     cur, conn = get_conn()
-
     sql_remarks = ACTIVITY_TABLE_STRING .format( sql_table)
     cur.execute(sql_remarks)
 
