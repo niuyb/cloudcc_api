@@ -92,6 +92,7 @@ def get_team_member():
                 temp_rowcause_dict = deepcopy(rowcause_dict)
                 role_user_list = user_df[user_df["crm_role"].isin(role_list)]["crm_id"].tolist()
                 crm_user_list +=role_user_list
+                # 处理角色组中的rowcause
                 for key in temp_rowcause_dict.keys():
                     temp_list = user_df[user_df["crm_role"]== key]["crm_id"].tolist()
                     for uid in temp_list:

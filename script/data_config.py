@@ -603,20 +603,21 @@ ACTIVITY_TABLE_STRING = """ALTER table `{}`
 
 OPPORTUNITY_DETAIL_API_NAME="sjmx"
 OPPORTUNITY_DETAIL_SQL_TABLE="opportunity_detail"
-OPPORTUNITY_DETAIL_CLOUMNS_ORDER = ["id","crm_id","name","product_id","amount","opportunity_id","price_amount","product_name","price_unit","price_id","discount_off","created_by","created_at","updated_by","updated_at"]
+OPPORTUNITY_DETAIL_CLOUMNS_ORDER = ["id","crm_id","owner_id","name","product_id","amount","opportunity_id","price_amount","price_unit","price_id","price_total","created_by","created_at","updated_by","updated_at"]
 OPPORTUNITY_DETAIL_DICT={
     "id":"crm_id",
     "name":"name",
-    "cp":"product_id",
+    "ownerid":"owner_id",
+    # "cp":"product_id",
     "amount":"amount",
     "opportunityId":"opportunity_id",
     "standardPrice":"price_amount",
-    "cpmc":"product_name",
+    "cpmc":"product_id",
     "priceUnit":"price_unit",
     # "priceTotal":"price_total",
     # "discount":"discount",
     "jgb":"price_id",
-    "discountOff":"discount_off",
+    # "discountOff":"discount_off",
     "createbyid": "created_by",
     "createdate": "created_at",
     "lastmodifybyid": "updated_by",
@@ -625,15 +626,15 @@ OPPORTUNITY_DETAIL_DICT={
 OPPORTUNITY_DETAIL_TABLE_STRING = """ALTER table `{}`
                           MODIFY column `id` varchar(50) COMMENT '星光自建 activity id',
                           MODIFY column `crm_id` varchar(50) COMMENT 'crmid',
+                          MODIFY column `owner_id` varchar(50) COMMENT '所有人',
                           MODIFY column `name` text COMMENT '编号',
-                          MODIFY column `product_id` varchar(100) COMMENT '	产品编号',
                           MODIFY column `amount` varchar(100) COMMENT '	数量',
                           MODIFY column `opportunity_id` varchar(100) COMMENT '	商机id',
                           MODIFY column `price_amount` varchar(100) COMMENT '价格表价格',
-                          MODIFY column `product_name` varchar(100) COMMENT '	产品名称',
+                          MODIFY column `product_id` varchar(100) COMMENT '	产品名称',
                           MODIFY column `price_unit` varchar(100) COMMENT '	销售单价',
                           MODIFY column `price_id` varchar(100) COMMENT '	价格表',
-                          MODIFY column `discount_off` varchar(100) COMMENT '	减价',
+                          MODIFY column `price_total` varchar(100) COMMENT '销售金额  price_unit * amount',
                           MODIFY column `created_at` varchar(50) COMMENT '创建日期', 
                           MODIFY column `created_by` varchar(50) COMMENT '创建人', 
                           MODIFY column `updated_at` varchar(50) COMMENT '更新日期', 
