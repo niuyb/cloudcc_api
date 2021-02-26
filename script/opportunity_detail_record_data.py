@@ -203,7 +203,7 @@ class Opportunity_Record():
 
 
 if __name__ == "__main__":
-    type = sys.args[1]
+    type = sys.argv[1]
     print('type',type)
 
     # 新曾周维度记录
