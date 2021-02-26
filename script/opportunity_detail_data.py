@@ -197,8 +197,9 @@ class Order_Data():
 
             # 在这里替换想相应的id
             # opportunity_id
-            local_opp_sql = """ select id as local_opportunity_id,crm_id as opportunity_id  from `{}`""".format(self.opportunity_table)
+            local_opp_sql = """ select id as local_opportunity_id,crm_id as opportunity_id,close_date  from `{}`""".format(self.opportunity_table)
             local_opp_df = pd.read_sql_query(local_opp_sql, new_data)
+            # cc_df = cc_df.drop(["close_date"], axis=1)
             cc_df = pd.merge(cc_df, local_opp_df, how='left', on="opportunity_id")
             cc_df = cc_df.drop(["opportunity_id"], axis=1)
             cc_df = cc_df.rename(columns={"local_opportunity_id": "opportunity_id"})
