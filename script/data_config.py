@@ -603,7 +603,7 @@ ACTIVITY_TABLE_STRING = """ALTER table `{}`
 
 OPPORTUNITY_DETAIL_API_NAME="sjmx"
 OPPORTUNITY_DETAIL_SQL_TABLE="opportunity_detail"
-OPPORTUNITY_DETAIL_CLOUMNS_ORDER = ["id","crm_id","owner_id","name","product_id","amount","opportunity_id","price_amount","price_unit","price_id","price_total","created_by","created_at","updated_by","updated_at"]
+OPPORTUNITY_DETAIL_CLOUMNS_ORDER = ["id","crm_id","owner_id","name","product_id","amount","opportunity_id","price_amount","price_unit","price_id","price_total","close_date","created_by","created_at","updated_by","updated_at"]
 OPPORTUNITY_DETAIL_DICT={
     "id":"crm_id",
     "name":"name",
@@ -634,6 +634,7 @@ OPPORTUNITY_DETAIL_TABLE_STRING = """ALTER table `{}`
                           MODIFY column `product_id` varchar(100) COMMENT '	产品名称',
                           MODIFY column `price_unit` varchar(100) COMMENT '	销售单价',
                           MODIFY column `price_id` varchar(100) COMMENT '	价格表',
+                          MODIFY column `close_date` varchar(100) COMMENT '	结单日期',
                           MODIFY column `price_total` varchar(100) COMMENT '销售金额  price_unit * amount',
                           MODIFY column `created_at` varchar(50) COMMENT '创建日期', 
                           MODIFY column `created_by` varchar(50) COMMENT '创建人', 

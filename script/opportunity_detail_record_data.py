@@ -26,7 +26,7 @@ from datetime import timedelta
 import pandas as pd
 
 from public.utils import engine
-from script.data_config import OPPORTUNITY_SQL_TABLE
+from script.data_config import OPPORTUNITY_SQL_TABLE, OPPORTUNITY_DETAIL_SQL_TABLE
 from settings import settings
 
 pd.set_option('display.max_rows', None) # 展示所有行
@@ -44,7 +44,7 @@ class Opportunity_Record():
         self.today = datetime.date.today()
         self.today_tmp = self.date_ms(str(self.today))
         self.now = datetime.datetime.now()
-        self.opportunity_table = OPPORTUNITY_SQL_TABLE
+        self.opportunity_detail_table = OPPORTUNITY_DETAIL_SQL_TABLE
         # self.now = datetime.date.today() + datetime.timedelta(-100)
         self.type = type
         # self.time_dict={
@@ -52,7 +52,7 @@ class Opportunity_Record():
         #     "month":30,
         #     "season":90,
         # }
-        self.columns_order=["id","type","date","opportunity_name","intended_product","money","sale_stage","win_rate","saler_promise","close_date","owner_id"]
+        self.columns_order=["type","date","id","crm_id","owner_id","name","product_id","amount","opportunity_id","price_unit","created_at","created_by","updated_at","updated_by","close_date"]
 
     def date_ms(self,date):
         # timestr = '2019-01-14 15:22:18'
@@ -138,8 +138,8 @@ class Opportunity_Record():
         else:
             return "参数有误"
         # 129数据库order
-        opp_sql = """ select id,opportunity_name,intended_product,money,sale_stage,win_rate,saler_promise,close_date,owner_id from `%s` 
-        where close_date >= "%s" and close_date <= "%s" """%(self.opportunity_table,today_tmp,future_tmp)
+        opp_sql = """ select id,crm_id,owner_id,`name`,product_id,amount,opportunity_id,price_unit,created_at,created_by,updated_at,updated_by,close_date from `%s` 
+        where close_date >= "%s" and close_date <= "%s" """%(self.opportunity_detail_table,today_tmp,future_tmp)
         opp_df = pd.read_sql_query(opp_sql, self.new_data)
         opp_df["type"] = self.type
         opp_df["date"] = self.today_tmp
@@ -166,21 +166,25 @@ class Opportunity_Record():
 
     def inster_sql(self,df):
         df = df[self.columns_order]
-        df.to_sql("opportunity_record", self.new_data, index=False, if_exists="append")
+        df.to_sql("opportunity_detail_record", self.new_data, index=False, if_exists="append")
         cur,conn = self.get_conn()
-
-        sql_remarks = """ALTER table `opportunity_record` 
+        sql_remarks = """ALTER table `opportunity_detail_record`
                           MODIFY `type` varchar(10) COMMENT 'week  周记录\r\nmonth 月记录\r\nseason  季度记录',
                           MODIFY `date` varchar(50) COMMENT '记录时间',
-                          MODIFY `id` varchar(50) COMMENT '商机id',
-                          MODIFY `opportunity_name` varchar(500) COMMENT '商机名称',
-                          MODIFY `intended_product` varchar(500) COMMENT '意向产品',
-                          MODIFY `money` varchar(255) COMMENT '商机金额',
-                          MODIFY `sale_stage` varchar(50) COMMENT '销售阶段',
-                          MODIFY `win_rate` varchar(50) COMMENT '赢率',
-                          MODIFY `saler_promise` varchar(50) COMMENT '销售承诺',
-                          MODIFY `close_date` varchar(50) COMMENT '结单日期',
-                          MODIFY `owner_id` varchar(50) COMMENT '销售id'  """
+                          MODIFY `id` varchar(50) COMMENT '商机明细id',
+                          MODIFY `crm_id` varchar(50) COMMENT '商机明细crm_id',
+                          MODIFY `owner_id` varchar(50) COMMENT '商机明细所属人',
+                          MODIFY `name` varchar(100) COMMENT '商机明细编号',
+                          MODIFY `product_id` varchar(50) COMMENT '产品id',
+                          MODIFY `amount` varchar(50) COMMENT '数量',
+                          MODIFY `opportunity_id` varchar(100) COMMENT '商机id',
+                          MODIFY `price_unit` varchar(50) COMMENT '单价',
+                          MODIFY `created_at` varchar(50) COMMENT '商机明细创建时间',
+                          MODIFY `created_by` varchar(50) COMMENT '商机明细创建人',
+                          MODIFY `updated_at` varchar(50) COMMENT '商机明细修改时间',
+                          MODIFY `updated_by` varchar(50) COMMENT '商机明细修改人',
+                          MODIFY `close_date` varchar(50) COMMENT '结单日期'  """
+
         cur.execute(sql_remarks)
 
         cur.close()
@@ -196,19 +200,16 @@ class Opportunity_Record():
 
 
 if __name__ == "__main__":
-
     type = sys.args[1]
     print('type',type)
 
     # 新曾周维度记录
-    o = Opportunity_Record(type)
+    # o = Opportunity_Record("week")
     # 新增月度维度记录
-    # o = Opportunity_Record("month")
+    o = Opportunity_Record(type)
     # 新增季度维度记录
     # o = Opportunity_Record("season")
-
     o.get_opportunity()
-    # o.close_connent()
 
 
 

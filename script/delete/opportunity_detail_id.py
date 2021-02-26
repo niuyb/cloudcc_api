@@ -103,8 +103,9 @@ def change_account_id():
     df = df.drop(["product_id"],axis=1)
     df = df.rename(columns = {"new_product_id":"product_id"})
 
-    local_opp_sql = """ select id as local_opportunity_id,crm_id as opportunity_id  from `{}`""".format("opportunity_back")
+    local_opp_sql = """ select id as local_opportunity_id,crm_id as opportunity_id,close_date  from `{}`""".format("opportunity_back")
     local_opp_df = pd.read_sql_query(local_opp_sql, new_data)
+    df = df.drop(["close_date"], axis=1)
     df = pd.merge(df, local_opp_df, how='left', on="opportunity_id")
     df = df.drop(["opportunity_id"], axis=1)
     df = df.rename(columns={"local_opportunity_id": "opportunity_id"})
@@ -143,7 +144,7 @@ def change():
             price_unit = price_unit.replace(",", "")
             cc_df.at[df_index, 'price_total'] = float(amount) * float(price_unit)
         else:
-            cc_df.at[df_index, 'price_total'] =0
+            cc_df.at[df_index, 'price_total'] = 0
     # # owner_id
     local_user_sql = """select `id` as local_owner_id ,crm_id as owner_id from {}""".format("user_back")
     local_user_df = pd.read_sql_query(local_user_sql, new_data)
