@@ -50,7 +50,7 @@ class Order_Data():
         self.access_url  = ''
         self.binding = ''
         self.cloudcc_object="hkjh"
-        self.sql_table= "payment_plan"
+        self.sql_table= "payment_plan_copy1"
         self.sql_mapping= PAYMENT_PLAN_DICT
         self.sql_table_string = PAYMENT_PLAN_TABLE_STRING
 

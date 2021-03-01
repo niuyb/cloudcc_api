@@ -29,7 +29,7 @@ from script.data_config import OPPORTUNITY_SQL_TABLE, OPPORTUNITY_CLOUMNS_ORDER,
     ACCOUNT_SQL_TABLE, ORDER_API_NAME, ORDER_TABLE_STRING, ORDER_DICT, ORDER_SQL_TABLE, ORDER_CLOUMNS_ORDER, \
     ORDER_DETAIL_API_NAME, ORDER_DETAIL_TABLE_STRING, ORDER_DETAIL_DICT, ORDER_DETAIL_SQL_TABLE, \
     ORDER_DETAIL_CLOUMNS_ORDER, PRODUCT_SQL_TABLE, PAYMENT_RECORD_API_NAME, PAYMENT_RECORD_SQL_TABLE, \
-    PAYMENT_RECORD_DICT, PAYMENT_RECORD_TABLE_STRING, PAYMENT_RECORD_CLOUMNS_ORDER
+    PAYMENT_RECORD_DICT, PAYMENT_RECORD_TABLE_STRING, PAYMENT_RECORD_CLOUMNS_ORDER, PAYMENT_PLAN_SQL_TABLE
 from script.data_utils import create_id
 from settings import settings
 from settings.config import ACCESS_URL, ClOUDCC_USERNAME, ClOUDCC_PASSWORD
@@ -53,6 +53,7 @@ class Order_Data():
         self.user_table = USER_SQL_TABLE
         self.account_table = ACCOUNT_SQL_TABLE
         self.order_table = ORDER_SQL_TABLE
+        self.payment_plan_table = PAYMENT_PLAN_SQL_TABLE
         # self.product_table = PRODUCT_SQL_TABLE
 
 
@@ -210,6 +211,13 @@ class Order_Data():
             cc_df = pd.merge(cc_df, local_order_df, how='left', on="order_id")
             cc_df = cc_df.drop(["order_id"],axis=1)
             cc_df = cc_df.rename(columns={"local_order_id":"order_id"})
+            #payment_plan_id
+            plan_sql = """ select id as new_plan_id, crm_id as payment_plan_id from {} """.format(self.payment_plan_table)
+            plan_df = pd.read_sql_query(plan_sql, new_data)
+            cc_df = pd.merge(cc_df, plan_df, how='left', on="payment_plan_id")
+            cc_df = cc_df.drop(["payment_plan_id"], axis=1)
+            cc_df = cc_df.rename(columns={"new_plan_id": "payment_plan_id"})
+
 
             local_split_sql = """select `id` as local_owner_id ,crm_id as owner_id,department_id as department from {}""".format(self.user_table)
             local_split_df = pd.read_sql_query(local_split_sql,new_data)

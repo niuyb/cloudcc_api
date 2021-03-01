@@ -133,11 +133,17 @@ def change_account_id():
     local_opp_sql = """ select id as local_order_id,crm_id as order_id  from `{}`""".format("order_back")
     local_opp_df = pd.read_sql_query(local_opp_sql, new_data)
 
+    plan_sql = """ select id as new_plan_id, crm_id as payment_plan_id from payment_plan """
+    plan_df = pd.read_sql_query(plan_sql,new_data)
+
+    df = pd.merge(df, plan_df, how='left', on="payment_plan_id")
+    df = df.drop(["payment_plan_id"], axis=1)
+    df = df.rename(columns={"new_plan_id": "payment_plan_id"})
+
 
     df = pd.merge(df, local_opp_df, how='left', on="order_id")
     df = df.drop(["order_id"], axis=1)
     df = df.rename(columns={"local_order_id": "order_id"})
-    print(df.shape)
 
     # print(account_df)
     df = pd.merge(df, account_df, how='left', on="account_id")

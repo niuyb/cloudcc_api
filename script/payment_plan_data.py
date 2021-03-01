@@ -238,7 +238,16 @@ class Order_Data():
                     cc_df.at[df_index, 'id'] = id
                 id_index+=1
 
+
+
             # 在这里替换想相应的id
+            # order_id
+            local_order_sql = """ select id as local_order_id,crm_id as order_id  from `{}`""".format("order_back")
+            local_order_df = pd.read_sql_query(local_order_sql, new_data)
+            cc_df = pd.merge(cc_df, local_order_df, how='left', on="order_id")
+            cc_df = cc_df.drop(["order_id"], axis=1)
+            cc_df = cc_df.rename(columns={"local_order_id": "order_id"})
+
             local_split_sql = """select `id` as local_owner_id ,crm_id as owner_id,department_id as department from {}""".format(self.user_table)
             local_split_df = pd.read_sql_query(local_split_sql,new_data)
             local_user_df = local_split_df[["local_owner_id","owner_id"]]
@@ -261,7 +270,7 @@ class Order_Data():
             cc_df = cc_df.drop_duplicates(["crm_id"], keep="first")
             new_data.close()
             # print(cc_df)
-            # self.inster_sql(cc_df,local_str)
+            self.inster_sql(cc_df,local_str)
             print("入库",cc_df.shape)
 
     def get_infos(self,p_index):

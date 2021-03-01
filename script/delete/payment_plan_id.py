@@ -120,44 +120,38 @@ def test():
 
 
 
-# def change_account_id():
-#     new_data = engine(settings.db_new_data)
-#
-#     sql = """ select * from payment_record_copy1 """
-#     df = pd.read_sql_query(sql,new_data)
-#
-#     account_sql = """ select id as new_account_id, crm_id as account_id from account_back """
-#     account_df = pd.read_sql_query(account_sql,new_data)
-#
-#     # cc_opportunity_str = list_to_sql_string(cc_df["opportunity_id"].dropna().tolist())
-#     local_opp_sql = """ select id as local_order_id,crm_id as order_id  from `{}`""".format("order_back")
-#     local_opp_df = pd.read_sql_query(local_opp_sql, new_data)
-#
-#
-#     df = pd.merge(df, local_opp_df, how='left', on="order_id")
-#     df = df.drop(["order_id"], axis=1)
-#     df = df.rename(columns={"local_order_id": "order_id"})
-#     print(df.shape)
-#
-#     # print(account_df)
-#     df = pd.merge(df, account_df, how='left', on="account_id")
-#     df = df.drop(["account_id"],axis=1)
-#     df = df.rename(columns = {"new_account_id":"account_id"})
-#
-#
-#     sql_table = "payment_record_copy1"
-#
-#     df.to_sql(sql_table, new_data, index=False, if_exists="replace")
-#     cur, conn = get_conn()
-#     sql_remarks = PAYMENT_RECORD_TABLE_STRING.format(sql_table)
-#     cur.execute(sql_remarks)
-#     cur.close()
-#     conn.close()
-#
-#     # print(df)
-#     print(df.shape)
-#
-#     new_data.close()
+def change_account_id():
+    new_data = engine(settings.db_new_data)
+
+    sql = """ select * from payment_plan_copy1 """
+    df = pd.read_sql_query(sql,new_data)
+
+    # account_sql = """ select id as new_account_id, crm_id as account_id from account_back """
+    # account_df = pd.read_sql_query(account_sql,new_data)
+
+    # cc_opportunity_str = list_to_sql_string(cc_df["opportunity_id"].dropna().tolist())
+    local_opp_sql = """ select id as local_order_id,crm_id as order_id  from `{}`""".format("order_back")
+    local_opp_df = pd.read_sql_query(local_opp_sql, new_data)
+
+
+    df = pd.merge(df, local_opp_df, how='left', on="order_id")
+    df = df.drop(["order_id"], axis=1)
+    df = df.rename(columns={"local_order_id": "order_id"})
+
+    print(df)
+
+    sql_table = "payment_plan_copy1"
+
+    df.to_sql(sql_table, new_data, index=False, if_exists="replace")
+    cur, conn = get_conn()
+    sql_remarks = PAYMENT_PLAN_TABLE_STRING.format(sql_table)
+    cur.execute(sql_remarks)
+    cur.close()
+    conn.close()
+
+    print(df.shape)
+
+    new_data.close()
 
 
 def change():
@@ -266,6 +260,7 @@ def change():
 
 if __name__ == "__main__":
     # test()
+    # change_account_id()
     change()
 
 
