@@ -55,7 +55,7 @@ class Order_Data():
 
         # self.today = str(datetime.now().strftime('%Y-%m-%d'))
         self.today = (datetime.datetime.now() - datetime.timedelta(hours=1.5)).strftime('%Y-%m-%d')
-        self.today = "2021-02-22"
+        # self.today = "2021-03-01"
         self.today_stamp =  date_ms(self.today)
         print(self.today)
         self.one_times_num = 1000

@@ -451,8 +451,6 @@ PAYMENT_PLAN_DICT={
                                 MODIFY column `call_back` varchar(50) COMMENT '催回款项', 
                                 MODIFY column `payment_actual_money` varchar(50) COMMENT '回款计划实际回款金额', 
 
-
-
 """
 
 PAYMENT_PLAN_TABLE_STRING= """ALTER table `{}` 
@@ -517,7 +515,7 @@ PAYMENT_RECORD_DICT={
     "ownerid":"owner_id",
     "contractid":"contract_id",
     "htzt":"contract_status",
-    "htbh":"contract_num",
+    # "htbh1":"contract_num",
     "customitem150":"overdue_date",
     "hkqc":"payment_batch",
     "hkjh":"payment_num",
@@ -538,13 +536,16 @@ PAYMENT_RECORD_DICT={
     "lastmodifybyid": "updated_by",
     "lastmodifydate": "updated_at",
 }
+"""
+MODIFY column `contract_num` varchar(50) COMMENT '合同编号',
+
+"""
 PAYMENT_RECORD_TABLE_STRING= """ALTER table `{}` 
                                 MODIFY column `crm_id` varchar(50) COMMENT 'crm_id',
                                 MODIFY column `name` varchar(50) COMMENT '回款记录',
                                 MODIFY column `owner_id` varchar(50) COMMENT '所有人',
                                 MODIFY column `contract_id` varchar(50) COMMENT '合同',
                                 MODIFY column `contract_status` varchar(50) COMMENT '合同状态',
-                                MODIFY column `contract_num` varchar(50) COMMENT '合同编号',
                                 MODIFY column `overdue_date` varchar(50) COMMENT '回款已逾期天数',
                                 MODIFY column `payment_batch` varchar(50) COMMENT '回款期次',
                                 MODIFY column `payment_num` varchar(50) COMMENT '回款计划',
