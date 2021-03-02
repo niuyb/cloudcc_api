@@ -19,16 +19,15 @@ import sys,os
 path1 = os.path.abspath('/var/www/cloudcc_api')
 sys.path.append(path1)
 
-
 from multiprocessing import Process
 import pymysql
 import pandas as pd
 
 from public.cloudcc_utils import cloudcc_get_request_url, cloudcc_get_binding, cloudcc_query_sql
 from public.utils import engine, list_to_sql_string, time_ms, date_ms
-from script.data_config import  OPPORTUNITY_DICT, \
-    OPPORTUNITY_TABLE_STRING, OPPORTUNITY_API_NAME, OPPORTUNITY_SQL_TABLE, OPPORTUNITY_CLOUMNS_ORDER, USER_SQL_TABLE, \
-    ACCOUNT_SQL_TABLE
+from script.data_config import OPPORTUNITY_SQL_TABLE, OPPORTUNITY_CLOUMNS_ORDER, USER_SQL_TABLE, \
+    ACCOUNT_SQL_TABLE, ORDER_API_NAME, ORDER_TABLE_STRING, ORDER_DICT, ORDER_SQL_TABLE, ORDER_CLOUMNS_ORDER, \
+    BONUS_API_NAME, BONUS_SQL_TABLE, BONUS_DICT, BONUS_TABLE_STRING, BONUS_CLOUMNS_ORDER
 from script.data_utils import create_id
 from settings import settings
 from settings.config import ACCESS_URL, ClOUDCC_USERNAME, ClOUDCC_PASSWORD
@@ -38,10 +37,6 @@ pd.set_option('display.max_columns', None) # 展示所有列
 pd.set_option('display.width', None)# 展示所有列
 
 
-"""
-price_id  暂时未转换
-
-"""
 
 
 class Order_Data():
@@ -49,24 +44,23 @@ class Order_Data():
 
         self.access_url  = ''
         self.binding = ''
-        self.cloudcc_object=OPPORTUNITY_API_NAME
-        self.sql_table= OPPORTUNITY_SQL_TABLE
-        # self.sql_table= "opportunity_back"
-        self.sql_mapping= OPPORTUNITY_DICT
-        self.sql_table_string = OPPORTUNITY_TABLE_STRING
+        self.cloudcc_object=BONUS_API_NAME
+        self.sql_table= BONUS_SQL_TABLE
+        # self.sql_table= "bouns_copy1"
+        self.sql_mapping= BONUS_DICT
+        self.sql_table_string = BONUS_TABLE_STRING
         self.user_table = USER_SQL_TABLE
-        self.account_table = ACCOUNT_SQL_TABLE
-        self.url_str = "https://k8mm3cmt3235c7ed72cede6e.cloudcc.com/queryframe.action?id={}&m=query"
-        # self.account_table = "account_back"
+        self.order_table = ORDER_SQL_TABLE
+        # self.opportunity_table = OPPORTUNITY_SQL_TABLE
 
         self.today = (datetime.datetime.now() - datetime.timedelta(hours=1.5)).strftime('%Y-%m-%d')
-        # self.today = "2021-01-20"
+        # self.today = "2021-02-18"
         self.today_stamp =  date_ms(self.today)
         print(self.today)
         self.one_times_num = 1000
         self.sql_index_list=[]
         self.process_num = 1
-        self.columns_order = OPPORTUNITY_CLOUMNS_ORDER
+        self.columns_order = BONUS_CLOUMNS_ORDER
 
 
     def get_conn(self):
@@ -135,7 +129,6 @@ class Order_Data():
         data = cloudcc_query_sql(self.access_url, "cqlQuery",self.cloudcc_object, sql, self.binding)
         print("查询",len(data))
         if data:
-
             cc_df = pd.DataFrame(columns=list(self.sql_mapping.keys()))
             cc_df = cc_df.append(data,ignore_index=True,sort=False)
             ccdf_name_list = list(self.sql_mapping.keys()) + ["is_deleted"]
@@ -167,25 +160,13 @@ class Order_Data():
             print("index_sql",index_sql)
             id_index = pd.read_sql_query(index_sql,new_data)["nums"].tolist()[0]
             print("id_index",id_index)
-            cc_df["url"]=''
             for row in cc_df.itertuples():
                 df_index = getattr(row, 'Index')
-                close_date = getattr(row, 'close_date')
-                try:
-                    cc_df.at[df_index, 'close_date'] = time_ms(close_date)
-                except:
-                    pass
                 created_at = getattr(row, 'created_at')
                 cc_df.at[df_index, 'created_at'] = time_ms(created_at)
                 updated_at = getattr(row, 'updated_at')
                 cc_df.at[df_index, 'updated_at'] = time_ms(updated_at)
-                xsy_id = getattr(row, 'xsy_id')
-                try:
-                    xsy_id = str(xsy_id).strip()
-                except:
-                    pass
-                cc_df.at[df_index, 'xsy_id'] = xsy_id
-                po = getattr(row, 'opportunity_name')
+                po = getattr(row, 'name')
                 created_at = getattr(row, 'created_at')
                 timestamp = time_ms(created_at)
                 id = getattr(row, 'id')
@@ -195,30 +176,25 @@ class Order_Data():
                     id = create_id(po, timestamp, id_index)
                     # print(id)
                     cc_df.at[df_index, 'id'] = id
-                crm_id = getattr(row, 'crm_id')
-                cc_df.at[df_index, 'url'] = self.url_str.format(crm_id)
                 id_index+=1
 
-
             # 在这里替换想相应的id
-            # account_id
-            cc_account_str = list_to_sql_string(cc_df["account_id"].dropna().tolist()+cc_df["account_name"].dropna().tolist())
-            local_account_sql = """ select id as local_account_id,crm_id as account_id  from `{}` where crm_id in ({})""".format(self.account_table,cc_account_str)
-            local_account_df = pd.read_sql_query(local_account_sql,new_data)
-            cc_df = pd.merge(cc_df, local_account_df, how='left', on="account_id")
-            cc_df = cc_df.drop(["account_id"],axis=1)
-            cc_df = cc_df.rename(columns={"local_account_id":"account_id"})
-            # account_name
-            account_df = local_account_df.rename(columns={"account_id": "account_name"})
-            cc_df = pd.merge(cc_df, account_df, how='left', on="account_name")
-            cc_df = cc_df.drop(["account_name"], axis=1)
-            cc_df = cc_df.rename(columns={"local_account_id": "account_name"})
-            #owner_id
+            # opportunity_id
+            cc_order_str = list_to_sql_string(cc_df["order_id"].dropna().tolist())
+            local_opp_sql = """ select id as local_order_id,crm_id as order_id  from `{}` where crm_id in ({})""".format(self.order_table,cc_order_str)
+            local_opp_df = pd.read_sql_query(local_opp_sql,new_data)
+            cc_df = pd.merge(cc_df, local_opp_df, how='left', on="order_id")
+            cc_df = cc_df.drop(["order_id"],axis=1)
+            cc_df = cc_df.rename(columns={"local_order_id":"order_id"})
+            #user
             local_user_sql = """select `id` as local_owner_id ,crm_id as owner_id from {}""".format(self.user_table)
             local_user_df = pd.read_sql_query(local_user_sql,new_data)
-            cc_df = pd.merge(cc_df, local_user_df, how='left', on="owner_id")
-            cc_df = cc_df.drop(["owner_id"],axis=1)
-            cc_df = cc_df.rename(columns={"local_owner_id":"owner_id"})
+            # bouns_person
+            local_user_df = local_user_df.rename(columns={"owner_id": "bouns_person"})
+            cc_df = pd.merge(cc_df, local_user_df, how='left', on="bouns_person")
+            cc_df = cc_df.drop(["bouns_person"], axis=1)
+            cc_df = cc_df.rename(columns={"local_owner_id": "bouns_person"})
+            local_user_df = local_user_df.rename(columns={"bouns_person": "owner_id"})
             # created_by
             local_user_df = local_user_df.rename(columns={"owner_id":"created_by"})
             cc_df = pd.merge(cc_df, local_user_df, how='left', on="created_by")
@@ -230,12 +206,10 @@ class Order_Data():
             cc_df = cc_df.drop(["updated_by"],axis=1)
             cc_df = cc_df.rename(columns={"local_owner_id":"updated_by"})
 
-
             cc_df = cc_df.drop_duplicates(["crm_id"], keep="first")
             new_data.close()
-
-            self.inster_sql(cc_df,local_str)
             # print(cc_df)
+            self.inster_sql(cc_df,local_str)
             print("入库",cc_df.shape)
 
     def get_infos(self,p_index):

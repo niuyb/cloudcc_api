@@ -674,3 +674,36 @@ MICROPOST_TABLE_STRING = """ALTER table `{}`
                           MODIFY column `isdelete` varchar(20) COMMENT '是否删除',
                           MODIFY column `created_at` varchar(50) COMMENT '创建日期', 
                           MODIFY column `created_by` varchar(50) COMMENT '创建人' """
+
+
+
+
+
+# 销售负责人&提成信息
+BONUS_API_NAME="sfzrtcxx"
+BONUS_SQL_TABLE="bouns"
+BONUS_CLOUMNS_ORDER = ["id","crm_id","name","order_id","bouns_person","percent","bouns_nums","created_by","created_at","updated_by","updated_at"]
+BONUS_DICT={
+    "id":"crm_id",
+    "name":"name",
+    "dingdan":"order_id",
+    "customitem195":"bouns_person",
+    "customitem197":"percent",
+    "djtcr":"bouns_nums",
+    "createbyid": "created_by",
+    "createdate": "created_at",
+    "lastmodifybyid": "updated_by",
+    "lastmodifydate": "updated_at",
+}
+BONUS_TABLE_STRING = """ALTER table `{}`
+                          MODIFY column `id` varchar(50) COMMENT '星光自建 bouns id',
+                          MODIFY column `crm_id` varchar(50) COMMENT 'crmid',
+                          MODIFY column `name` varchar(50) COMMENT '提成人编号',
+                          MODIFY column `order_id` varchar(100) COMMENT '订单id',
+                          MODIFY column `bouns_person` varchar(50) COMMENT '提成人',
+                          MODIFY column `percent` varchar(100) COMMENT '提成人分配比例',
+                          MODIFY column `bouns_nums` varchar(100) COMMENT '第几提成人',
+                          MODIFY column `created_at` varchar(50) COMMENT '创建日期', 
+                          MODIFY column `created_by` varchar(50) COMMENT '创建人', 
+                          MODIFY column `updated_at` varchar(50) COMMENT '更新日期', 
+                          MODIFY column `updated_by` varchar(50) COMMENT '更新人' """
