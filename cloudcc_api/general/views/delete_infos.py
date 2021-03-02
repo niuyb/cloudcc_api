@@ -25,7 +25,7 @@ def get_deleted_infos():
     token = request.args.get("token", None)
 
     result = Result()
-    database = engine(settings.db_new_data)
+    database = engine(settings.db_91)
 
     if token:
         if type in GENERAL_DELETED_TYPE_ALLOW:

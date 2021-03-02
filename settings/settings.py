@@ -17,7 +17,7 @@ db_xgyypt_develop = {"DB_HOST":"192.168.185.33", "DB_USER": "root", "DB_PWD": "1
 # 129 数仓 只写
 db_new_data = {"DB_HOST":"192.168.185.129", "DB_USER": "nyb", "DB_PWD": "nyb123", "DB_NAME": "yydw"}
 # 129的从库  只读
-db_91 = {"DB_HOST":"192.168.16.91", "DB_USER": "nyb", "DB_PWD": "123QWE", "DB_NAME": "yydw"}
+db_91 = {"DB_HOST":"192.168.16.91", "DB_USER": "nyb", "DB_PWD": "Nyb_12345", "DB_NAME": "yydw"}
 
 
 

@@ -35,7 +35,7 @@ def user_update_append():
         return json.dumps(result.dict(), ensure_ascii=False)
     if token:
         try:
-            new_data = engine(settings.db_new_data)
+            new_data = engine(settings.db_91)
             select_items = ",".join(USER_APPEND_ITEMS)
             print(select_items)
             count_sql = """ select count(crm_id) as nums from {}  """.format(USER_SQL_TABLE)

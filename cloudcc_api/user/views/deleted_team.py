@@ -33,7 +33,7 @@ def get_delete_team_member():
     except:
         result.msg = "获取信息失败"
         return json.dumps(result.dict(), ensure_ascii=False)
-    database = engine(settings.db_new_data)
+    database = engine(settings.db_91)
 
     if token:
         if type in USER_MEMBER_QUERY_ALLOW:

@@ -129,7 +129,7 @@ def order_post_query():
         result.msg = "获取data失败,请检查参数"
         return json.dumps(result.dict(), ensure_ascii=False)
 
-    database = engine(settings.db_new_data)
+    database = engine(settings.db_91)
     back_url = ""
     if token:
         sql_list = CHECK_PERMISSION_QUERY(token, "post_order")

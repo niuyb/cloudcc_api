@@ -40,7 +40,7 @@ def account_update_append():
         return json.dumps(result.dict(), ensure_ascii=False)
     if token:
         try:
-            new_data = engine(settings.db_new_data)
+            new_data = engine(settings.db_91)
             select_items = ",".join(ACCOUNT_APPEND_ITEMS)
             count_sql = """ select count(crm_id) as nums from {} where updated_at >= {}  """.format(ACCOUNT_SQL_TABLE,date_stamp)
             count_nums = pd.read_sql_query(count_sql,new_data)["nums"].tolist()[0]
