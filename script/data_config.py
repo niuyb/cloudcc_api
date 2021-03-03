@@ -543,6 +543,7 @@ MODIFY column `contract_num` varchar(50) COMMENT '合同编号',
 
 """
 PAYMENT_RECORD_TABLE_STRING= """ALTER table `{}` 
+                                MODIFY column `id` varchar(50) COMMENT 'id',
                                 MODIFY column `crm_id` varchar(50) COMMENT 'crm_id',
                                 MODIFY column `name` varchar(50) COMMENT '回款记录',
                                 MODIFY column `owner_id` varchar(50) COMMENT '所有人',
