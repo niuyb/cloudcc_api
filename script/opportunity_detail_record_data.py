@@ -24,6 +24,8 @@ import time
 import pymysql
 from datetime import timedelta
 
+from public.Time import Time
+
 path1 = os.path.abspath('/var/www/cloudcc_api')
 sys.path.append(path1)
 import pandas as pd
@@ -70,7 +72,7 @@ class Opportunity_Record():
         week_tmp = self.date_ms(str(week_str))
         print(week_str)
         return week_tmp
-    # 本周最后一天   23点59分59秒
+    # 本周最后一天  23点59分59秒
     def this_week_end(self):
         week_end_tmp= self.now + timedelta(days=7 - self.now.weekday())
         week_str = week_end_tmp.strftime("%Y-%m-%d")
@@ -118,6 +120,22 @@ class Opportunity_Record():
         return season_tmp
 
 
+    # 下月第一天
+    def next_month_start(self):
+        t = Time()
+        month_str = t.next_month_start()
+        month_tmp = self.date_ms(str(month_str).split()[0])
+        return month_tmp
+
+    #下月最后一天
+    def next_month_end(self):
+        t = Time()
+        month_str = t.next_month_end()
+        month_tmp = self.date_ms(str(month_str).split()[0])
+        return month_tmp
+
+
+
 
     def get_timestamp(self,days):
         # 获取前days天数的时间戳
@@ -138,6 +156,9 @@ class Opportunity_Record():
         elif self.type =="season":
             today_tmp = self.this_quarter_start()
             future_tmp = self.this_quarter_end()
+        elif self.type =="dm":
+            today_tmp = self.this_month_start()
+            future_tmp = self.next_month_end()
         else:
             return "参数有误"
         # 129数据库order
@@ -172,7 +193,7 @@ class Opportunity_Record():
         df.to_sql("opportunity_detail_record", self.new_data, index=False, if_exists="append")
         cur,conn = self.get_conn()
         sql_remarks = """ALTER table `opportunity_detail_record`
-                          MODIFY `type` varchar(10) COMMENT 'week  周记录\r\nmonth 月记录\r\nseason  季度记录',
+                          MODIFY `type` varchar(10) COMMENT 'week  周记录\r\nmonth 月记录\r\nseason  季度记录  dm 双月',
                           MODIFY `date` varchar(50) COMMENT '记录时间',
                           MODIFY `id` varchar(50) COMMENT '商机明细id',
                           MODIFY `crm_id` varchar(50) COMMENT '商机明细crm_id',
@@ -205,7 +226,6 @@ class Opportunity_Record():
 if __name__ == "__main__":
     type = sys.argv[1]
     print('type',type)
-
     # 新曾周维度记录
     # o = Opportunity_Record("week")
     # 新增月度维度记录
@@ -213,6 +233,3 @@ if __name__ == "__main__":
     # 新增季度维度记录
     # o = Opportunity_Record("season")
     o.get_opportunity()
-
-
-

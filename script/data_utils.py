@@ -27,6 +27,18 @@ def create_id(name,timestamp,index):
 
 
 
+def qy_sign(appkey,appSecret,timestamp):
+    sign=hashlib.md5(str(appkey).encode(encoding='UTF-8') + str(appSecret).encode(encoding='UTF-8') + str(timestamp).encode(encoding='UTF-8')).hexdigest()
+    return sign
+
+
 
 if __name__ == "__main__":
-    create_id("北京世中臻贤教育科技有限公司","1609324317948",1)
+    # create_id("北京世中臻贤教育科技有限公司","1609324317948",1)
+
+    appkey = "U61fBGDOkn9EXDSrKvuP"
+    appSecret = "GX4bHAqqulLZP4wSrbaZLZNvcphG8qld"
+    timestamp = "1614761616000"
+    sign=qy_sign(appkey,appSecret,timestamp)
+
+    print(sign)

@@ -20,6 +20,9 @@ import datetime
 import os
 import sys
 import time
+
+from public.Time import Time
+
 path1 = os.path.abspath('/var/www/cloudcc_api')
 sys.path.append(path1)
 import pymysql
@@ -116,6 +119,19 @@ class Opportunity_Record():
         print(season_str,season_tmp)
         return season_tmp
 
+    # 下月第一天
+    def next_month_start(self):
+        t = Time()
+        month_str = t.next_month_start()
+        month_tmp = self.date_ms(str(month_str).split()[0])
+        return month_tmp
+
+    #下月最后一天
+    def next_month_end(self):
+        t = Time()
+        month_str = t.next_month_end()
+        month_tmp = self.date_ms(str(month_str).split()[0])
+        return month_tmp
 
 
     def get_timestamp(self,days):
@@ -137,6 +153,9 @@ class Opportunity_Record():
         elif self.type =="season":
             today_tmp = self.this_quarter_start()
             future_tmp = self.this_quarter_end()
+        elif self.type =="dm":
+            today_tmp = self.this_month_start()
+            future_tmp = self.next_month_end()
         else:
             return "参数有误"
         # 129数据库order
@@ -172,7 +191,7 @@ class Opportunity_Record():
         cur,conn = self.get_conn()
 
         sql_remarks = """ALTER table `opportunity_record` 
-                          MODIFY `type` varchar(10) COMMENT 'week  周记录\r\nmonth 月记录\r\nseason  季度记录',
+                          MODIFY `type` varchar(10) COMMENT 'week  周记录\r\nmonth 月记录\r\nseason  季度记录  dm 双月',
                           MODIFY `date` varchar(50) COMMENT '记录时间',
                           MODIFY `id` varchar(50) COMMENT '商机id',
                           MODIFY `opportunity_name` varchar(500) COMMENT '商机名称',
