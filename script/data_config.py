@@ -7,7 +7,7 @@
 
 ORDER_API_NAME="dingdan"
 ORDER_SQL_TABLE="order_back"
-ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_name","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","amount","discount_amount","contract_status","contract_attribute","contract_id","contract_start","contract_end","contract_server_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id","contract_abnormal_status","order_manager"]
+ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_name","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","amount","discount_amount","contract_status","contract_attribute","contract_id","payment_type","contract_start","contract_end","contract_server_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id","contract_abnormal_status","order_manager"]
 ORDER_DICT={
     "id":"crm_id",
     "name":"po",
@@ -26,6 +26,7 @@ ORDER_DICT={
     "htzt": "contract_status",
     "customitem158": "contract_attribute",
     "customitem166": "contract_id",
+    "customitem160": "payment_type",
     "customitem147": "contract_start",
     "customitem148": "contract_end",
     "customitem174": "contract_server_end",
@@ -57,6 +58,7 @@ ORDER_TABLE_STRING="""ALTER table `{}`
       MODIFY `contract_abnormal_status` varchar(20) COMMENT '合同异常状态',
       MODIFY `contract_attribute` varchar(10) COMMENT '合同属性 1新签 2续签',
       MODIFY `contract_id` varchar(50) COMMENT '合同编号',
+      MODIFY `payment_type` varchar(50) COMMENT '回款方式',
       MODIFY `contract_start` varchar(50) COMMENT '合同开始日期',
       MODIFY `contract_end` varchar(50) COMMENT '合同结束日期',
       MODIFY `contract_server_end` varchar(50) COMMENT '最终合同截止日期',
