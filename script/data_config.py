@@ -7,7 +7,7 @@
 
 ORDER_API_NAME="dingdan"
 ORDER_SQL_TABLE="order_back"
-ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_name","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","amount","discount_amount","contract_status","contract_attribute","contract_id","payment_type","contract_start","contract_end","contract_server_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id","contract_abnormal_status","order_manager"]
+ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_name","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","discount_amount","contract_status","contract_attribute","contract_id","payment_type","contract_start","contract_end","contract_server_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id","contract_abnormal_status","order_manager"]
 ORDER_DICT={
     "id":"crm_id",
     "name":"po",
@@ -21,7 +21,8 @@ ORDER_DICT={
     "createdate": "created_at",
     "lastmodifybyid": "updated_by",
     "lastmodifydate": "updated_at",
-    "amount": "amount",
+    # 订单明细中加和
+    # "amount1": "amount",
     "totaldiscountamount": "discount_amount",
     "htzt": "contract_status",
     "customitem158": "contract_attribute",
@@ -38,6 +39,7 @@ ORDER_DICT={
     "customitem210": "contract_abnormal_status",
     "yid":"xsy_id",
 }
+"""      MODIFY `amount` varchar(50) COMMENT '订单总金额', """
 ORDER_TABLE_STRING="""ALTER table `{}`
       MODIFY `id` varchar(50) COMMENT '星光自建订单id',
       MODIFY `crm_id` varchar(50) COMMENT 'crm 订单id',
@@ -52,7 +54,6 @@ ORDER_TABLE_STRING="""ALTER table `{}`
       MODIFY `created_at` varchar(50) COMMENT '创建日期',
       MODIFY `updated_by` varchar(50) COMMENT '最新修改人',
       MODIFY `updated_at` varchar(50) COMMENT '最新修改日期',
-      MODIFY `amount` varchar(50) COMMENT '订单总金额',
       MODIFY `discount_amount` varchar(50) COMMENT '总折扣额',
       MODIFY `contract_status` varchar(20) COMMENT '合同状态',
       MODIFY `contract_abnormal_status` varchar(20) COMMENT '合同异常状态',
@@ -262,7 +263,7 @@ ORDER_DETAIL_DICT={
     # "customitem162": "contract_status",
     "customitem149": "attribute",
     "productid":"product_id",
-    "ddmxxsje":"saler_amount",
+    "xiaosjine":"saler_amount",
     "yjifsr":"performance_acount",
     # contract_back_date 从order中关联
     # "customitem163":"contract_back_date",
