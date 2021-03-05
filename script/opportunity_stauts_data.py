@@ -30,7 +30,7 @@ from datetime import timedelta
 
 import pandas as pd
 
-from public.utils import engine
+from public.utils import engine, list_to_sql_string
 from script.data_config import OPPORTUNITY_SQL_TABLE
 from settings import settings
 
@@ -49,7 +49,9 @@ class Opportunity_Record():
         self.today = datetime.date.today()
         self.today_tmp = self.date_ms(str(self.today))
         self.now = datetime.datetime.now()
+        self.opportunity_record_table = "opportunity_record_copy1"
         self.opportunity_table = OPPORTUNITY_SQL_TABLE
+
         # self.now = datetime.date.today() + datetime.timedelta(-100)
         self.type = type
         # self.time_dict={
@@ -57,7 +59,7 @@ class Opportunity_Record():
         #     "month":30,
         #     "season":90,
         # }
-        self.columns_order=["id","type","date","opportunity_name","intended_product","money","sale_stage","win_rate","saler_promise","close_date","owner_id"]
+        self.columns_order=["id","type","date","opportunity_name","intended_product","money","sale_stage","win_rate","saler_promise","close_date","owner_id","next_saler_promise","next_sale_stage"]
 
     def date_ms(self,date):
         # timestr = '2019-01-14 15:22:18'
@@ -70,14 +72,12 @@ class Opportunity_Record():
         week_start_tmp= self.now - timedelta(days=self.now.weekday())
         week_str = week_start_tmp.strftime("%Y-%m-%d")
         week_tmp = self.date_ms(str(week_str))
-        print(week_str)
         return week_tmp
     # 本周最后一天   23点59分59秒
     def this_week_end(self):
         week_end_tmp= self.now + timedelta(days=7 - self.now.weekday())
         week_str = week_end_tmp.strftime("%Y-%m-%d")
         week_tmp = self.date_ms(str(week_str))
-        print(week_str)
         week_tmp -= 1000
         return week_tmp
     # 本月第一天
@@ -85,7 +85,6 @@ class Opportunity_Record():
         month_start_tmp =datetime.datetime(self.now.year, self.now.month, 1)
         month_str = month_start_tmp.strftime("%Y-%m-%d")
         month_tmp = self.date_ms(str(month_str))
-        print(month_str)
         return month_tmp
     #本月最后一天
     def this_month_end(self):
@@ -96,7 +95,6 @@ class Opportunity_Record():
         month_str = month_end_tmp.strftime("%Y-%m-%d")
         month_tmp = self.date_ms(str(month_str))
         month_tmp-=1000
-        print(month_str,month_tmp)
         return month_tmp
     # 本季度第一天
     def this_quarter_start(self):
@@ -104,7 +102,6 @@ class Opportunity_Record():
         season_start_tmp = datetime.datetime(self.now.year, month, 1)
         season_str = season_start_tmp.strftime("%Y-%m-%d")
         season_tmp = self.date_ms(str(season_str))
-        print(season_str)
         return season_tmp
     # 本季度最后一天
     def this_quarter_end(self):
@@ -116,7 +113,6 @@ class Opportunity_Record():
         season_str = season_end_tmp.strftime("%Y-%m-%d")
         season_tmp = self.date_ms(str(season_str))
         season_tmp -= 1000
-        print(season_str,season_tmp)
         return season_tmp
 
     # 下月第一天
@@ -134,6 +130,41 @@ class Opportunity_Record():
         month_tmp += 86400000
         return month_tmp
 
+    # 上周第一天
+    def last_week_start(self):
+        last_week_start = self.now - timedelta(days=self.now.weekday() + 7)
+        last_week_start = str(last_week_start).split()[0]
+        last_week_tmp = self.date_ms(last_week_start)
+        return last_week_tmp
+    # 上月最后一天
+    def last_month_end(self):
+        last_month_end = datetime.datetime(self.now.year, self.now.month, 1)
+        last_month_end =  last_month_end - timedelta(days=1)
+        last_month_end = str(last_month_end).split()[0]
+        last_month_tmp = self.date_ms(last_month_end)
+        return last_month_tmp
+    # 上个月第一天
+    def last_month_start(self):
+        last_month_end = datetime.datetime(self.now.year, self.now.month, 1)
+        last_month_end =  last_month_end - timedelta(days=1)
+        last_month_start = datetime.datetime(last_month_end.year, last_month_end.month, 1)
+        last_month_start = str(last_month_start).split()[0]
+        last_month_tmp = self.date_ms(last_month_start)
+        return last_month_tmp
+
+    # 上个双月第一天
+    def last_dm_start(self):
+        last_month_end = datetime.datetime(self.now.year, self.now.month, 1)
+        last_month_end =  last_month_end - timedelta(days=1)
+        last_month_start = datetime.datetime(last_month_end.year, last_month_end.month, 1)
+        last_month_start =  last_month_start - timedelta(days=1)
+        last_month_start = datetime.datetime(last_month_start.year, last_month_start.month, 1)
+        last_month_start = str(last_month_start).split()[0]
+        last_month_tmp = self.date_ms(last_month_start)
+        # last_month_tmp += 86400000
+        return last_month_tmp
+
+
 
     def get_timestamp(self,days):
         # 获取前days天数的时间戳
@@ -146,27 +177,24 @@ class Opportunity_Record():
 
     def get_opportunity(self):
         if self.type =="week":
-            today_tmp = self.this_week_start()
-            future_tmp = self.this_week_end()
+            last_tmp = self.last_week_start()
         elif self.type =="month":
-            today_tmp = self.this_month_start()
-            future_tmp = self.this_month_end()
-        elif self.type =="season":
-            today_tmp = self.this_quarter_start()
-            future_tmp = self.this_quarter_end()
+            last_tmp = self.last_month_start()
+            # last_tmp = self.this_month_start()
         elif self.type =="dm":
-            today_tmp = self.this_month_start()
-            future_tmp = self.next_month_end()
+            last_tmp = self.last_dm_start()
         else:
             return "参数有误"
         # 129数据库order
-        opp_sql = """ select id,opportunity_name,intended_product,money,sale_stage,win_rate,saler_promise,close_date,owner_id from `%s` 
-        where close_date >= "%s" and close_date <= "%s" """%(self.opportunity_table,today_tmp,future_tmp)
+        record_sql = """ select * from `%s` where `date` = "%s" and `type` = "%s" """%(self.opportunity_record_table,last_tmp,self.type)
+        record_df = pd.read_sql_query(record_sql, self.new_data)
+        opp_sql = """ select id,sale_stage as next_sale_stage,saler_promise as next_saler_promise from `%s` """%(self.opportunity_table)
         opp_df = pd.read_sql_query(opp_sql, self.new_data)
-        opp_df["type"] = self.type
-        opp_df["date"] = self.today_tmp
-        print(opp_df)
-        self.inster_sql(opp_df)
+        record_df = record_df.drop(["next_saler_promise","next_sale_stage"], axis=1)
+        record_df = pd.merge(record_df, opp_df, how='left', on="id")
+
+        # print(record_df)
+        self.inster_sql(record_df)
 
     def get_conn(self):
         host = "192.168.185.129"
@@ -187,11 +215,20 @@ class Opportunity_Record():
         return cur,conn
 
     def inster_sql(self,df):
-        df = df[self.columns_order]
-        df.to_sql("opportunity_record", self.new_data, index=False, if_exists="append")
-        cur,conn = self.get_conn()
 
-        sql_remarks = """ALTER table `opportunity_record` 
+        cur, conn = self.get_conn()
+        delete_id_list = df["id"]
+        delete_nums = len(delete_id_list)
+        deleted_times = int(delete_nums / 1000) + 1
+        for i in range(1, deleted_times + 1):
+            # delete_str = ",".join(delete_id_list[(i - 1) * 1000:i * 1000])
+            delete_str = list_to_sql_string(delete_id_list[(i - 1) * 1000:i * 1000])
+            delete_sql = """ delete from {} WHERE id in ({}) """.format(self.opportunity_record_table, delete_str)
+            cur.execute(delete_sql)
+            conn.commit()
+        df = df[self.columns_order]
+        df.to_sql(self.opportunity_record_table, self.new_data, index=False, if_exists="append")
+        sql_remarks = """ALTER table `{}` 
                           MODIFY `type` varchar(10) COMMENT 'week  周记录\r\nmonth 月记录\r\nseason  季度记录  dm 双月',
                           MODIFY `date` varchar(50) COMMENT '记录时间',
                           MODIFY `id` varchar(50) COMMENT '商机id',
@@ -204,7 +241,7 @@ class Opportunity_Record():
                           MODIFY `next_saler_promise` varchar(50) COMMENT '下个维度销售承诺',
                           MODIFY `next_sale_stage` varchar(50) COMMENT '下个维度销售阶段',
                           MODIFY `close_date` varchar(50) COMMENT '结单日期',
-                          MODIFY `owner_id` varchar(50) COMMENT '销售id'  """
+                          MODIFY `owner_id` varchar(50) COMMENT '销售id'  """.format(self.opportunity_record_table)
         cur.execute(sql_remarks)
 
         cur.close()
@@ -221,19 +258,17 @@ class Opportunity_Record():
 
 if __name__ == "__main__":
 
-    type = sys.argv[1]
-    # type = "month"
+    # type = sys.argv[1]
+    type = "week"
     print('type',type)
-
-    # 新曾周维度记录
+    #
+    # # 新曾周维度记录
     o = Opportunity_Record(type)
-    # 新增月度维度记录
-    # o = Opportunity_Record("month")
-    # 新增季度维度记录
-    # o = Opportunity_Record("season")
-
+    # # 新增月度维度记录
+    # # o = Opportunity_Record("month")
+    # # 新增季度维度记录
+    # # o = Opportunity_Record("season")
+    #
     o.get_opportunity()
-    # o.close_connent()
-
-
+    o.close_connent()
 
