@@ -15,11 +15,11 @@
 # import importlib
 # importlib.reload(sys)
 
+import sys,os
+path1 = os.path.abspath('/var/www/cloudcc_api')
+sys.path.append(path1)
 
-
-import hashlib
-import random
-from multiprocessing import Process,Queue
+from multiprocessing import Process
 
 import pymysql
 

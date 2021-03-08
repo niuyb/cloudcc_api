@@ -5,6 +5,9 @@
 # @Link    : https://www.baidu.com
 # @Version : $Id$
 
+import sys,os
+path1 = os.path.abspath('/var/www/cloudcc_api')
+sys.path.append(path1)
 
 import requests
 import json
