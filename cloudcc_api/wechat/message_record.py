@@ -39,19 +39,30 @@ class MediaData_t(Structure):
     ]
 
 
-d = cdll.LoadLibrary("./libWeWorkFinanceSdk_C.so")
+d = cdll.LoadLibrary("./cloudcc_api/wechat/libWeWorkFinanceSdk_C.so")
 print(d)
 r = d.NewSdk()
 print(r)
-NewDKey = d.Init(r,"ww60d12cbe3d4a82be","15CWzzgj_YeR6XxWdesGmwB7O974dVmSgkm57uZG1Nk")
+NewDKey = d.Init(r,b"ww60d12cbe3d4a82be",b"15CWzzgj_YeR6XxWdesGmwB7O974dVmSgkm57uZG1Nk")
 slice = Slice_t()
 
-tes2  = d.GetChatData(r,0,100,"","",10,ctypes.byref(slice))
+tes2  = d.GetChatData(r,0,1,"","",10,ctypes.byref(slice))
 print(tes2)
 
 local_str = slice.buf
 data = json.loads(local_str)
 print(data)
+encrypt_key = data.get("encrypt_random_key")
+encrypt_msg = data.get("encrypt_chat_msg")
+
+rsa_slice = Slice_t()
+
+ret=d.DecryptData(encrypt_key,encrypt_msg,rsa_slice)
+print(ret)
+
+
+
+
 
 
 
