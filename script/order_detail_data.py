@@ -248,6 +248,16 @@ class Order_Data():
             cc_df = pd.merge(cc_df, local_user_df, how='left', on="updated_by")
             cc_df = cc_df.drop(["updated_by"],axis=1)
             cc_df = cc_df.rename(columns={"local_owner_id":"updated_by"})
+            # performance_manager
+            local_user_df = local_user_df.rename(columns={"updated_by": "performance_manager"})
+            cc_df = pd.merge(cc_df, local_user_df, how='left', on="performance_manager")
+            cc_df = cc_df.drop(["performance_manager"], axis=1)
+            cc_df = cc_df.rename(columns={"local_owner_id": "performance_manager"})
+            # performance_account
+            local_user_df = local_user_df.rename(columns={"performance_manager": "performance_acount"})
+            cc_df = pd.merge(cc_df, local_user_df, how='left', on="performance_acount")
+            cc_df = cc_df.drop(["performance_acount"], axis=1)
+            cc_df = cc_df.rename(columns={"local_owner_id": "performance_acount"})
 
             cc_df = cc_df.drop_duplicates(["crm_id"], keep="first")
             new_data.close()
