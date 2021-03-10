@@ -50,7 +50,7 @@ class Opportunity_Record():
         self.today = datetime.date.today()
         self.today_tmp = self.date_ms(str(self.today))
         self.now = datetime.datetime.now()
-        self.opportunity_record_table = "opportunity_record_copy1"
+        self.opportunity_record_table = "opportunity_record"
         self.opportunity_table = OPPORTUNITY_SQL_TABLE
 
         # self.now = datetime.date.today() + datetime.timedelta(-100)
