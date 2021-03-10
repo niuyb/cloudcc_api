@@ -75,8 +75,12 @@ class RSACipher(object):
     def decrypt_with_private_key(self, _cipher_text):
         _rsa_key = RSA.importKey(self._private_pem)
         _cipher = Cipher_pkcs1_v1_5.new(_rsa_key)
-        _text = _cipher.decrypt(base64.b64decode(_cipher_text), "ERROR")
-        return _text.decode(encoding="utf-8")
+        # _text = _cipher.decrypt(base64.b64decode(_cipher_text), "ERROR")
+        res = []
+        for i in range(0, len(_cipher_text), 128):
+            res.append(_cipher.decrypt(_cipher_text[i:i + 128],"ERROR"))
+        return "".join(res)
+
 
     def encrypt_with_public_key(self, _text):
         _rsa_key = RSA.importKey(self._public_pem)
@@ -104,14 +108,14 @@ if __name__ == "__main__":
     # cipher.save_keys()
     # cipher.load_keys()
 
-    text = 'Encrypt with public key, and decrypt with private key'
+    text = 'ja3b0c+rs5q876piSl6A2Xd+639js1Blh7qfY52lq7g9W296P25ecob4Ixugrz6THIEjdeRszrRtiSsnUYbRdXWX0Fb3nhPJ58mkSd5WTGnrVYu/8R3n9YrxPKwsnQtl1vNNenB46lOKg5KqtivvFS3eQYHoghKHNGWlICpYOuya4PAkebmvtpg4eaTXOq9cMR5YraY58tNsT55KpLAG1Bp9Ybm2IV7VDyY9Z9Soueg/HGIFaZbFXRqCehXd52nJdtivC28FdadCsqcWb5wjeUICx/2kvEPzWQOLcbtThBMzZj4AoQhOJhHog8rgGWbx9UmEKCkmPbmZ6Mg8Xmtmxw=='
 
-    # 公钥加密
-    cipherText = cipher.encrypt_with_public_key(text)
-    print(cipherText)
+    # # 公钥加密
+    # cipherText = cipher.encrypt_with_public_key(text)
+    # print(cipherText)
 
     # 私钥解密
-    plainText = cipher.decrypt_with_private_key(cipherText)
+    plainText = cipher.decrypt_with_private_key(text)
     print(plainText)
 
     # # RSA算法本身允许私钥加密公钥解密，实际python不允许

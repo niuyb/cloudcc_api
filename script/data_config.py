@@ -7,7 +7,7 @@
 
 ORDER_API_NAME="dingdan"
 ORDER_SQL_TABLE="order_back"
-ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_name","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","discount_amount","contract_status","contract_attribute","contract_id","payment_type","contract_start","contract_end","contract_server_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id","contract_abnormal_status","order_manager"]
+ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_name","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","discount_amount","contract_status","contract_attribute","contract_id","payment_type","contract_start","contract_end","contract_server_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id","contract_abnormal_status","is_account_error","order_manager"]
 ORDER_DICT={
     "id":"crm_id",
     "name":"po",
@@ -24,6 +24,7 @@ ORDER_DICT={
     # 订单明细中加和
     # "amount1": "amount",
     "totaldiscountamount": "discount_amount",
+    "khzlsfyc":"is_account_error",
     "htzt": "contract_status",
     "customitem158": "contract_attribute",
     "customitem166": "contract_id",
@@ -57,6 +58,7 @@ ORDER_TABLE_STRING="""ALTER table `{}`
       MODIFY `discount_amount` varchar(50) COMMENT '总折扣额',
       MODIFY `contract_status` varchar(20) COMMENT '合同状态',
       MODIFY `contract_abnormal_status` varchar(20) COMMENT '合同异常状态',
+      MODIFY `is_account_error` varchar(50) COMMENT '客户资料是否异常',
       MODIFY `contract_attribute` varchar(10) COMMENT '合同属性 1新签 2续签',
       MODIFY `contract_id` varchar(50) COMMENT '合同编号',
       MODIFY `payment_type` varchar(50) COMMENT '回款方式',
@@ -68,6 +70,7 @@ ORDER_TABLE_STRING="""ALTER table `{}`
       MODIFY `approve_date` varchar(50) COMMENT '审批通过时间',
       MODIFY `payback_type` varchar(20) COMMENT '回款计划类型',
       MODIFY `order_manager` varchar(50) COMMENT '订单实际负责人 业绩负责人',
+      MODIFY `url` varchar(255) COMMENT '订单url',
       MODIFY `xsy_id` varchar(20) COMMENT '销售易id' """
 
 
@@ -180,7 +183,7 @@ OPPORTUNITY_CLOUMNS_ORDER = ["id","crm_id","entity_type","type","opportunity_nam
 # api 与数据库字段映射关系
 OPPORTUNITY_DICT = {
     "id": "crm_id",
-    "ywlx": "entity_type",
+    "recordtype": "entity_type",
     "name": "opportunity_name",
     "ownerid": "owner_id",
     "priceid": "price_id",
@@ -215,7 +218,7 @@ OPPORTUNITY_DICT = {
 OPPORTUNITY_TABLE_STRING = """ALTER table `{}`
                   MODIFY `id` varchar(50) COMMENT '星光自建商机id',
                   MODIFY `crm_id` varchar(50) COMMENT 'crm商机id',
-                  MODIFY `entity_type` varchar(20) COMMENT '业务类型',
+                  MODIFY `entity_type` varchar(20) COMMENT '记录类型',
                   MODIFY `type` varchar(20) COMMENT '业务类型',
                   MODIFY `opportunity_name` varchar(500) COMMENT '商机名称',
                   MODIFY `owner_id` varchar (100) COMMENT '星光自建销售id',
@@ -307,10 +310,11 @@ ORDER_DETAIL_TABLE_STRING = """ALTER table `{}`
 
 PRODUCT_LINE_API_NAME="cpx"
 PRODUCT_LINE_SQL_TABLE="product_line_back"
-PRODUCT_LINE_CLOUMNS_ORDER = ["id","crm_id","name"]
+PRODUCT_LINE_CLOUMNS_ORDER = ["id","crm_id","name","department"]
 PRODUCT_LINE_DICT={
     "id":"crm_id",
     "name":"name",
+    "dimDepart":"department",
     "createbyid": "created_by",
     "createdate": "created_at",
     "lastmodifybyid": "updated_by",
@@ -320,6 +324,7 @@ PRODUCT_LINE_TABLE_STRING = """ALTER table `{}`
                           MODIFY `id` varchar(50) COMMENT '星光自建产品线id',
                           MODIFY `crm_id` varchar(50) COMMENT 'crm_产品线id',
                           MODIFY `name` varchar(200) COMMENT '产品线名',
+                          MODIFY `department` varchar(100) COMMENT '所属部门',
                           MODIFY `created_at` varchar(50) COMMENT '创建日期', 
                           MODIFY `created_by` varchar(50) COMMENT '创建人', 
                           MODIFY `updated_at` varchar(50) COMMENT '更新日期', 

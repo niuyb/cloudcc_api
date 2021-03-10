@@ -214,9 +214,9 @@ def add_url():
 
 
 if __name__ == "__main__":
-    # test()
-    # change_account_id()
-    # change()
+    test()
+    change_account_id()
+    change()
     add_url()
 
 

@@ -246,10 +246,35 @@ def change():
 
 
 
+def add_url():
+    new_data = engine(settings.db_new_data)
+    url_str = "https://k8mm2bmtada55ce305401dc1.cloudcc.com/queryframe.action?vr=inno&id={}&m=query"
+
+    sql = """ select * from order_back_copy1 """
+    df = pd.read_sql_query(sql, new_data)
+    for row in df.itertuples():
+        df_index = getattr(row, 'Index')
+        crm_id = getattr(row, 'crm_id')
+        df.at[df_index, 'url'] = url_str.format(crm_id)
+
+    sql_table = "order_back_copy1"
+    df.to_sql(sql_table, new_data, index=False, if_exists="replace")
+    cur, conn = get_conn()
+
+    sql_remarks = ORDER_TABLE_STRING.format(sql_table)
+    cur.execute(sql_remarks)
+
+    cur.close()
+    conn.close()
+
+    new_data.close()
+
+
 if __name__ == "__main__":
-    # test()
-    # change_account_id()
+    test()
+    change_account_id()
     change()
+    add_url()
 
 
 
