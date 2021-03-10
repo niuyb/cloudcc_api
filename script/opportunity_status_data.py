@@ -186,6 +186,8 @@ class Opportunity_Record():
             last_tmp = self.last_dm_start()
         else:
             return "参数有误"
+
+        # print(last_tmp)
         # 129数据库order
         record_sql = """ select * from `%s` where `date` = "%s" and `type` = "%s" """%(self.opportunity_record_table,last_tmp,self.type)
         record_df = pd.read_sql_query(record_sql, self.new_data)
@@ -195,7 +197,8 @@ class Opportunity_Record():
         record_df = pd.merge(record_df, opp_df, how='left', on="id")
 
         # print(record_df)
-        self.inster_sql(record_df)
+        # print(record_df.shape)
+        self.inster_sql(record_df,last_tmp)
 
     def get_conn(self):
         host = "192.168.185.129"
@@ -215,7 +218,7 @@ class Opportunity_Record():
 
         return cur,conn
 
-    def inster_sql(self,df):
+    def inster_sql(self,df,last_tmp):
 
         cur, conn = self.get_conn()
         delete_id_list = df["id"]
@@ -224,7 +227,7 @@ class Opportunity_Record():
         for i in range(1, deleted_times + 1):
             # delete_str = ",".join(delete_id_list[(i - 1) * 1000:i * 1000])
             delete_str = list_to_sql_string(delete_id_list[(i - 1) * 1000:i * 1000])
-            delete_sql = """ delete from {} WHERE id in ({}) """.format(self.opportunity_record_table, delete_str)
+            delete_sql = """ delete from {} WHERE id in ({}) and date= {} and type="{}" """.format(self.opportunity_record_table, delete_str,last_tmp,self.type)
             cur.execute(delete_sql)
             conn.commit()
         df = df[self.columns_order]
