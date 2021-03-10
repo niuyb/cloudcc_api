@@ -21,10 +21,11 @@ import os
 import sys
 import time
 
-from public.Time import Time
-
 path1 = os.path.abspath('/var/www/cloudcc_api')
 sys.path.append(path1)
+
+from public.Time import Time
+
 import pymysql
 from datetime import timedelta
 
@@ -221,8 +222,8 @@ class Opportunity_Record():
 
 if __name__ == "__main__":
 
-    type = sys.argv[1]
-    # type = "month"
+    # type = sys.argv[1]
+    type = "week"
     print('type',type)
 
     # 新曾周维度记录

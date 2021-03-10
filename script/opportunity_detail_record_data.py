@@ -24,10 +24,10 @@ import time
 import pymysql
 from datetime import timedelta
 
-from public.Time import Time
-
 path1 = os.path.abspath('/var/www/cloudcc_api')
 sys.path.append(path1)
+from public.Time import Time
+
 import pandas as pd
 
 from public.utils import engine

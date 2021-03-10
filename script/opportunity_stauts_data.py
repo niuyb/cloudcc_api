@@ -21,10 +21,11 @@ import os
 import sys
 import time
 
-from public.Time import Time
-
 path1 = os.path.abspath('/var/www/cloudcc_api')
 sys.path.append(path1)
+
+from public.Time import Time
+
 import pymysql
 from datetime import timedelta
 
