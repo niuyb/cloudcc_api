@@ -115,3 +115,11 @@ ZW_OPPORTUNITY_QUERY = ["name","id","zzkh","yid","ownerid","customitem164","comm
 # ZW_ORDER_QUERY = ["name","htzt","customitem147","customItem174","lastmodifydate","zzkh","opportunityId","ownerid",""]
 # 输出字段
 ZW_ORDER_QUERY = ["id","po","crm_id","contract_status","contract_start","contract_server_end","updated_at","account_id","opportunity_id","account_name","opportunity_name","owner_id","product_id","zw_back_url"]
+
+
+QY2_token = "ed10834a90af0a36c1bed66f754fafe5"
+# QY账号允许查询返回的字段
+QY2_ACCOUNT_QUERY=["id","name","yid"]
+QY2_OPPORTUNITY_QUERY = ["name","id","zzkh","yid"]
+# QY_ORDER_QUERY = ["name","htzt","customitem147","customItem174","lastmodifydate","zzkh","opportunityId","ownerid"]
+QY2_ORDER_QUERY = ["id","po","crm_id","contract_status","contract_start","contract_server_end","updated_at","account_id","opportunity_id","account_name","opportunity_name","owner_id","product_id"]

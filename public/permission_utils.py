@@ -8,7 +8,7 @@ from copy import deepcopy
 
 from public.utils import list_to_sql_string
 from settings.config import QY_token, ZW_token, QY_ACCOUNT_QUERY, ZW_ACCOUNT_QUERY, QY_OPPORTUNITY_QUERY, \
-    ZW_OPPORTUNITY_QUERY, ZW_ORDER_QUERY, QY_ORDER_QUERY
+    ZW_OPPORTUNITY_QUERY, ZW_ORDER_QUERY, QY_ORDER_QUERY, QY2_token, QY2_ORDER_QUERY, QY2_ACCOUNT_QUERY
 
 
 def CHECK_PERMISSION_QUERY(token,sql_table):
@@ -17,20 +17,20 @@ def CHECK_PERMISSION_QUERY(token,sql_table):
     if sql_table == "account":
         if token == QY_token:
             sql_list =QY_ACCOUNT_QUERY
-            # sql_str = ",".join(sql_list)
             sql_str = sql_list
-
-            # sql_str = list_to_sql_string(sql_list)
             return sql_str
         elif token == ZW_token:
             sql_list =ZW_ACCOUNT_QUERY
             # sql_str = ",".join(sql_list)
             sql_str = sql_list
             return sql_str
+        elif token == QY2_token:
+            sql_list =QY2_ACCOUNT_QUERY
+            return sql_list
         else:
             return False
     elif sql_table == "opportunity":
-        if token == QY_token:
+        if token == QY_token or token == QY2_token:
             sql_list =QY_OPPORTUNITY_QUERY
             # sql_str = ",".join(sql_list)
             sql_str = sql_list
@@ -43,12 +43,13 @@ def CHECK_PERMISSION_QUERY(token,sql_table):
         else:
             return False
     elif sql_table == "post_order":
-        if token == QY_token:
+        if token == QY_token :
             sql_list =deepcopy(QY_ORDER_QUERY)
             sql_str = sql_list
-
-            # sql_str = ",".join(sql_list)
-            # sql_str = list_to_sql_string(sql_list)
+            return sql_str
+        elif token == QY2_token:
+            sql_list =deepcopy(QY2_ORDER_QUERY)
+            sql_str = sql_list
             return sql_str
         elif token == ZW_token:
             sql_list =deepcopy(ZW_ORDER_QUERY)

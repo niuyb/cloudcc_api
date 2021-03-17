@@ -17,7 +17,7 @@ from public.utils import Result, list_to_sql_string, engine, time_ms
 from script.data_config import ACCOUNT_DICT, ACCOUNT_SQL_TABLE
 from settings import settings
 from settings.config import ACCOUNT_QUERY_ALLOW, ACCESS_URL, ClOUDCC_USERNAME, ClOUDCC_PASSWORD, ClOUDCC_OBJECT, \
-    ACCOUNT_MODIFY_ALLOW, ACCOUNT_MAPPING, QY_token, ZW_token, ACCOUNT_FUZZY_QUERY
+    ACCOUNT_MODIFY_ALLOW, ACCOUNT_MAPPING, QY_token, ZW_token, ACCOUNT_FUZZY_QUERY, QY2_token
 
 blue_account = Blueprint("blue_account",__name__)
 
@@ -155,7 +155,7 @@ def account_modify():
                     cloudcc_field = ACCOUNT_MAPPING.get("qy_"+modify_field)
                 elif token == ZW_token and modify_field == "back_url":
                     cloudcc_field = ACCOUNT_MAPPING.get("zw_"+modify_field)
-                elif token == ZW_token or token == QY_token:
+                elif token == ZW_token or token == QY_token or token == QY2_token:
                     cloudcc_field = ACCOUNT_MAPPING.get(modify_field)
                 else:
                     result.msg = "暂无权限"

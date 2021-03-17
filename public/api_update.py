@@ -212,7 +212,10 @@ def opportunity_into_mysql(data):
                 timestamp = time_ms(created_at)
 
                 id=local_id_dict.get(crm_id,None)
-                if not id:
+                # print(id,type(id))
+                if isinstance(id,str):
+                    pass
+                else:
                     id = create_id(po, timestamp, id_index)
                     id_index += 1
                 cc_df.at[df_index, 'id'] = id

@@ -137,14 +137,17 @@ def order_post_query():
             sql_list.remove("account_name")
             sql_list.remove("opportunity_name")
             sql_list.remove("product_id")
-            try:
-                sql_list.remove("qy_back_url")
-            except:
-                back_url = "zw_back_url"
-            try:
+
+            if "qy_back_url"not in sql_list and "zw_back_url"not in sql_list:
+                pass
+            elif "zw_back_url" in  sql_list:
                 sql_list.remove("zw_back_url")
-            except:
+                back_url = "zw_back_url"
+            elif "qy_back_url" in  sql_list:
+                sql_list.remove("qy_back_url")
                 back_url = "qy_back_url"
+            else:
+                pass
 
             sql_str = "a."+',a.'.join(sql_list) + ",b.product_id"
             temp_sql = ""
@@ -184,7 +187,10 @@ def order_post_query():
             opportunity_str = list_to_sql_string(opportunity_id_list)
             account_str = list_to_sql_string(account_id_list)
 
-            opportunity_sql = """ select id as opportunity_id,opportunity_name,{} from {} where id in ({}) """.format(back_url,OPPORTUNITY_SQL_TABLE,opportunity_str)
+            if back_url:
+                opportunity_sql = """ select id as opportunity_id,opportunity_name,{} from {} where id in ({}) """.format(back_url,OPPORTUNITY_SQL_TABLE,opportunity_str)
+            else:
+                opportunity_sql = """ select id as opportunity_id,opportunity_name from {} where id in ({}) """.format(OPPORTUNITY_SQL_TABLE,opportunity_str)
             opportunity_df = pd.read_sql_query(opportunity_sql, database)
             account_sql = """ select id as account_id,account_name from {} where id in ({}) """.format(ACCOUNT_SQL_TABLE,account_str)
             account_df = pd.read_sql_query(account_sql, database)
@@ -198,7 +204,8 @@ def order_post_query():
             result.data = data_dict
             result.total = total
             result.code = 1
-        except:
+        except :
+            # print(e)
             result.msg = "获取data失败"
     else:
         result.msg = "token无效"
