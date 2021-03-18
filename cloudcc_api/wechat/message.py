@@ -77,7 +77,7 @@ class GET_WECHAT_MESSAGE:
     @classmethod
     def wechat_msg(cls):
         # 读取sdk文件
-        dll = ctypes.cdll.LoadLibrary("./cloudcc_api/wechat/libWeWorkFinanceSdk_C.so")
+        dll = ctypes.cdll.LoadLibrary("/var/www/cloudcc_api/cloudcc_api/wechat/libWeWorkFinanceSdk_C.so")
         # 实例sdk
         new_sdk = dll.NewSdk()
         # 初始化
