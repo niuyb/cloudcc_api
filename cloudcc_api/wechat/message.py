@@ -40,6 +40,8 @@ class GET_WECHAT_MESSAGE:
     time_out = 10
     database=engine(settings.db_new_data)
     wechat_format = ["msg_id","action","from","tolist","roomid","msgtime","msgtype","text"]
+    wechat_sql_table="wechat"
+
 
     qy_id = "ww60d12cbe3d4a82be"
     private_key = """-----BEGIN RSA PRIVATE KEY-----
@@ -116,6 +118,7 @@ class GET_WECHAT_MESSAGE:
                 wechat_dict["text"] = wechat_dict[text_name]
                 wechat_dict.pop(text_name,False)
                 wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
+                wechat_df.to_sql(cls.wechat_sql_table , cls.database, index=False, if_exists="append")
 
                 print(wechat_df)
         # 销毁sdk

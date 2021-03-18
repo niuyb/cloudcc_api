@@ -152,8 +152,8 @@ def account_insert_mysql(data):
             cc_df = cc_df.drop(["recent_activity_by"], axis=1)
             cc_df = cc_df.rename(columns={"local_owner_id": "recent_activity_by"})
 
-            print(cc_df["id"].tolist()[0])
-            # inster_sql(new_data,ACCOUNT_SQL_TABLE,ACCOUNT_CLOUMNS_ORDER,cc_df,local_str)
+            # print(cc_df["id"].tolist()[0])
+            inster_sql(new_data,ACCOUNT_SQL_TABLE,ACCOUNT_CLOUMNS_ORDER,cc_df,local_str)
             new_data.close()
             return cc_df["id"].tolist()[0]
         else:
