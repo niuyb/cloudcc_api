@@ -83,6 +83,13 @@ def account_insert_mysql(data):
 
             local_list = cc_df["crm_id"].tolist()
             local_str = list_to_sql_string(local_list)
+            # 替换id
+            id_sql = """ select crm_id,id from {} where crm_id in ({}) """.format(ACCOUNT_SQL_TABLE,local_str)
+            id_list = pd.read_sql_query(id_sql,new_data).to_dict("records")
+            local_id_dict={}
+            if id_list:
+                for dict in id_list:
+                    local_id_dict[dict["crm_id"]]=dict["id"]
 
             index_sql = """ select count(*) as nums from %s where created_at >= "%s" """ % (
             ACCOUNT_SQL_TABLE, today_stamp)
@@ -112,13 +119,15 @@ def account_insert_mysql(data):
                 po = getattr(row, 'account_name')
                 created_at = getattr(row, 'created_at')
                 timestamp = time_ms(created_at)
-                id = getattr(row, 'id')
+                crm_id = getattr(row, 'crm_id')
+                id=local_id_dict.get(crm_id,None)
+                print(type(id),id)
                 if isinstance(id, str):
                     pass
                 else:
                     id = create_id(po, timestamp, id_index)
-                    cc_df.at[df_index, 'id'] = id
-                id_index += 1
+                    id_index += 1
+                cc_df.at[df_index, 'id'] = id
 
             # 在这里替换想相应的id
             # owner_id
@@ -143,7 +152,8 @@ def account_insert_mysql(data):
             cc_df = cc_df.drop(["recent_activity_by"], axis=1)
             cc_df = cc_df.rename(columns={"local_owner_id": "recent_activity_by"})
 
-            inster_sql(new_data,ACCOUNT_SQL_TABLE,ACCOUNT_CLOUMNS_ORDER,cc_df,local_str)
+            print(cc_df["id"].tolist()[0])
+            # inster_sql(new_data,ACCOUNT_SQL_TABLE,ACCOUNT_CLOUMNS_ORDER,cc_df,local_str)
             new_data.close()
             return cc_df["id"].tolist()[0]
         else:
