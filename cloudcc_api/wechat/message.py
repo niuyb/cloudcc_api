@@ -39,7 +39,7 @@ class GET_WECHAT_MESSAGE:
     seq = 2000
     time_out = 10
     database=engine(settings.db_new_data)
-    wechat_format = ["msg_id","action","from","tolist","roomid","msgtime","msgtype","text"]
+    wechat_format = ["msgid","action","from","tolist","roomid","msgtime","msgtype","text"]
     wechat_sql_table="wechat"
 
 
