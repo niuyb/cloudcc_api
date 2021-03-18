@@ -10,13 +10,16 @@ import json
 import os
 import sys
 
+from public.utils import engine
+from settings import settings
+
 path1 = os.path.abspath('/var/www/cloudcc_api')
 sys.path.append(path1)
 
 import Crypto
 from Crypto.Cipher import PKCS1_v1_5
 from Crypto.PublicKey import RSA
-
+import pandas as pd
 
 # libWeWorkFinanceSdk_C.so linux 不兼容win
 
@@ -36,7 +39,8 @@ class GET_WECHAT_MESSAGE:
     infos_num = 500
     seq = 2000
     time_out = 10
-
+    database=engine(settings.db_new_data)
+    wechat_format = ["msg_id","action","from","tolist","roomid","msgtime","msgtype","text"]
 
     qy_id = "ww60d12cbe3d4a82be"
     private_key = """-----BEGIN RSA PRIVATE KEY-----
@@ -106,9 +110,28 @@ class GET_WECHAT_MESSAGE:
                 result = ctypes.string_at(result, -1).decode("utf-8")
                 result = json.loads(result)
                 dll.FreeSlice(ss)
-                print(result)
+                # print(result)
+                wechat_df = pd.DataFrame(columns=cls.wechat_format)
+                wechat_dict=json.loads(result)
+                text_name = wechat_dict["msgtype"]
+                wechat_dict["text"] = wechat_dict[text_name]
+                wechat_dict.pop(text_name,False)
+                wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
+
+                print(wechat_df)
         # 销毁sdk
         dll.DestroySdk(new_sdk)
+
+
+    def insert_data(cls,data):
+        print(cls.database)
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
