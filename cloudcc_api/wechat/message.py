@@ -111,7 +111,7 @@ class GET_WECHAT_MESSAGE:
                 dll.FreeSlice(ss)
                 # print(result)
                 wechat_df = pd.DataFrame(columns=cls.wechat_format)
-                wechat_dict=json.loads(result)
+                wechat_dict=result
                 text_name = wechat_dict["msgtype"]
                 wechat_dict["text"] = wechat_dict[text_name]
                 wechat_dict.pop(text_name,False)
