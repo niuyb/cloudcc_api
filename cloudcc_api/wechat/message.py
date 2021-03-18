@@ -115,12 +115,11 @@ class GET_WECHAT_MESSAGE:
                 wechat_df = pd.DataFrame(columns=cls.wechat_format)
                 wechat_dict=result
                 text_name = wechat_dict["msgtype"]
-                wechat_dict["text"] = wechat_dict[text_name]
+                wechat_dict["text"] = json.dumps(wechat_dict[text_name])
                 wechat_dict.pop(text_name,False)
                 wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
-                wechat_df.to_sql(cls.wechat_sql_table , cls.database, index=False, if_exists="append")
-
                 print(wechat_df)
+                wechat_df.to_sql(cls.wechat_sql_table , cls.database, index=False, if_exists="append")
         # 销毁sdk
         dll.DestroySdk(new_sdk)
 
