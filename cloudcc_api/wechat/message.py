@@ -115,6 +115,8 @@ class GET_WECHAT_MESSAGE:
                 wechat_df = pd.DataFrame(columns=cls.wechat_format)
                 wechat_dict=result
                 text_name = wechat_dict["msgtype"]
+                if text_name in ["image"]:
+                    continue
                 wechat_dict["text"] = wechat_dict[text_name]
                 wechat_dict.pop(text_name,False)
                 wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
