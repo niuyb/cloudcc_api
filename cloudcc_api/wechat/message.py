@@ -10,11 +10,10 @@ import json
 import os
 import sys
 
-from public.utils import engine
-from settings import settings
-
 path1 = os.path.abspath('/var/www/cloudcc_api')
 sys.path.append(path1)
+from public.utils import engine
+from settings import settings
 
 import Crypto
 from Crypto.Cipher import PKCS1_v1_5
