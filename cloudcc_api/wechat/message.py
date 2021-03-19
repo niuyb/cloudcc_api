@@ -36,7 +36,8 @@ c) 得到str2与对应消息的encrypt_chat_msg，调用下方描述的DecryptDa
 class GET_WECHAT_MESSAGE:
     # 获取信息配置
     infos_num = 500
-    seq = 2000
+    # 开始位置
+    seq = 0
     time_out = 10
     database=engine(settings.db_new_data)
     wechat_format = ["msgid","action","from","tolist","roomid","msgtime","msgtype","content"]
@@ -96,7 +97,7 @@ class GET_WECHAT_MESSAGE:
             # 消息格式
             data = dll.GetContentFromSlice(s)
             data = ctypes.string_at(data, -1).decode("utf-8")
-            print(data)
+            # print(data)
             # 销毁
             dll.FreeSlice(s)
             data = json.loads(data).get('chatdata')
@@ -120,7 +121,7 @@ class GET_WECHAT_MESSAGE:
                 if text_name in cls.ignore_list:
                     continue
                 else:
-                    print(wechat_dict[text_name])
+                    # print(wechat_dict[text_name])
                     wechat_dict["content"] = json.dumps(wechat_dict[text_name])
                     wechat_dict["tolist"] = json.dumps(wechat_dict["tolist"])
                     wechat_dict.pop(text_name,False)
@@ -131,8 +132,8 @@ class GET_WECHAT_MESSAGE:
         dll.DestroySdk(new_sdk)
 
 
-    def insert_data(cls,data):
-        print(cls.database)
+    # def insert_data(cls,data):
+    #     print(cls.database)
 
 
 
