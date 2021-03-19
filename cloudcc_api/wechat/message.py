@@ -37,7 +37,7 @@ class GET_WECHAT_MESSAGE:
     # 获取信息配置
     infos_num = 500
     # 开始位置
-    seq = 8375
+    seq = 14058
     time_out = 10
     database=engine(settings.db_new_data)
     wechat_format = ["msgid","action","from","tolist","roomid","msgtime","msgtype","content"]
@@ -107,6 +107,7 @@ class GET_WECHAT_MESSAGE:
                 break
             cls.seq = data[-1].get('seq')
             print("--------------all len-------------",len(data))
+            wechat_df = pd.DataFrame(columns=cls.wechat_format)
             for msg in data:
                 try:
                     # encrypt_random_key base64
@@ -119,7 +120,7 @@ class GET_WECHAT_MESSAGE:
                     result = json.loads(result)
                     dll.FreeSlice(ss)
                     # print(result)
-                    wechat_df = pd.DataFrame(columns=cls.wechat_format)
+                    # temp_df = pd.DataFrame(columns=cls.wechat_format)
                     wechat_dict=result
                     text_name = wechat_dict.get("msgtype","text")
                     if text_name in cls.allow_list:
@@ -128,12 +129,14 @@ class GET_WECHAT_MESSAGE:
                         wechat_dict["tolist"] = json.dumps(wechat_dict.get("tolist",""))
                         wechat_dict.pop(text_name,False)
                         wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
-                        print(wechat_df)
-                        wechat_df.to_sql(cls.wechat_sql_table , cls.database, index=False, if_exists="append")
+                        print(wechat_dict)
                     else:
                         continue
                 except:
                     continue
+            # 入库
+            wechat_df.to_sql(cls.wechat_sql_table, cls.database, index=False, if_exists="append")
+
         # 销毁sdk
         dll.DestroySdk(new_sdk)
         cls.database.close()
