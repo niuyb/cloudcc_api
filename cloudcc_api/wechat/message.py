@@ -45,6 +45,8 @@ class GET_WECHAT_MESSAGE:
 
     ignore_list = ["image","mixed","file","video"]
 
+    allow_list=["text"]
+
 
     qy_id = "ww60d12cbe3d4a82be"
     private_key = """-----BEGIN RSA PRIVATE KEY-----
@@ -118,9 +120,18 @@ class GET_WECHAT_MESSAGE:
                 wechat_df = pd.DataFrame(columns=cls.wechat_format)
                 wechat_dict=result
                 text_name = wechat_dict["msgtype"]
-                if text_name in cls.ignore_list:
-                    continue
-                else:
+                # if text_name in cls.ignore_list:
+                #     continue
+                # else:
+                #     # print(wechat_dict[text_name])
+                #     wechat_dict["content"] = json.dumps(wechat_dict[text_name])
+                #     wechat_dict["tolist"] = json.dumps(wechat_dict["tolist"])
+                #     wechat_dict.pop(text_name,False)
+                #     wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
+                #     print(wechat_df)
+                #     wechat_df.to_sql(cls.wechat_sql_table , cls.database, index=False, if_exists="append")
+
+                if text_name in cls.allow_list:
                     # print(wechat_dict[text_name])
                     wechat_dict["content"] = json.dumps(wechat_dict[text_name])
                     wechat_dict["tolist"] = json.dumps(wechat_dict["tolist"])
@@ -128,6 +139,9 @@ class GET_WECHAT_MESSAGE:
                     wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
                     print(wechat_df)
                     wechat_df.to_sql(cls.wechat_sql_table , cls.database, index=False, if_exists="append")
+                else:
+                    continue
+
         # 销毁sdk
         dll.DestroySdk(new_sdk)
 
