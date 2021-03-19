@@ -111,7 +111,7 @@ class GET_WECHAT_MESSAGE:
                 result = ctypes.string_at(result, -1).decode("utf-8")
                 result = json.loads(result)
                 dll.FreeSlice(ss)
-                # print(result)
+                print(result)
                 wechat_df = pd.DataFrame(columns=cls.wechat_format)
                 wechat_dict=result
                 text_name = wechat_dict["msgtype"]
@@ -119,6 +119,7 @@ class GET_WECHAT_MESSAGE:
                     continue
                 else:
                     wechat_dict["text"] = wechat_dict[text_name]
+                    wechat_dict["tolist"] = json.dumps(wechat_dict["tolist"])
                     wechat_dict.pop(text_name,False)
                     wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
                     print(wechat_df)
