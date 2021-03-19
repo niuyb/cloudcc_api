@@ -37,7 +37,7 @@ class GET_WECHAT_MESSAGE:
     # 获取信息配置
     infos_num = 500
     # 开始位置
-    seq = 0
+    seq = 3656
     time_out = 10
     database=engine(settings.db_new_data)
     wechat_format = ["msgid","action","from","tolist","roomid","msgtime","msgtype","content"]
@@ -107,55 +107,45 @@ class GET_WECHAT_MESSAGE:
                 break
             cls.seq = data[-1].get('seq')
             for msg in data:
-                # encrypt_random_key base64
-                encrypt_key = cipher.decrypt(base64.b64decode(msg.get('encrypt_random_key')), "ERROR")
-                ss = dll.NewSlice()
-                # 解密
-                dll.DecryptData(encrypt_key, msg.get('encrypt_chat_msg').encode(), ctypes.c_long(ss))
-                result = dll.GetContentFromSlice(ss)
-                result = ctypes.string_at(result, -1).decode("utf-8")
-                result = json.loads(result)
-                dll.FreeSlice(ss)
-                # print(result)
-                wechat_df = pd.DataFrame(columns=cls.wechat_format)
-                wechat_dict=result
-                text_name = wechat_dict["msgtype"]
-                # if text_name in cls.ignore_list:
-                #     continue
-                # else:
-                #     # print(wechat_dict[text_name])
-                #     wechat_dict["content"] = json.dumps(wechat_dict[text_name])
-                #     wechat_dict["tolist"] = json.dumps(wechat_dict["tolist"])
-                #     wechat_dict.pop(text_name,False)
-                #     wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
-                #     print(wechat_df)
-                #     wechat_df.to_sql(cls.wechat_sql_table , cls.database, index=False, if_exists="append")
-
-                if text_name in cls.allow_list:
-                    # print(wechat_dict[text_name])
-                    wechat_dict["content"] = json.dumps(wechat_dict[text_name])
-                    wechat_dict["tolist"] = json.dumps(wechat_dict["tolist"])
-                    wechat_dict.pop(text_name,False)
-                    wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
-                    print(wechat_df)
-                    wechat_df.to_sql(cls.wechat_sql_table , cls.database, index=False, if_exists="append")
-                else:
+                try:
+                    # encrypt_random_key base64
+                    encrypt_key = cipher.decrypt(base64.b64decode(msg.get('encrypt_random_key')), "ERROR")
+                    ss = dll.NewSlice()
+                    # 解密
+                    dll.DecryptData(encrypt_key, msg.get('encrypt_chat_msg').encode(), ctypes.c_long(ss))
+                    result = dll.GetContentFromSlice(ss)
+                    result = ctypes.string_at(result, -1).decode("utf-8")
+                    result = json.loads(result)
+                    dll.FreeSlice(ss)
+                    # print(result)
+                    wechat_df = pd.DataFrame(columns=cls.wechat_format)
+                    wechat_dict=result
+                    text_name = wechat_dict.get("msgtype","text")
+                    if text_name in cls.allow_list:
+                        # print(wechat_dict[text_name])
+                        wechat_dict["content"] = json.dumps(wechat_dict.get(text_name,""))
+                        wechat_dict["tolist"] = json.dumps(wechat_dict.get("tolist",""))
+                        wechat_dict.pop(text_name,False)
+                        wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
+                        print(wechat_df)
+                        wechat_df.to_sql(cls.wechat_sql_table , cls.database, index=False, if_exists="append")
+                    else:
+                        continue
+                except:
                     continue
-
         # 销毁sdk
         dll.DestroySdk(new_sdk)
 
-
-    # def insert_data(cls,data):
-    #     print(cls.database)
-
-
-
-
-
-
-
-
+# if text_name in cls.ignore_list:
+#     continue
+# else:
+#     # print(wechat_dict[text_name])
+#     wechat_dict["content"] = json.dumps(wechat_dict[text_name])
+#     wechat_dict["tolist"] = json.dumps(wechat_dict["tolist"])
+#     wechat_dict.pop(text_name,False)
+#     wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
+#     print(wechat_df)
+#     wechat_df.to_sql(cls.wechat_sql_table , cls.database, index=False, if_exists="append")
 
 if __name__ == '__main__':
 
