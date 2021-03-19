@@ -117,11 +117,12 @@ class GET_WECHAT_MESSAGE:
                 text_name = wechat_dict["msgtype"]
                 if text_name in ["image"]:
                     continue
-                wechat_dict["text"] = wechat_dict[text_name]
-                wechat_dict.pop(text_name,False)
-                wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
-                print(wechat_df)
-                wechat_df.to_sql(cls.wechat_sql_table , cls.database, index=False, if_exists="append")
+                else:
+                    wechat_dict["text"] = wechat_dict[text_name]
+                    wechat_dict.pop(text_name,False)
+                    wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
+                    print(wechat_df)
+                    wechat_df.to_sql(cls.wechat_sql_table , cls.database, index=False, if_exists="append")
         # 销毁sdk
         dll.DestroySdk(new_sdk)
 
