@@ -37,7 +37,7 @@ class GET_WECHAT_MESSAGE:
     # 获取信息配置
     infos_num = 500
     # 开始位置
-    seq = 3656
+    seq = 8375
     time_out = 10
     database=engine(settings.db_new_data)
     wechat_format = ["msgid","action","from","tolist","roomid","msgtime","msgtype","content"]
@@ -106,6 +106,7 @@ class GET_WECHAT_MESSAGE:
             if not data:
                 break
             cls.seq = data[-1].get('seq')
+            print("--------------all len-------------",len(data))
             for msg in data:
                 try:
                     # encrypt_random_key base64
@@ -135,6 +136,7 @@ class GET_WECHAT_MESSAGE:
                     continue
         # 销毁sdk
         dll.DestroySdk(new_sdk)
+        cls.database.close()
 
 # if text_name in cls.ignore_list:
 #     continue
