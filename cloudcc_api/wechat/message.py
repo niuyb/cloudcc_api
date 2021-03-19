@@ -39,8 +39,10 @@ class GET_WECHAT_MESSAGE:
     seq = 2000
     time_out = 10
     database=engine(settings.db_new_data)
-    wechat_format = ["msgid","action","from","tolist","roomid","msgtime","msgtype","text"]
+    wechat_format = ["msgid","action","from","tolist","roomid","msgtime","msgtype","content"]
     wechat_sql_table="wechat"
+
+    ignore_list = ["image","mixed","file","video"]
 
 
     qy_id = "ww60d12cbe3d4a82be"
@@ -115,11 +117,11 @@ class GET_WECHAT_MESSAGE:
                 wechat_df = pd.DataFrame(columns=cls.wechat_format)
                 wechat_dict=result
                 text_name = wechat_dict["msgtype"]
-                if text_name in ["image","mixed","file","video"]:
+                if text_name in cls.ignore_list:
                     continue
                 else:
                     print(wechat_dict[text_name])
-                    wechat_dict["text"] = json.dumps(wechat_dict[text_name])
+                    wechat_dict["content"] = json.dumps(wechat_dict[text_name])
                     wechat_dict["tolist"] = json.dumps(wechat_dict["tolist"])
                     wechat_dict.pop(text_name,False)
                     wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
