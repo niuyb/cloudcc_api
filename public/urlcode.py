@@ -15,6 +15,9 @@
 # import importlib
 # importlib.reload(sys)
 import datetime
+import json
+
+import requests
 
 from public.utils import engine, list_to_sql_string
 from settings import settings
@@ -22,7 +25,6 @@ import pandas as pd
 pd.set_option('display.max_rows', None) # 展示所有行
 pd.set_option('display.max_columns', None) # 展示所有列
 pd.set_option('display.width', None)# 展示所有列
-
 
 
 
@@ -44,29 +46,42 @@ if __name__ == '__main__1':
 
 
 if __name__ == '__main__1':
-    import urllib
-    from urllib import parse
-    str1="https://support.istarshine.com/DataCount/single_user_activity_count?uid=67358"
-    str2 = parse.quote(str1)  # quote()将字符串进行编码
-    # str2="%E4%B8%8A%E6%B5%B7%E5%8D%8E%E7%91%9E%E9%93%B6%E8%A1%8C%E8%82%A1%E4%BB%BD%E6%9C%89"
-    print(str2)
-    rawurl = str2
-    url = parse.unquote(rawurl)
-    print (url)
+    # import urllib
+    # from urllib import parse
+    # str1="https://support.istarshine.com/DataCount/single_user_activity_count?uid=67358"
+    # str2 = parse.quote(str1)  # quote()将字符串进行编码
+    # str2="%E5%B1%B1%E8%A5%BF%E7%9C%81%E4%BC%81%E4%B8%9A%E5%8F%91%E5%B1%95"
+    # print(str2)
+    # rawurl = str2
+    # url = parse.unquote(rawurl)
+    # print (url)
+    s = "你好"
+    a= s.encode()
+    print(a)
+
+    a = b"\x8d\xad\xdb\xd1\xcf\xab\xb3\x9a\xbc\xef"
+    a = b"\xe4\xbd\xa0\xe5\xa5\xbd"
+    a = a.decode(encoding='UTF-8')
+    print(a)
+
+if __name__ == '__main__1':
 
 
+    # datas = {"serviceName": "getChatters01", "binding": "CD9E92E35722BF4A43DE3885F76D28E9",
+    #          "data": {"queryType": "zone","userId":"0052020A2F256D6Jj7Gr"}}
 
-if __name__ == '__main__':
+    datas = {"serviceName": "getChatters01", "binding": "29C6734EF0B5035CEE5385789B63E063",
+             "data": {"queryType": "zone","userId":"0052017BE8702F1PIi4j"}}
 
-    data=[{"CCObjectAPI":"Account","id":"00120200380BC39Vlgpi"},{"CCObjectAPI":"Account","id":"0012020162260358XHfb"},{"CCObjectAPI":"Account","id":"001202039D9C044SyWPr"},{"CCObjectAPI":"Account","id":"00120210EDD0D58HQuVk"},{"CCObjectAPI":"Account","id":"0012021199DBF70KrJlI"},{"CCObjectAPI":"Account","id":"001202129544BC29mtch"},{"CCObjectAPI":"Account","id":"00120212C922FF5EowU5"},{"CCObjectAPI":"Account","id":"0012021326AF953ZPt6S"},{"CCObjectAPI":"Account","id":"001202133A9C37BeaoMY"},{"CCObjectAPI":"Account","id":"0012021361A789AhUcNe"},{"CCObjectAPI":"Account","id":"00120213BA43346Hk9lu"},{"CCObjectAPI":"Account","id":"001202143D9A674FjvrA"},{"CCObjectAPI":"Account","id":"00120214614C800wo9Wl"},{"CCObjectAPI":"Account","id":"0012021484BB2A7Indvo"},{"CCObjectAPI":"Account","id":"0012021494C435BYmc04"},{"CCObjectAPI":"Account","id":"00120214A72739EJmIXg"},{"CCObjectAPI":"Account","id":"00120214EFD3ACEHWK4e"},{"CCObjectAPI":"Account","id":"0012021532135114peKo"},{"CCObjectAPI":"Account","id":"001202158A56CBADqyIf"},{"CCObjectAPI":"Account","id":"00120215EF720ECovE1C"},{"CCObjectAPI":"Account","id":"001202160158DFDTzOE5"},{"CCObjectAPI":"Account","id":"0012021638F06C6QRo8n"},{"CCObjectAPI":"Account","id":"00120216406F49BCONmL"},{"CCObjectAPI":"Account","id":"00120216F57756AQSdhA"},{"CCObjectAPI":"Account","id":"001202171C437ABOr35w"},{"CCObjectAPI":"Account","id":"001202172F531BAn9LS5"},{"CCObjectAPI":"Account","id":"0012021760801B6vAfs6"},{"CCObjectAPI":"Account","id":"00120217C8B571Fudkpb"},{"CCObjectAPI":"Account","id":"00120217F88BCAEfSdsl"},{"CCObjectAPI":"Account","id":"0012021801CED20ifLqs"},{"CCObjectAPI":"Account","id":"001202182BA028DLzwpW"},{"CCObjectAPI":"Account","id":"0012021853334BE5Vb92"},{"CCObjectAPI":"Account","id":"00120218AF19CB8Q5Dwd"},{"CCObjectAPI":"Account","id":"00120218BA92EC5zBmW6"},{"CCObjectAPI":"Account","id":"00120218C2BC8A6N2mhS"},{"CCObjectAPI":"Account","id":"0012021928DCC04w9Xnp"},{"CCObjectAPI":"Account","id":"00120219DD3B2BEfX14j"},{"CCObjectAPI":"Account","id":"0012021A4A79171WL7yp"},{"CCObjectAPI":"Account","id":"0012021A55655AFVbJ8d"},{"CCObjectAPI":"Account","id":"0012021A66A83395YgsV"},{"CCObjectAPI":"Account","id":"0012021A6E73D45LKRPv"},{"CCObjectAPI":"Account","id":"0012021AE200ABBqMDw4"},{"CCObjectAPI":"Account","id":"0012021B19F29A6T8jyd"},{"CCObjectAPI":"Account","id":"0012021B6254E81EXZhw"},{"CCObjectAPI":"Account","id":"0012021B95639E0PAxsu"},{"CCObjectAPI":"Account","id":"0012021BA6824A4eLBoG"},{"CCObjectAPI":"Account","id":"0012021BD40EB6Bg1kr6"},{"CCObjectAPI":"Account","id":"0012021C48D0A56SlIyf"},{"CCObjectAPI":"Account","id":"0012021C7B0E2C9vQFx1"},{"CCObjectAPI":"Account","id":"0012021CFE527C8TNPO7"},{"CCObjectAPI":"Account","id":"0012021D287967A7W0ma"},{"CCObjectAPI":"Account","id":"0012021D419E7F0NHxPv"},{"CCObjectAPI":"Account","id":"0012021D729A5DEK7Tf5"},{"CCObjectAPI":"Account","id":"0012021DB8A6057oehWb"},{"CCObjectAPI":"Account","id":"0012021E3FDD156Nyg5E"},{"CCObjectAPI":"Account","id":"0012021E649E5E4siAgo"},{"CCObjectAPI":"Account","id":"0012021EBB70245MSIRE"},{"CCObjectAPI":"Account","id":"0012021F3EB2E0Du7MKB"},{"CCObjectAPI":"Account","id":"0012021FB5AD23EmMdPB"}]
-    print(len(data))
-    m_list = []
-    for d in data:
-        m_list.append(d["id"])
+    # datas = {"serviceName": "getChatters01", "binding": "B98EB2938FC6D03B379E28A5E4DF0E60",
+    #          "data": {"queryType": "record","recordId":"bef2021CF6FDCDCz4yUf"}}
 
-    m_str = list_to_sql_string(m_list)
-    print(m_str)
 
+    datas['data'] = json.dumps(datas['data'])
+    url = "https://k8mm3cmt3235c7ed72cede6e.cloudcc.com/distributor.action?"
+    ret = requests.post(url, data=datas)
+
+    print(ret.text)
 
 """
 51042   0012021DB8A6057oehWb  国网河北省电力有限公司保定供电公司
@@ -74,4 +89,24 @@ if __name__ == '__main__':
 
 
 
+if __name__ =="__main__" :
+    nums = 1650
+    one_times_num = 1000
+    sql_index_list=[]
 
+    if nums % one_times_num > 0:
+        num_times = int(nums / one_times_num) + 1
+    elif nums % one_times_num == 0:
+        num_times = int(nums / one_times_num)
+    else:
+        num_times = 0
+
+    print(num_times)
+
+    for index in range(num_times):
+        start = int(index) * one_times_num
+        if index == 0:
+            start = 1
+        sql_index_list.append(start)
+
+    print(sql_index_list)

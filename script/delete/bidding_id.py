@@ -19,7 +19,7 @@ import  pandas as pd
 import pymysql
 
 from public.utils import engine, time_ms
-from script.data_config import ORDER_TABLE_STRING, BONUS_TABLE_STRING, BIDDING_TABLE_STRING
+from script.data_config import ORDER_TABLE_STRING, BONUS_TABLE_STRING
 from script.data_utils import create_id
 from settings import settings
 
@@ -40,6 +40,7 @@ def get_conn():
     # 获得游标
     cur = conn.cursor()
 
+
     return cur, conn
 
 
@@ -47,10 +48,10 @@ def get_conn():
 def test():
     new_data = engine(settings.db_new_data)
 
-    old_sql = """ select id,crm_id from bidding """
+    old_sql = """ select id,crm_id from bouns """
     old_df = pd.read_sql_query(old_sql,new_data)
 
-    sql = """ select * from bidding_copy1 """
+    sql = """ select * from bouns_copy1 """
     df = pd.read_sql_query(sql,new_data)
     df = df.drop(['id'], axis=1)
     df = pd.merge(df, old_df, how='left', on="crm_id")
@@ -68,11 +69,11 @@ def test():
             df.at[index, 'id'] = id
 
     print(df)
-    sql_table = "bidding_copy1"
+    sql_table = "bouns_copy1"
     df.to_sql(sql_table, new_data, index=False, if_exists="replace")
     cur, conn = get_conn()
 
-    sql_remarks = BIDDING_TABLE_STRING .format( sql_table)
+    sql_remarks = BONUS_TABLE_STRING .format( sql_table)
     cur.execute(sql_remarks)
 
     cur.close()
@@ -89,9 +90,9 @@ def test():
 def change_account_id():
     new_data = engine(settings.db_new_data)
 
-    sql = """ select * from bidding_copy1 """
+    sql = """ select * from bouns_copy1 """
     df = pd.read_sql_query(sql,new_data)
-    account_sql = """ select id as new_order_id, crm_id as order_id from account_back """
+    account_sql = """ select id as new_order_id, crm_id as order_id from order_back """
     account_df = pd.read_sql_query(account_sql,new_data)
 
     # cc_opportunity_str = list_to_sql_string(cc_df["opportunity_id"].dropna().tolist())
@@ -111,7 +112,7 @@ def change_account_id():
     df.to_sql(sql_table, new_data, index=False, if_exists="replace")
     cur, conn = get_conn()
 
-    sql_remarks = BIDDING_TABLE_STRING.format(sql_table)
+    sql_remarks = BONUS_TABLE_STRING.format(sql_table)
     cur.execute(sql_remarks)
 
     cur.close()
@@ -123,7 +124,7 @@ def change_account_id():
 
 def change():
     new_data = engine(settings.db_new_data)
-    sql = """ select * from bidding_copy1 """
+    sql = """ select * from bouns_copy1 """
     cc_df = pd.read_sql_query(sql,new_data)
 
     for row in cc_df.itertuples():
@@ -142,11 +143,11 @@ def change():
     # cc_df = cc_df.rename(columns={"local_owner_id": "owner_id"})
 
     # bouns_person
-    # local_user_df = local_user_df.rename(columns = {"owner_id":"bouns_person"})
-    # cc_df = pd.merge(cc_df, local_user_df, how='left', on="bouns_person")
-    # cc_df = cc_df.drop(["bouns_person"], axis=1)
-    # cc_df = cc_df.rename(columns={"local_owner_id": "bouns_person"})
-    # local_user_df = local_user_df.rename(columns = {"bouns_person":"owner_id"})
+    local_user_df = local_user_df.rename(columns = {"owner_id":"bouns_person"})
+    cc_df = pd.merge(cc_df, local_user_df, how='left', on="bouns_person")
+    cc_df = cc_df.drop(["bouns_person"], axis=1)
+    cc_df = cc_df.rename(columns={"local_owner_id": "bouns_person"})
+    local_user_df = local_user_df.rename(columns = {"bouns_person":"owner_id"})
     # created_by
     local_user_df = local_user_df.rename(columns={"owner_id": "created_by"})
     cc_df = pd.merge(cc_df, local_user_df, how='left', on="created_by")
@@ -162,11 +163,11 @@ def change():
     print(cc_df)
 
 
-    sql_table = "bidding_copy1"
+    sql_table = "bouns_copy1"
     cc_df.to_sql(sql_table, new_data, index=False, if_exists="replace")
     cur, conn = get_conn()
 
-    sql_remarks =BIDDING_TABLE_STRING.format(sql_table)
+    sql_remarks =BONUS_TABLE_STRING.format(sql_table)
     cur.execute(sql_remarks)
 
     cur.close()
@@ -176,8 +177,8 @@ def change():
 
 
 if __name__ == "__main__":
-    test()
-    change_account_id()
+    # test()
+    # change_account_id()
     change()
 
 

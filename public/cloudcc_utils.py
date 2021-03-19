@@ -157,10 +157,31 @@ def modify_by_api(access_url,server_name,objectapi_name,data,binding):
 
 
 
+"""
+http://test.cloudcc.cn/distributor.action?serviceName=insert&o
+bjectApiName=Contact&data=[{"name":"测试HTTP服务
+add","shouji":"13401154540","email":"aa@cloudcc.com"}]&binding
+=B53A28849D0CF0288CD9D7A1105EC5A1
+"""
 
-
-
-
+def append_by_api(access_url,server_name,objectapi_name,data,binding):
+    session = requests.session()
+    session.keep_alive = False
+    try:
+        data=json.dumps(data)
+        data = parse.quote(data)
+        access_url = access_url+"/distributor.action?serviceName="+server_name+"&objectApiName="+objectapi_name+"&data="+data+"&binding="+binding
+        # print(access_url)
+        response = json.loads(session.get(access_url).text)
+        # print(response)
+        if response["result"] == True:
+            crm_id = response["data"]["ids"][0]["id"]
+            return crm_id
+            # return True
+        else:
+            return False
+    except:
+        return False
 
 
 
@@ -206,9 +227,9 @@ if __name__ == "__main__":
     # str1 = """select name,lastmodifydate from `Opportunity` where `zzkh` ="001202191EFE31FES10P"  """
 
     # str1 = """ select count(*) as nums from ddmx where left(lastmodifydate,10) = '2021-01-18' """
-    str1 = """ select *  from dingdan where `id` = 'a132021C9A05875CF6pj' """
 
-    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","dingdan",str1,"2251EB53E8509B57692C836849A8A0C0")
+    str1 = """  select count(*) from ztbsp where is_deleted != "1" """
+    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","dingdan",str1,"4621A3932AEE7DDE765AE8AD604A1B2A")
     print(data)
 
     # data = modify_by_api("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","update","Account", [{'id':"0012020FE5A8EB0s9Ahn","name":"万科_modify_by_api"}], "F4318B05B7C1D4DC0CF165E0AB5421BC")
@@ -218,3 +239,9 @@ if __name__ == "__main__":
     # print(md5_str)
     # md5_str = hashlib.md5("ZW_001".encode(encoding='UTF-8')).hexdigest()
     # print(md5_str)
+
+
+
+    # str1  = [{"name":"信息部测试数据","company":"北京智慧星光","email":"aa@cloudcc.com"}]
+    # data=append_by_api("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","insert","Lead",str1,"9F89BBBC42F140E9E4331A2FE671F296")
+    # print(data)

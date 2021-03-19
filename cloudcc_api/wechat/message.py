@@ -12,9 +12,9 @@ import sys
 
 path1 = os.path.abspath('/var/www/cloudcc_api')
 sys.path.append(path1)
+
 from public.utils import engine
 from settings import settings
-
 import Crypto
 from Crypto.Cipher import PKCS1_v1_5
 from Crypto.PublicKey import RSA
@@ -37,14 +37,13 @@ class GET_WECHAT_MESSAGE:
     # 获取信息配置
     infos_num = 500
     # 开始位置
-    seq = 17032
+    seq = 0
     time_out = 10
     database=engine(settings.db_new_data)
     wechat_format = ["msgid","action","from","tolist","roomid","msgtime","msgtype","content"]
     wechat_sql_table="wechat"
 
-    ignore_list = ["image","mixed","file","video"]
-
+    # ignore_list = ["image","mixed","file","video"]
     allow_list=["text"]
 
 
@@ -99,14 +98,13 @@ class GET_WECHAT_MESSAGE:
             # 消息格式
             data = dll.GetContentFromSlice(s)
             data = ctypes.string_at(data, -1).decode("utf-8")
-            # print(data)
             # 销毁
             dll.FreeSlice(s)
             data = json.loads(data).get('chatdata')
             if not data:
                 break
             cls.seq = data[-1].get('seq')
-            print("--------------all len-------------",len(data))
+            # print("--------------all len-------------",len(data))
             wechat_df = pd.DataFrame(columns=cls.wechat_format)
             for msg in data:
                 try:
@@ -119,17 +117,15 @@ class GET_WECHAT_MESSAGE:
                     result = ctypes.string_at(result, -1).decode("utf-8")
                     result = json.loads(result)
                     dll.FreeSlice(ss)
-                    # print(result)
-                    # temp_df = pd.DataFrame(columns=cls.wechat_format)
+
+                    # 入库操作
                     wechat_dict=result
                     text_name = wechat_dict.get("msgtype","text")
                     if text_name in cls.allow_list:
-                        # print(wechat_dict[text_name])
                         wechat_dict["content"] = json.dumps(wechat_dict.get(text_name,""))
                         wechat_dict["tolist"] = json.dumps(wechat_dict.get("tolist",""))
                         wechat_dict.pop(text_name,False)
                         wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
-                        print(wechat_dict)
                     else:
                         continue
                 except:
@@ -142,16 +138,6 @@ class GET_WECHAT_MESSAGE:
         dll.DestroySdk(new_sdk)
         cls.database.close()
 
-# if text_name in cls.ignore_list:
-#     continue
-# else:
-#     # print(wechat_dict[text_name])
-#     wechat_dict["content"] = json.dumps(wechat_dict[text_name])
-#     wechat_dict["tolist"] = json.dumps(wechat_dict["tolist"])
-#     wechat_dict.pop(text_name,False)
-#     wechat_df = wechat_df.append(wechat_dict, ignore_index=True, sort=False)
-#     print(wechat_df)
-#     wechat_df.to_sql(cls.wechat_sql_table , cls.database, index=False, if_exists="append")
 
 if __name__ == '__main__':
 
