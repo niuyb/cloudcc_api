@@ -37,7 +37,7 @@ class GET_WECHAT_MESSAGE:
     # 获取信息配置
     infos_num = 500
     # 开始位置
-    seq = 14058
+    seq = 17032
     time_out = 10
     database=engine(settings.db_new_data)
     wechat_format = ["msgid","action","from","tolist","roomid","msgtime","msgtype","content"]
@@ -135,6 +135,7 @@ class GET_WECHAT_MESSAGE:
                 except:
                     continue
             # 入库
+            wechat_df = wechat_df[cls.wechat_format]
             wechat_df.to_sql(cls.wechat_sql_table, cls.database, index=False, if_exists="append")
 
         # 销毁sdk
