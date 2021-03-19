@@ -49,7 +49,7 @@ def account_query():
                     for sql_str in sql_list:
                         sql_str = ACCOUNT_DICT.get(sql_str)
                         str_list.append(sql_str)
-                    str_list.remove("crm_id")
+                    # str_list.remove("crm_id")
                     sql_str = ','.join(str_list)
                     if field_name in ACCOUNT_FUZZY_QUERY :
                         query_sql = """ select id,{} from {} where {} like '%%{}%%' limit 15 """.format(sql_str,ACCOUNT_SQL_TABLE, ACCOUNT_DICT.get(field_name),field_value)
@@ -85,7 +85,8 @@ def account_query():
                                         for key,value in data_dict.items():
                                             account_dict_key = ACCOUNT_DICT.get(key,"null")
                                             if account_dict_key == "crm_id":
-                                                # new_data_dict["crm_id"] = account_dict_key
+                                                # pass
+                                                new_data_dict["crm_id"] = value
                                                 if id:
                                                     new_data_dict["id"]= id
                                                 else:
