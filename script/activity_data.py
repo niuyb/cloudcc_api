@@ -60,7 +60,7 @@ class Order_Data():
 
         # self.today = str(datetime.now().strftime('%Y-%m-%d'))
         self.today = (datetime.datetime.now() - datetime.timedelta(hours=2)).strftime('%Y-%m-%d')
-        # self.today = "2021-03-18"
+        # self.today = "2021-03-21"
         self.today_stamp =  date_ms(self.today)
         print(self.today)
         self.one_times_num = 1000
@@ -201,19 +201,18 @@ class Order_Data():
                 if object_type == "001":
                     new_object_id = account_df.loc[account_df["account_id"] == object_id, "new_account_id"].tolist()
                     if len(new_object_id) > 0:
-                        cc_df.at[index, 'object_id'] = new_object_id[0]
+                        cc_df.at[df_index, 'object_id'] = new_object_id[0]
                     else:
                         pass
                 elif object_type == "002":
                     new_object_id = local_opp_df.loc[
                         local_opp_df["opportunity_id"] == object_id, "local_opportunity_id"].tolist()
                     if len(new_object_id) > 0:
-                        cc_df.at[index, 'object_id'] = new_object_id[0]
+                        cc_df.at[df_index, 'object_id'] = new_object_id[0]
                     else:
                         pass
                 else:
                     pass
-
 
             # 在这里替换想相应的id
             # # owner_id
@@ -235,7 +234,7 @@ class Order_Data():
 
             cc_df = cc_df.drop_duplicates(["crm_id"], keep="first")
             new_data.close()
-            print(cc_df)
+            # print(cc_df)
             self.inster_sql(cc_df,local_str)
             print("入库",cc_df.shape)
 
