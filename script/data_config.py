@@ -844,35 +844,43 @@ BIDDING_TABLE_STRING = """ALTER table `{}`
 
 
 # 报价单
-QUOTES_API_NAME="Quoteswebtocloudcc"
-QUOTES_SQL_TABLE="quotes"
-QUOTES_CLOUMNS_ORDER = ["id","crm_id","name","order_id","bouns_person","percent","bouns_nums","created_by","created_at","updated_by","updated_at"]
-QUOTES_DICT={
+QUOTE_API_NAME="Quote"
+QUOTE_SQL_TABLE="quote_back"
+QUOTE_CLOUMNS_ORDER = ["id","crm_id","name","quote_id","total_performance","approval_status","owner_id","account_id","opportunity_id","status","total_amount","lock_status","money","created_by","created_at","updated_by","updated_at"]
+QUOTE_DICT={
     "id":"crm_id",
     "name":"name",
-    "bjdbh": "quotes_id",
-    "customitem45": "total_performance",
+    "bjdbh": "quote_id",
+    # "customitem45": "total_performance",
     "spzt": "approval_status",
     "ownerid": "owner_id",
     "khmc": "account_id",
     "ywjhmc": "opportunity_id",
     "zhuangtai": "status",
-    "zongjia": "total_amount",
-    "lockStatus": "lock_status",
-    "htzje": "money",
+    # "zongjia": "total_amount",
+    "lockstatus": "lock_status",
+    # "htzje": "money",
     "createbyid": "created_by",
     "createdate": "created_at",
     "lastmodifybyid": "updated_by",
     "lastmodifydate": "updated_at",
 }
-QUOTES_TABLE_STRING = """ALTER table `{}`
-                          MODIFY column `id` varchar(50) COMMENT '星光自建 bouns id',
-                          MODIFY column `crm_id` varchar(50) COMMENT 'crmid',
-                          MODIFY column `name` varchar(50) COMMENT '提成人编号',
-                          MODIFY column `order_id` varchar(100) COMMENT '订单id',
-                          MODIFY column `bouns_person` varchar(50) COMMENT '提成人',
-                          MODIFY column `percent` varchar(100) COMMENT '提成人分配比例',
-                          MODIFY column `bouns_nums` varchar(100) COMMENT '第几提成人',
+"""
+                          MODIFY column `total_amount` varchar(50) COMMENT '总价',
+                          MODIFY column `money` varchar(50) COMMENT '合同总金额',
+                          MODIFY column `total_performance` varchar(50) COMMENT '业绩核算总额',
+"""
+QUOTE_TABLE_STRING = """ALTER table `{}`
+                          MODIFY column `id` varchar(50) COMMENT '星光自建 quote id',
+                          MODIFY column `crm_id` varchar(100) COMMENT 'crmid',
+                          MODIFY column `name` varchar(100) COMMENT '报价单名称',
+                          MODIFY column `quote_id` varchar(100) COMMENT '报价单编号',
+                          MODIFY column `approval_status` varchar(50) COMMENT '审批状态',
+                          MODIFY column `owner_id` varchar(50) COMMENT '所有人',
+                          MODIFY column `account_id` varchar(50) COMMENT '客户id',
+                          MODIFY column `opportunity_id` varchar(50) COMMENT '商机id',
+                          MODIFY column `status` varchar(50) COMMENT '状态',
+                          MODIFY column `lock_status` varchar(50) COMMENT '锁定状态',
                           MODIFY column `created_at` varchar(50) COMMENT '创建日期', 
                           MODIFY column `created_by` varchar(50) COMMENT '创建人', 
                           MODIFY column `updated_at` varchar(50) COMMENT '更新日期', 
