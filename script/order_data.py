@@ -55,9 +55,10 @@ class Order_Data():
         self.user_table = USER_SQL_TABLE
         self.account_table = ACCOUNT_SQL_TABLE
         self.opportunity_table = OPPORTUNITY_SQL_TABLE
+        self.url_str = "https://k8mm2bmtada55ce305401dc1.cloudcc.com/queryframe.action?vr=inno&id={}&m=query"
 
         self.today = (datetime.datetime.now() - datetime.timedelta(hours=1.5)).strftime('%Y-%m-%d')
-        # self.today = "2021-02-18"
+        # self.today = "2021-03-22"
         self.today_stamp =  date_ms(self.today)
         print(self.today)
         self.one_times_num = 1000
@@ -212,6 +213,8 @@ class Order_Data():
                     id = create_id(po, timestamp, id_index)
                     # print(id)
                     cc_df.at[df_index, 'id'] = id
+                crm_id = getattr(row, 'crm_id')
+                cc_df.at[df_index, 'url'] = self.url_str.format(crm_id)
                 id_index+=1
 
 

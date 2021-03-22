@@ -7,7 +7,7 @@
 
 ORDER_API_NAME="dingdan"
 ORDER_SQL_TABLE="order_back"
-ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_name","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","discount_amount","contract_status","contract_attribute","contract_id","payment_type","contract_start","contract_end","contract_server_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id","contract_abnormal_status","is_account_error","order_manager"]
+ORDER_CLOUMNS_ORDER = ["id","crm_id","po","owner_id","status","account_name","account_id","price_id","opportunity_id","created_by","created_at","updated_by","updated_at","discount_amount","contract_status","contract_attribute","contract_id","payment_type","contract_start","contract_end","contract_server_end","contract_back_date","total_performance","approve_date","payback_type","xsy_id","contract_abnormal_status","is_account_error","order_manager","url"]
 ORDER_DICT={
     "id":"crm_id",
     "name":"po",
@@ -70,7 +70,7 @@ ORDER_TABLE_STRING="""ALTER table `{}`
       MODIFY `approve_date` varchar(50) COMMENT '审批通过时间',
       MODIFY `payback_type` varchar(20) COMMENT '回款计划类型',
       MODIFY `order_manager` varchar(50) COMMENT '订单实际负责人 业绩负责人',
-      MODIFY `url` varchar(255) COMMENT '订单url',
+      MODIFY `url` varchar(300) COMMENT '订单url',
       MODIFY `xsy_id` varchar(20) COMMENT '销售易id' """
 
 
@@ -586,7 +586,7 @@ PAYMENT_RECORD_TABLE_STRING= """ALTER table `{}`
 
 ACTIVITY_API_NAME="Activity"
 ACTIVITY_SQL_TABLE="activity"
-ACTIVITY_CLOUMNS_ORDER = ["id","crm_id","name"]
+ACTIVITY_CLOUMNS_ORDER = ["id","crm_id","name","subject","object_type","object_id","remark","owner_id","created_by","created_at","updated_by","updated_at"]
 ACTIVITY_DICT={
     "id":"crm_id",
     "name":"name",
@@ -834,6 +834,45 @@ BIDDING_TABLE_STRING = """ALTER table `{}`
                           MODIFY column `project_approval` varchar(50) COMMENT '项目立项',
                           MODIFY column `project_approval_num` varchar(50) COMMENT '项目立项编号',
                           MODIFY column `report` varchar(50) COMMENT '验收报告',
+                          MODIFY column `created_at` varchar(50) COMMENT '创建日期', 
+                          MODIFY column `created_by` varchar(50) COMMENT '创建人', 
+                          MODIFY column `updated_at` varchar(50) COMMENT '更新日期', 
+                          MODIFY column `updated_by` varchar(50) COMMENT '更新人' """
+
+
+
+
+
+# 报价单
+QUOTES_API_NAME="Quoteswebtocloudcc"
+QUOTES_SQL_TABLE="quotes"
+QUOTES_CLOUMNS_ORDER = ["id","crm_id","name","order_id","bouns_person","percent","bouns_nums","created_by","created_at","updated_by","updated_at"]
+QUOTES_DICT={
+    "id":"crm_id",
+    "name":"name",
+    "bjdbh": "quotes_id",
+    "customitem45": "total_performance",
+    "spzt": "approval_status",
+    "ownerid": "owner_id",
+    "khmc": "account_id",
+    "ywjhmc": "opportunity_id",
+    "zhuangtai": "status",
+    "zongjia": "total_amount",
+    "lockStatus": "lock_status",
+    "htzje": "money",
+    "createbyid": "created_by",
+    "createdate": "created_at",
+    "lastmodifybyid": "updated_by",
+    "lastmodifydate": "updated_at",
+}
+QUOTES_TABLE_STRING = """ALTER table `{}`
+                          MODIFY column `id` varchar(50) COMMENT '星光自建 bouns id',
+                          MODIFY column `crm_id` varchar(50) COMMENT 'crmid',
+                          MODIFY column `name` varchar(50) COMMENT '提成人编号',
+                          MODIFY column `order_id` varchar(100) COMMENT '订单id',
+                          MODIFY column `bouns_person` varchar(50) COMMENT '提成人',
+                          MODIFY column `percent` varchar(100) COMMENT '提成人分配比例',
+                          MODIFY column `bouns_nums` varchar(100) COMMENT '第几提成人',
                           MODIFY column `created_at` varchar(50) COMMENT '创建日期', 
                           MODIFY column `created_by` varchar(50) COMMENT '创建人', 
                           MODIFY column `updated_at` varchar(50) COMMENT '更新日期', 
