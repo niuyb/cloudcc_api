@@ -63,7 +63,7 @@ class Append_Hidden_Account():
         self.time_stamp = int(round(self.temp * 1000))
         print(self.time_stamp)
         self.date = (datetime.datetime.now()-datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-        # self.date ="2021-03-18"
+        # self.date ="2021-03-23"
         print(self.date)
         self.page_num = 50
         # ai_media

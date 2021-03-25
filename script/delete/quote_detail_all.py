@@ -31,7 +31,8 @@ import pandas as pd
 from public.cloudcc_utils import cloudcc_get_request_url, cloudcc_get_binding, cloudcc_query_sql
 from public.utils import engine, list_to_sql_string
 from script.data_config import ORDER_DICT, ACCOUNT_DICT, OPPORTUNITY_DICT, OPPORTUNITY_TABLE_STRING, ORDER_TABLE_STRING, \
-    BIDDING_DICT, BIDDING_TABLE_STRING
+    ORDER_DETAIL_DICT, ORDER_DETAIL_TABLE_STRING, QUOTE_DICT, QUOTE_TABLE_STRING, QUOTE_DETAIL_DICT, \
+    QUOTE_DETAIL_TABLE_STRING
 from settings import settings
 from settings.config import ACCESS_URL, ClOUDCC_USERNAME, ClOUDCC_PASSWORD
 
@@ -40,16 +41,19 @@ pd.set_option('display.max_columns', None) # 展示所有列
 pd.set_option('display.width', None)
 
 
+
+
+
 class Order_Data():
     def __init__(self):
 
         # self.new_data = engine(settings.db_new_data)
         self.access_url  = ''
         self.binding = ''
-        self.cloudcc_object="ztbsp"
-        self.sql_table= "bidding"
-        self.sql_mapping= BIDDING_DICT
-        self.sql_table_string = BIDDING_TABLE_STRING
+        self.cloudcc_object="baojd"
+        self.sql_table= "quote_detail"
+        self.sql_mapping= QUOTE_DETAIL_DICT
+        self.sql_table_string = QUOTE_DETAIL_TABLE_STRING
 
         self.one_times_num = 1000
         self.sql_index_list=[]
@@ -74,11 +78,6 @@ class Order_Data():
         date = time.strftime("%Y%m%d", time_local)
         return date[2:]
 
-    def create_id(self,item_name,create_timestamp,index):
-        md5_str = hashlib.md5(item_name.encode(encoding='UTF-8')+create_timestamp.encode(encoding='UTF-8')).hexdigest()[8:-8]
-        md5_str = md5_str + index
-        md5_str = self.id_per+md5_str
-        return md5_str
 
     def get_conn(self):
         host = "192.168.185.129"
@@ -146,7 +145,7 @@ class Order_Data():
             return False
 
 
-        # cur,conn = self.get_conn()
+        cur,conn = self.get_conn()
         new_data = engine(settings.db_new_data)
 
         if index == 1:
@@ -167,7 +166,6 @@ class Order_Data():
         ccdf_name_list = list(self.sql_mapping.keys()) + ["is_deleted"]
         cc_df = cc_df[ccdf_name_list]
         cc_df = cc_df.rename(columns=self.sql_mapping)
-        print("countcount",cc_df.shape)
 
         # 本次操作的cc id
         operate_list = cc_df["crm_id"].tolist()
@@ -175,9 +173,9 @@ class Order_Data():
         local_sql = """ select * from `{}` where crm_id in ({})""".format(self.sql_table,operate_str)
         local_df = pd.read_sql_query(local_sql,new_data)
 
-        # # 本次操作local数据库id
-        # local_list = cc_df["crm_id"].tolist()
-        # local_str = list_to_sql_string(local_list)
+        # 本次操作local数据库id
+        local_list = cc_df["crm_id"].tolist()
+        local_str = list_to_sql_string(local_list)
 
         # 删除cc 与 local 中删除的数据
         deleted_list = cc_df.loc[cc_df["is_deleted"] != "0","crm_id"].tolist()
@@ -202,17 +200,16 @@ class Order_Data():
 
         # 修改操作
 
-        # # 删除本次操作的所有local id
-        # delete_sql = """ delete from {} WHERE crm_id in ({}) """.format(self.sql_table,local_str)
-        # print(delete_sql)
-        # cur.execute(delete_sql)
-        # conn.commit()
+        # 删除本次操作的所有local id
+        delete_sql = """ delete from {} WHERE crm_id in ({}) """.format(self.sql_table,local_str)
+        cur.execute(delete_sql)
+        conn.commit()
 
-        # cur.close()
-        # conn.close()
+        cur.close()
+        conn.close()
         new_data.close()
 
-        # time.sleep(random.randint(0,5))
+        time.sleep(random.randint(0,5))
         self.inster_sql(cc_df)
 
 
@@ -264,7 +261,7 @@ class Order_Data():
             count_sql = """  select count(*) as nums from {} """.format(self.cloudcc_object)
             count_data = cloudcc_query_sql(self.access_url, "cqlQuery", self.cloudcc_object, count_sql, self.binding)
             nums = count_data[0].get("nums",0)
-            # nums = 3001
+            # nums = 500
         except:
             print("获取总数目失败")
             return False
@@ -276,6 +273,8 @@ class Order_Data():
             num_times = 0
 
         for index in range(num_times):
+            if num_times == 1:
+                index = 1
             start = int(index) * self.one_times_num
             if index == 0:
                 start = 1
@@ -298,8 +297,6 @@ class Order_Data():
 if __name__ == "__main__":
     o = Order_Data()
 
-    o.process_data()
-
     # df = o.get_crm_data()
     # # print(order_df)
     # o.inster_sql(df)
@@ -307,10 +304,7 @@ if __name__ == "__main__":
 
     # o.get_cloudcc_order()
 
-
-
-
-    # o.process_data()
+    o.process_data()
     # o.get_cloudcc_order(100)
 
 

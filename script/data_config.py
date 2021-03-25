@@ -727,7 +727,7 @@ BONUS_TABLE_STRING = """ALTER table `{}`
 
 
 
-# 销售负责人&提成信息
+#招投标
 BIDDING_API_NAME="ztbsp"
 BIDDING_SQL_TABLE="bidding"
 BIDDING_CLOUMNS_ORDER = ["id","crm_id","name","winbid_link","winbid_name","winbid_date","winbid_rate","winbid_notice","region","sales_team","opportunity_name","remark","approval_date","city","bid_situation","open_bid_date","department","owner_id","is_upload","quotation_status","quotation_num","bid_name","bidding_link","bidding_num","bidding_account_name","is_bid_upload","bid_type","bidding_project_num","bidding_budget","agent_name","bid_striving","bidding_document","account_id","loss_reason","bid_file","province","order_id","record_type","use_agent_reason","sale_owner","sale_stage","approval_date2","project_nature","project_approval","project_approval_num","report","created_by","created_at","updated_by","updated_at"]
@@ -846,11 +846,11 @@ BIDDING_TABLE_STRING = """ALTER table `{}`
 # 报价单
 QUOTE_API_NAME="Quote"
 QUOTE_SQL_TABLE="quote_back"
-QUOTE_CLOUMNS_ORDER = ["id","crm_id","name","quote_id","total_performance","approval_status","owner_id","account_id","opportunity_id","status","total_amount","lock_status","money","created_by","created_at","updated_by","updated_at"]
+QUOTE_CLOUMNS_ORDER = ["id","crm_id","name","quote_num","approval_status","owner_id","account_id","opportunity_id","status","lock_status","created_by","created_at","updated_by","updated_at"]
 QUOTE_DICT={
     "id":"crm_id",
     "name":"name",
-    "bjdbh": "quote_id",
+    "bjdbh": "quote_num",
     # "customitem45": "total_performance",
     "spzt": "approval_status",
     "ownerid": "owner_id",
@@ -874,12 +874,56 @@ QUOTE_TABLE_STRING = """ALTER table `{}`
                           MODIFY column `id` varchar(50) COMMENT '星光自建 quote id',
                           MODIFY column `crm_id` varchar(100) COMMENT 'crmid',
                           MODIFY column `name` varchar(100) COMMENT '报价单名称',
-                          MODIFY column `quote_id` varchar(100) COMMENT '报价单编号',
+                          MODIFY column `quote_num` varchar(100) COMMENT '报价单编号',
                           MODIFY column `approval_status` varchar(50) COMMENT '审批状态',
                           MODIFY column `owner_id` varchar(50) COMMENT '所有人',
                           MODIFY column `account_id` varchar(50) COMMENT '客户id',
                           MODIFY column `opportunity_id` varchar(50) COMMENT '商机id',
                           MODIFY column `status` varchar(50) COMMENT '状态',
+                          MODIFY column `lock_status` varchar(50) COMMENT '锁定状态',
+                          MODIFY column `created_at` varchar(50) COMMENT '创建日期', 
+                          MODIFY column `created_by` varchar(50) COMMENT '创建人', 
+                          MODIFY column `updated_at` varchar(50) COMMENT '更新日期', 
+                          MODIFY column `updated_by` varchar(50) COMMENT '更新人' """
+
+
+
+
+
+# 报价单明细
+QUOTE_DETAIL_API_NAME="baojd"
+QUOTE_DETAIL_SQL_TABLE="quote_detail"
+QUOTE_DETAIL_CLOUMNS_ORDER = ["id","crm_id","name","quote_id","lock_status","opportunity_id","product_id","product_line","money","total_performance","created_by","created_at","updated_by","updated_at"]
+QUOTE_DETAIL_DICT={
+    "id":"crm_id",
+    "name":"name",
+    # "quotationDetailEntityRel": "quote_num",
+    "customitem4": "quote_id",
+    "lockstatus": "lock_status",
+    "xsjhmc": "opportunity_id",
+    "cpmc": "product_id",
+    "cpx1": "product_line",
+    "xsje1": "money",
+    "customItem1": "total_performance",
+    "createbyid": "created_by",
+    "createdate": "created_at",
+    "lastmodifybyid": "updated_by",
+    "lastmodifydate": "updated_at",
+}
+"""
+                          MODIFY column `quote_num` varchar(50) COMMENT '审批状态',
+
+"""
+QUOTE_DETAIL_TABLE_STRING = """ALTER table `{}`
+                          MODIFY column `id` varchar(50) COMMENT '星光自建 quote id',
+                          MODIFY column `crm_id` varchar(100) COMMENT 'crmid',
+                          MODIFY column `name` varchar(100) COMMENT '报价单名称',
+                          MODIFY column `quote_id` varchar(100) COMMENT '报价单编号',
+                          MODIFY column `opportunity_id` varchar(50) COMMENT '所有人',
+                          MODIFY column `product_id` varchar(50) COMMENT '客户id',
+                          MODIFY column `product_line` varchar(50) COMMENT '商机id',
+                          MODIFY column `money` varchar(50) COMMENT '状态',
+                          MODIFY column `total_performance` varchar(50) COMMENT '状态',
                           MODIFY column `lock_status` varchar(50) COMMENT '锁定状态',
                           MODIFY column `created_at` varchar(50) COMMENT '创建日期', 
                           MODIFY column `created_by` varchar(50) COMMENT '创建人', 

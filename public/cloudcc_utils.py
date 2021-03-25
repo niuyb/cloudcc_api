@@ -228,8 +228,8 @@ if __name__ == "__main__":
 
     # str1 = """ select count(*) as nums from ddmx where left(lastmodifydate,10) = '2021-01-18' """
 
-    str1 = """  select count(*) from ztbsp where is_deleted != "1" """
-    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","dingdan",str1,"4621A3932AEE7DDE765AE8AD604A1B2A")
+    str1 = """  select * from Activity where id ="bef20214863E268KX0Pz" """
+    data=cloudcc_query_sql("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","cqlQuery","Quoteswebtocloudcc",str1,"F50043DE8558BF05FDA75BA0186B7F73")
     print(data)
 
     # data = modify_by_api("https://k8mm3cmt3235c7ed72cede6e.cloudcc.com","update","Account", [{'id':"0012020FE5A8EB0s9Ahn","name":"万科_modify_by_api"}], "F4318B05B7C1D4DC0CF165E0AB5421BC")
